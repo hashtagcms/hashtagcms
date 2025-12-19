@@ -9,8 +9,8 @@ use Illuminate\Support\Str;
 use MarghoobSuleman\HashtagCms\Facades\HashtagCms;
 
 if (HashtagCms::isInstallationRoutesEnabled()) {
-    Route::get('/install', config('hashtagcms.namespace')."Http\Controllers\Installer\InstallController@index");
-    Route::post('/install/save', config('hashtagcms.namespace')."Http\Controllers\Installer\InstallController@save");
+    Route::get('/install', config('hashtagcms.namespace') . "Http\Controllers\Installer\InstallController@index");
+    Route::post('/install/save', config('hashtagcms.namespace') . "Http\Controllers\Installer\InstallController@save");
 }
 // Get configuration values once outside the route to avoid calling on each request
 $namespace = config('hashtagcms.namespace');
@@ -25,10 +25,11 @@ Route::prefix('admin')->group(function () use ($namespace, $appNamespace, $defau
         $controller = ($controller === '') ? $defaultPage : $controller;
 
         $methodType = $request->method();
+
         //Hashtag Controller
-        $callable = $namespace."Http\Controllers\\Admin\\".str_replace('-', '', Str::title($controller)).'Controller';
+        $callable = $namespace . "Http\Controllers\\Admin\\" . str_replace('-', '', Str::title($controller)) . 'Controller';
         //App Controller
-        $callableApp = $appNamespace."Http\Controllers\\Admin\\".str_replace('-', '', Str::title($controller)).'Controller';
+        $callableApp = $appNamespace . "Http\Controllers\\Admin\\" . str_replace('-', '', Str::title($controller)) . 'Controller';
 
         $controllerName = class_exists($callableApp) ? $callableApp : $callable;
 
@@ -36,7 +37,7 @@ Route::prefix('admin')->group(function () use ($namespace, $appNamespace, $defau
 
             $method = ($method === '' && $methodType === 'GET') ? 'index' : $method;
 
-            $callable = $controllerName.'@'.$method;
+            $callable = $controllerName . '@' . $method;
             $values = explode('/', $params);
             $ref = new ReflectionMethod($controllerName, $method);
             $params = $ref->getParameters();
