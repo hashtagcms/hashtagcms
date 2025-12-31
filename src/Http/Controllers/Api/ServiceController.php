@@ -17,13 +17,13 @@ class ServiceController extends ApiBaseController
     public function siteConfigs(Request $request): array|string
     {
         $query = $request->all();
-        $context = $query['site'];
-        $lang = $query['lang'] ?? null;
-        $platform = $query['platform'] ?? null;
+        $context = $query['site'] ?? $request->header('x-site');
+        $lang = $query['lang'] ?? $request->header('x-lang');
+        $platform = $query['platform'] ?? $request->header('x-platform');
 
         //Basic level of api check -
         // site context and api secret should be there in config/hashtagcms.php
-        $api_secret = $query['api_secret'] ?? null;
+        $api_secret = $query['api_secret'] ?? $request->header('x-api-secret') ?? $request->header('api_key');
         if (empty($api_secret)) {
             return response()->json(['message' => 'Api key is missing.', 'status' => Response::HTTP_BAD_REQUEST], Response::HTTP_BAD_REQUEST);
         }
@@ -36,7 +36,7 @@ class ServiceController extends ApiBaseController
                 break;
             }
         }
-        if (! $foundSecret) {
+        if (!$foundSecret) {
             return response()->json(['message' => 'API key or site context is not valid', 'status' => Response::HTTP_BAD_REQUEST], Response::HTTP_BAD_REQUEST);
         }
 
@@ -66,11 +66,11 @@ class ServiceController extends ApiBaseController
     {
 
         $query = $request->all();
-        $context = $query['site'];
-        $lang = $query['lang'] ?? null;
-        $platform = $query['platform'] ?? null;
-        $category = $query['category'] ?? null;
-        $microsite = $query['microsite'] ?? null;
+        $context = $query['site'] ?? $request->header('x-site');
+        $lang = $query['lang'] ?? $request->header('x-lang');
+        $platform = $query['platform'] ?? $request->header('x-platform');
+        $category = $query['category'] ?? $request->header('x-category');
+        $microsite = $query['microsite'] ?? $request->header('x-microsite');
 
         $loader = new ServiceLoader();
         try {
@@ -96,11 +96,11 @@ class ServiceController extends ApiBaseController
     {
 
         $query = $request->all();
-        $context = $query['site'];
-        $lang = $query['lang'] ?? null;
-        $platform = $query['platform'] ?? null;
-        $category = $query['category'] ?? null;
-        $microsite = $query['microsite'] ?? null;
+        $context = $query['site'] ?? $request->header('x-site');
+        $lang = $query['lang'] ?? $request->header('x-lang');
+        $platform = $query['platform'] ?? $request->header('x-platform');
+        $category = $query['category'] ?? $request->header('x-category');
+        $microsite = $query['microsite'] ?? $request->header('x-microsite');
 
         $loader = new ServiceLoader();
         try {

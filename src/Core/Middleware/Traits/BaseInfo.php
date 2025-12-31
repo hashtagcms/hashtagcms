@@ -45,7 +45,7 @@ trait BaseInfo
         try {
             DB::connection()->getPdo();
         } catch (\Exception $e) {
-            exit('Could not connect to the database.  Please check your configuration. Error: '.$e->getMessage());
+            exit('Could not connect to the database.  Please check your configuration. Error: ' . $e->getMessage());
         }
 
         info('BaseInfo: Start Processing...');
@@ -115,7 +115,7 @@ trait BaseInfo
 
         } else {
             $isSiteInstalled = $this->infoLoader->isSiteInstalled();
-            if (! $isSiteInstalled) {
+            if (!$isSiteInstalled) {
                 //return redirect("/install");
                 exit('Site is not installed');
             }
@@ -157,12 +157,25 @@ trait BaseInfo
         $siteData = $this->configData['site'];
 
         //find lang
-        $langData = $this->findData($langList, 'isoCode', $path_arr[0]);
+        //Added Header support
+        $headerLang = $request->header('x-lang');
+        $langData = ($headerLang) ? $this->findData($langList, 'isoCode', $headerLang) : null;
+        if ($langData == null) {
+            $langData = $this->findData($langList, 'isoCode', $path_arr[0]);
+        }
         $foundLang = ($langData != null);
 
         //find platform
-        $platformIndex = ($foundLang === true && $path_size > 1) ? 1 : 0;
-        $platformData = $this->findData($platformList, 'linkRewrite', $path_arr[$platformIndex]);
+        //Added Header support
+        $headerPlatform = $request->header('x-platform');
+        $platformData = ($headerPlatform) ? $this->findData($platformList, 'linkRewrite', $headerPlatform) : null;
+
+        if ($platformData == null) {
+            $platformIndex = ($foundLang === true && $path_size > 1) ? 1 : 0;
+            $platformIndex = ($headerLang && $foundLang === true) ? 0 : $platformIndex; //Adjust index if lang came from header
+
+            $platformData = $this->findData($platformList, 'linkRewrite', $path_arr[$platformIndex]);
+        }
         $foundPlatform = ($platformData != null);
 
         //set default if lang not found
@@ -178,10 +191,12 @@ trait BaseInfo
             $categoryData = isset($defaultData['category']) ? $defaultData['category'] : $this->findData($categoryList, 'id', $defaultData['categoryId']);
             $categoryName = $categoryData['linkRewrite'];
         } else {
-            if ($foundLang) {
+            //Remove lang if found in URL (not header)
+            if ($foundLang && empty($headerLang)) {
                 array_shift($path_arr);
             }
-            if ($foundPlatform) {
+            //Remove platform if found in URL (not header)
+            if ($foundPlatform && empty($headerPlatform)) {
                 array_shift($path_arr);
             }
 
@@ -238,7 +253,7 @@ trait BaseInfo
          *
          *** Mess it with your own risk :).
          ***
-        */
+         */
 
         $path_arr = $path;
         $pathLen = count($path_arr);
@@ -283,10 +298,10 @@ trait BaseInfo
         $this->infoLoader->setInfoKeeper(LayoutKeys::CATEGORY_NAME, $categoryName);
 
         // if controller is not found. $values will ie ["support", "tnc"]. if found $values will be ["tnc"]
-        if (! $foundController && $categoryInfo != null) {
+        if (!$foundController && $categoryInfo != null) {
             array_unshift($paramsValues, $controllerName, $callableData[LayoutKeys::METHOD_NAME_PARAM]);
         }
-        if ($foundController && ! $foundMethod) {
+        if ($foundController && !$foundMethod) {
             array_unshift($paramsValues, $callableData[LayoutKeys::METHOD_NAME_PARAM]);
         }
 
@@ -308,7 +323,7 @@ trait BaseInfo
         $values = array_merge($args, $paramsValues);
 
         //Check if controller and found and dynamic link option available ie: blog/{link_rewrite?}
-        if ($categoryInfo && ! empty($categoryInfo->link_rewrite_pattern)) {
+        if ($categoryInfo && !empty($categoryInfo->link_rewrite_pattern)) {
 
             $link_rewrite_pattern = $categoryInfo->link_rewrite_pattern;
             //Calculate required link count
@@ -324,7 +339,7 @@ trait BaseInfo
 
             $valuesForContext = $values; //make a copy of values. ie.
             // if controller is not found. $values will ie ["support", "tnc"]. if found $values will be ["tnc"]
-            if (! $foundController) {
+            if (!$foundController) {
                 array_splice($valuesForContext, 0, 1); //remove first index because it's a category. also explain in above lines
             }
             //dd('valuesForContext: ',$valuesForContext);
@@ -344,10 +359,11 @@ trait BaseInfo
             //dd("callable 1 ", $callable,$methodName, $values, $categoryInfo['link_rewrite_pattern']);
         }
 
-        $this->infoLoader->setInfoKeeper(LayoutKeys::CALLABLE_CONTROLLER, $callable.'@'.$methodName);
+        $this->infoLoader->setInfoKeeper(LayoutKeys::CALLABLE_CONTROLLER, $callable . '@' . $methodName);
         $this->infoLoader->setInfoKeeper(LayoutKeys::CONTROLLER_VALUE, $values);
 
-        $data = ['callable' => $callable,
+        $data = [
+            'callable' => $callable,
             'callableValue' => $values,
             'controllerName' => $controllerName,
             'categoryName' => $categoryName,
@@ -357,7 +373,7 @@ trait BaseInfo
         //dd($data);
 
         info('======================= setControllerInfo ================================');
-        info('setControllerInfo: '.json_encode($data));
+        info('setControllerInfo: ' . json_encode($data));
     }
 
     /**
@@ -369,18 +385,18 @@ trait BaseInfo
     {
 
         if ($categoryInfo !== null) {
-            $controller_name = isset($categoryInfo['controllerName']) ? $categoryInfo['controllerName'] : str_replace('-', '', Str::title($controller_name)).'Controller';
-            info('----- Found category controller: '.$controller_name.' ------');
+            $controller_name = isset($categoryInfo['controllerName']) ? $categoryInfo['controllerName'] : str_replace('-', '', Str::title($controller_name)) . 'Controller';
+            info('----- Found category controller: ' . $controller_name . ' ------');
         } else {
-            $controller_name = str_replace('-', '', Str::title($controller_name)).'Controller';
-            info('----- Default controller: '.$controller_name.' ------');
+            $controller_name = str_replace('-', '', Str::title($controller_name)) . 'Controller';
+            info('----- Default controller: ' . $controller_name . ' ------');
         }
 
         $namespace = config('hashtagcms.namespace');
         $appNamespace = app()->getNamespace();
-        $callable = $namespace."Http\Controllers\\".$controller_name; //hashtag controller
-        $callableDefault = $namespace."Http\Controllers\FrontendController"; //hashtag default controller
-        $callableApp = $appNamespace."Http\Controllers\\".$controller_name; // app controller
+        $callable = $namespace . "Http\Controllers\\" . $controller_name; //hashtag controller
+        $callableDefault = $namespace . "Http\Controllers\FrontendController"; //hashtag default controller
+        $callableApp = $appNamespace . "Http\Controllers\\" . $controller_name; // app controller
 
         $finalCallableApp = class_exists($callableApp) ? $callableApp : $callable;
 

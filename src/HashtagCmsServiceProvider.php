@@ -20,6 +20,12 @@ use MarghoobSuleman\HashtagCms\Core\Middleware\FeMiddleware;
 use MarghoobSuleman\HashtagCms\Core\Providers\Admin\AdminServiceProvider;
 use MarghoobSuleman\HashtagCms\Core\Providers\FeServiceProvider;
 use Illuminate\Routing\Events\RouteMatched;
+use Illuminate\Support\Facades\Event;
+use MarghoobSuleman\HashtagCms\Services\AnalyticsLogger;
+use MarghoobSuleman\HashtagCms\Events\UserVisit;
+use MarghoobSuleman\HashtagCms\Listeners\RecordUserVisit;
+use MarghoobSuleman\HashtagCms\Events\CopyLangData;
+use MarghoobSuleman\HashtagCms\Listeners\ProcessLangCopy;
 
 class HashtagCmsServiceProvider extends ServiceProvider
 {
@@ -32,6 +38,15 @@ class HashtagCmsServiceProvider extends ServiceProvider
      */
     public function boot(RouteRegistrar $router)
     {
+        //Register Event Listener
+//Register Event Listener
+        Event::listen(UserVisit::class, RecordUserVisit::class);
+        Event::listen(CopyLangData::class, ProcessLangCopy::class);
+
+        //Flush Analytics buffer on termination
+        $this->app->terminating(function () {
+            app(AnalyticsLogger::class)->flush();
+        });
 
         //More providers for admin and frontend
         $this->app->register(AdminServiceProvider::class);
@@ -46,9 +61,9 @@ class HashtagCmsServiceProvider extends ServiceProvider
         $router->aliasMiddleware('interceptor', FeMiddleware::class);
         $router->aliasMiddleware('etag', Etag::class);
 
-        $this->loadTranslationsFrom(__DIR__.'/../resources/lang', 'hashtagcms');
-        $this->loadViewsFrom(__DIR__.'/../resources/views', 'hashtagcms');
-        $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
+        $this->loadTranslationsFrom(__DIR__ . '/../resources/lang', 'hashtagcms');
+        $this->loadViewsFrom(__DIR__ . '/../resources/views', 'hashtagcms');
+        $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
 
         // Register a callback to load routes after application routes
         $this->app->booted(function () {
@@ -70,14 +85,19 @@ class HashtagCmsServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->mergeConfigFrom(__DIR__.'/../config/hashtagcms.php', $this->groupName);
-        $this->mergeConfigFrom(__DIR__.'/../config/hashtagcmsadmin.php', $this->groupName.'admin');
-        $this->mergeConfigFrom(__DIR__.'/../config/hashtagcmscommon.php', $this->groupName.'common');
-        $this->mergeConfigFrom(__DIR__.'/../config/hashtagcmsapi.php', $this->groupName.'api');
+        $this->mergeConfigFrom(__DIR__ . '/../config/hashtagcms.php', $this->groupName);
+        $this->mergeConfigFrom(__DIR__ . '/../config/hashtagcmsadmin.php', $this->groupName . 'admin');
+        $this->mergeConfigFrom(__DIR__ . '/../config/hashtagcmscommon.php', $this->groupName . 'common');
+        $this->mergeConfigFrom(__DIR__ . '/../config/hashtagcmsapi.php', $this->groupName . 'api');
 
         // Register the service the package provides.
         $this->app->singleton('hashtagcms', function ($app) {
             return new HashtagCms;
+        });
+
+        //Bind AnalyticsLogger as Singleton
+        $this->app->singleton(AnalyticsLogger::class, function ($app) {
+            return new AnalyticsLogger();
         });
     }
 
@@ -101,50 +121,50 @@ class HashtagCmsServiceProvider extends ServiceProvider
         // Publishing the configuration file.
         // php artisan vendor:publish --tag=hashtagcms.config
         $this->publishes([
-            __DIR__.'/../config/hashtagcms.php' => config_path('hashtagcms.php'),
-            __DIR__.'/../config/hashtagcmsadmin.php' => config_path('hashtagcmsadmin.php'),
-        ], $this->groupName.'.config');
+            __DIR__ . '/../config/hashtagcms.php' => config_path('hashtagcms.php'),
+            __DIR__ . '/../config/hashtagcmsadmin.php' => config_path('hashtagcmsadmin.php'),
+        ], $this->groupName . '.config');
 
         // Publishing the views.
         // php artisan vendor:publish --tag=hashtagcms.views.frontend
         $this->publishes([
-            __DIR__.'/../resources/views/fe' => resource_path('views/vendor/hashtagcms/fe'),
-            __DIR__.'/../resources/lang' => resource_path('lang/vendor/hashtagcms'),
-        ], $this->groupName.'.views.frontend');
+            __DIR__ . '/../resources/views/fe' => resource_path('views/vendor/hashtagcms/fe'),
+            __DIR__ . '/../resources/lang' => resource_path('lang/vendor/hashtagcms'),
+        ], $this->groupName . '.views.frontend');
 
         //Publishing the views for admin
         // php artisan vendor:publish --tag=hashtagcms.views.admin
         $this->publishes([
-            __DIR__.'/../resources/views/be' => resource_path('views/vendor/hashtagcms/be'),
-            __DIR__.'/../resources/assets/be' => resource_path('assets/hashtagcms/be'),
-        ], $this->groupName.'.views.admin');
+            __DIR__ . '/../resources/views/be' => resource_path('views/vendor/hashtagcms/be'),
+            __DIR__ . '/../resources/assets/be' => resource_path('assets/hashtagcms/be'),
+        ], $this->groupName . '.views.admin');
 
         //Publishing the views for admin common
         // hashtagcms.views.admincommon
         $this->publishes([
-            __DIR__.'/../resources/views/be/neo/common' => resource_path('views/vendor/hashtagcms/be/neo/common'),
-            __DIR__.'/../resources/views/be/neo/index.blade.php' => resource_path('views/vendor/hashtagcms/be/neo/index.blade.php'),
-        ], $this->groupName.'.views.admincommon');
+            __DIR__ . '/../resources/views/be/neo/common' => resource_path('views/vendor/hashtagcms/be/neo/common'),
+            __DIR__ . '/../resources/views/be/neo/index.blade.php' => resource_path('views/vendor/hashtagcms/be/neo/index.blade.php'),
+        ], $this->groupName . '.views.admincommon');
 
         //Export view and js for admin and frontend
         // php artisan vendor:publish --tag=hashtagcms.views.all
         $this->publishes([
-            __DIR__.'/../resources/views/be' => resource_path('views/vendor/hashtagcms/be'),
-            __DIR__.'/../resources/views/fe' => resource_path('views/vendor/hashtagcms/fe'),
-            __DIR__.'/../resources/lang' => resource_path('lang/vendor/hashtagcms'),
-            __DIR__.'/../resources/assets' => resource_path('assets/hashtagcms'),
+            __DIR__ . '/../resources/views/be' => resource_path('views/vendor/hashtagcms/be'),
+            __DIR__ . '/../resources/views/fe' => resource_path('views/vendor/hashtagcms/fe'),
+            __DIR__ . '/../resources/lang' => resource_path('lang/vendor/hashtagcms'),
+            __DIR__ . '/../resources/assets' => resource_path('assets/hashtagcms'),
 
-        ], $this->groupName.'.views.all');
+        ], $this->groupName . '.views.all');
 
         // Publishing assets.
         // php artisan vendor:publish --tag=hashtagcms.assets
         $this->publishes([
-            __DIR__.'/../public/assets' => public_path('assets/hashtagcms'),
-            __DIR__.'/../resources/assets/fe' => resource_path('assets/hashtagcms/fe'),
-            __DIR__.'/../resources/assets/be' => resource_path('assets/hashtagcms/be'),
-            __DIR__.'/../resources/assets/js' => resource_path('assets/hashtagcms/js'),
-            __DIR__.'/../resources/support' => resource_path('assets/hashtagcms/support'),
-        ], $this->groupName.'.assets');
+            __DIR__ . '/../public/assets' => public_path('assets/hashtagcms'),
+            __DIR__ . '/../resources/assets/fe' => resource_path('assets/hashtagcms/fe'),
+            __DIR__ . '/../resources/assets/be' => resource_path('assets/hashtagcms/be'),
+            __DIR__ . '/../resources/assets/js' => resource_path('assets/hashtagcms/js'),
+            __DIR__ . '/../resources/support' => resource_path('assets/hashtagcms/support'),
+        ], $this->groupName . '.assets');
 
         // Register all package commands in one place
         $this->registerPackageCommands();
@@ -159,19 +179,19 @@ class HashtagCmsServiceProvider extends ServiceProvider
     protected function registerPackageCommands()
     {
         $this->commands([
-            // Core installation commands
+                // Core installation commands
             CmsInstall::class,
             CmsValidatorCommand::class,
 
-            // Code generation commands
+                // Code generation commands
             CmsModuleModelCommand::class,
             CmsModuleControllerCommand::class,
             CmsFrontendControllerCommand::class,
 
-            // Utility commands
+                // Utility commands
             Cmsversion::class,
 
-            // Data management commands
+                // Data management commands
             ImportDatabaseData::class,
             ExportDatabaseData::class
         ]);
@@ -190,9 +210,10 @@ class HashtagCmsServiceProvider extends ServiceProvider
      * Load routes
      * @return void
      */
-    protected function loadHashtagRoutes() {
+    protected function loadHashtagRoutes()
+    {
         // Load API routes
-        $this->loadRoutesFrom(__DIR__.'/routes/api.php');
+        $this->loadRoutesFrom(__DIR__ . '/routes/api.php');
 
         // Create a route filter to add additional middleware from config
         app('router')->matched(function (RouteMatched $event) {
@@ -220,6 +241,6 @@ class HashtagCmsServiceProvider extends ServiceProvider
         });
 
         // Load web routes
-        $this->loadRoutesFrom(__DIR__.'/routes/web.php');
+        $this->loadRoutesFrom(__DIR__ . '/routes/web.php');
     }
 }

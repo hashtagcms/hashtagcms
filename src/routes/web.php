@@ -148,5 +148,22 @@ if (HashtagCms::isRoutesEnabled()) {
 
     })->where('all', HashtagCms::getIgnoredPath())->middleware(['web', 'interceptor']);
     //Keep some original routes
-    Auth::routes();
+    //Auth::routes();
+
+    // Authentication Routes...
+    Route::get('login', 'App\Http\Controllers\LoginController@index')->name('login');
+    Route::post('login', 'App\Http\Controllers\LoginController@index');
+    Route::post('logout', 'App\Http\Controllers\LoginController@logout')->name('logout');
+
+    // Registration Routes...
+    if (Route::has('register')) {
+        Route::get('register', 'App\Http\Controllers\RegisterController@index')->name('register');
+        Route::post('register', 'App\Http\Controllers\RegisterController@register');
+    }
+
+    // Password Reset Routes...
+    Route::get('password/reset', 'App\Http\Controllers\PasswordController@index')->name('password.request');
+    Route::post('password/email', 'App\Http\Controllers\PasswordController@email')->name('password.email');
+    Route::get('password/reset/{token}', 'App\Http\Controllers\PasswordController@reset')->name('password.reset');
+    Route::post('password/reset', 'App\Http\Controllers\PasswordController@update')->name('password.update');
 }

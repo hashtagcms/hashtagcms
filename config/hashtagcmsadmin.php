@@ -35,8 +35,20 @@ return [
         'module_types' => ['Static', 'Query', 'Service', 'Custom', 'QueryService', 'UrlService', 'ServiceLater'],
     ],
     'media' => [
-        'upload_path' => 'public/media', // /storage/app/public/media  >_ php artisan storage:link
+        'upload_path' => 'media', // /storage/app/public/media  >_ php artisan storage:link
     ],
     'imageSupportedByBrowsers' => ['apng', 'avif', 'gif', 'jpg', 'jpeg', 'jfif', 'pjpeg', 'pjp', 'png', 'svg', 'webp', 'bmp', 'ico', 'cur', 'tif', 'tiff'],
     'chartPages' => 10,
+    'json_query_in_query_module' => false, // Enable/Disable JSON query in query module, 
+    // example: 
+    // {
+    //     "from": "users",
+    //     "select": "id, name, email",
+    //     "where": [
+    //         ["id", "=", 1]
+    //     ],
+    //     "orderBy": ["id", "desc"],
+    //     "limit": 1
+    // }
+
 ];

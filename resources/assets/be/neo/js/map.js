@@ -1,2 +1,2 @@
-import MapAPI from '../../common/js/helpers/map';
+import { MapAPI } from '@hashtagcms/jskit';
 window.MapApi = new MapAPI();

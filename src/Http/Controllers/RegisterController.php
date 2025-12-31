@@ -3,7 +3,6 @@
 namespace MarghoobSuleman\HashtagCms\Http\Controllers;
 
 use Illuminate\Auth\Events\Registered;
-use Illuminate\Foundation\Auth\RedirectsUsers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -22,7 +21,14 @@ class RegisterController extends FrontendBaseController
    | provide this functionality without requiring any additional code.
    |
    */
-    use RedirectsUsers;
+    // use RedirectsUsers;
+    public function redirectPath()
+    {
+        if (method_exists($this, 'redirectTo')) {
+            return $this->redirectTo();
+        }
+        return property_exists($this, 'redirectTo') ? $this->redirectTo : '/home';
+    }
 
     /**
      * Where to redirect users after registration.

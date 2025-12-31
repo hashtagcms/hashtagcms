@@ -18,7 +18,7 @@ trait Viewer
 
         if ($checkPolicy == true) {
 
-            if (! $this->checkPolicy('read')) {
+            if (!$this->checkPolicy('read')) {
 
                 return htcms_admin_view('common.error');
 
@@ -61,7 +61,7 @@ trait Viewer
 
         // info("moduleInfo: ". json_encode($moduleInfo));
 
-        if (! $moduleInfo['isSuperAdmin']) {
+        if (!$moduleInfo['isSuperAdmin']) {
 
             //handle special case. User has rights but readonly for a module
             switch ($rights) {
@@ -78,7 +78,6 @@ trait Viewer
             //$this->authorize($rights);
             if (Gate::denies($rights, $moduleInfo['permission']) || $moduleInfo['permission'] == false) {
                 return false;
-
             }
 
         }

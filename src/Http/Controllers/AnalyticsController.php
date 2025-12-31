@@ -2,8 +2,7 @@
 
 namespace MarghoobSuleman\HashtagCms\Http\Controllers;
 
-use MarghoobSuleman\HashtagCms\Models\Category;
-use MarghoobSuleman\HashtagCms\Models\Page;
+use MarghoobSuleman\HashtagCms\Events\UserVisit;
 
 //Keeping out of hahatgcms controller scope;
 class AnalyticsController extends Controller
@@ -17,12 +16,13 @@ class AnalyticsController extends Controller
     {
         $data = \request()->post();
         if (isset($data['categoryId']) && $data['categoryId'] > 0) {
-            Category::withoutGlobalScopes()->find((int) $data['categoryId'])->increment('read_count');
+            event(new UserVisit('category', (int) $data['categoryId']));
         }
         if (isset($data['pageId']) && $data['pageId'] > 0) {
-            Page::withoutGlobalScopes()->find($data['pageId'])->increment('read_count');
+            event(new UserVisit('page', (int) $data['pageId']));
         }
 
         return json_encode(['success' => true]);
     }
 }
+

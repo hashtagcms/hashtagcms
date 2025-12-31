@@ -15,7 +15,7 @@ trait Common
      */
     protected function getValidSourceFileName($name)
     {
-        return __DIR__.'/../../../'.$name;
+        return __DIR__ . '/../../../' . $name;
     }
 
     /**
@@ -26,7 +26,7 @@ trait Common
     protected function getValidTarget($path = '', $type = 'app')
     {
         if ($type == 'app') {
-            return $this->laravel['path'].'/'.$path;
+            return $this->laravel['path'] . '/' . $path;
         } else {
             return base_path($path);
         }
@@ -41,7 +41,7 @@ trait Common
     {
 
         $path = $this->laravel['path'];
-        $file_name = $path.'/Http/Controllers/Admin/'.Str::title($name).'Controller.php';
+        $file_name = $path . '/Http/Controllers/Admin/' . Str::title($name) . 'Controller.php';
 
         return $this->files->exists($file_name);
     }
@@ -55,7 +55,7 @@ trait Common
     {
 
         $path = $this->laravel['path'];
-        $file_name = $path.'/Http/Controllers/'.Str::title($name).'Controller.php';
+        $file_name = $path . '/Http/Controllers/' . Str::title($name) . 'Controller.php';
 
         return $this->files->exists($file_name);
     }
@@ -68,7 +68,7 @@ trait Common
     protected function isModelExists($name)
     {
         $path = $this->laravel['path'];
-        $file_name = $path.'/Models/'.Str::title($name).'.php';
+        $file_name = $path . '/Models/' . Str::title($name) . '.php';
 
         return $this->files->exists($file_name);
     }
@@ -109,17 +109,17 @@ trait Common
         $targetDir = $this->getValidTarget($this->paths['targetDir'], 'app');
 
         //Create temp dir
-        if (! $this->files->isDirectory($targetTemp)) {
+        if (!$this->files->isDirectory($targetTemp)) {
             $this->files->makeDirectory($targetTemp, 0777, true, true);
         }
 
         //Model/Controller Directory
-        if (! $this->files->isDirectory($targetDir)) {
+        if (!$this->files->isDirectory($targetDir)) {
             $this->files->makeDirectory($targetDir);
         }
 
-        $sourceFile = $this->getValidSourceFileName($this->paths['sourceDir']."/$what/".$this->paths['sourceFile']);
-        $this->currentSourceFile = $tagetTempFile = $targetTemp.'/'.md5($sourceFile.''.date('YY-DD-M H:i:s')).'.ms';
+        $sourceFile = $this->getValidSourceFileName($this->paths['sourceDir'] . "/$what/" . $this->paths['sourceFile']);
+        $this->currentSourceFile = $tagetTempFile = $targetTemp . '/' . md5($sourceFile . '' . date('YY-DD-M H:i:s')) . '.ms';
         $this->files->copy($sourceFile, $tagetTempFile);
 
         return $tagetTempFile;
@@ -136,7 +136,7 @@ trait Common
         preg_match('/\d{1,}/', $field, $found, PREG_OFFSET_CAPTURE);
 
         if (count($found) > 0) {
-            return 'max:'.$found[0][0];
+            return 'max:' . $found[0][0];
         }
 
         return '';
@@ -152,14 +152,16 @@ trait Common
 
         preg_match('/[a-z].+\(/', $field, $found, PREG_OFFSET_CAPTURE);
 
-        $typeArray = ['varchar' => 'string',
+        $typeArray = [
+            'varchar' => 'string',
             'int' => 'numeric',
             'decimal' => 'numeric',
             'bigint' => 'numeric',
             'float' => 'numeric',
             'double' => 'numeric',
             'tinyint' => 'integer',
-            'timestamp' => 'date'];
+            'timestamp' => 'date'
+        ];
 
         if (count($found) > 0) {
             $key = Str::replaceLast('(', '', $found[0][0]);
@@ -196,7 +198,7 @@ trait Common
 
         $table_name = strtolower($table_name);
 
-        if (! Schema::hasTable(Str::plural($table_name))) {
+        if (!Schema::hasTable(Str::plural($table_name))) {
             return [];
         }
 
@@ -204,7 +206,13 @@ trait Common
 
         $isLang = ($lang == '') ? false : true;
 
-        $data = DB::select('SHOW COLUMNS FROM '.Str::plural($table_name));
+        if (DB::connection()->getDriverName() !== 'mysql') {
+            // SHOW COLUMNS is MySQL specific.
+            // For now, we cannot auto-generate validation rules for other drivers without doctrine/dbal.
+            return [];
+        }
+
+        $data = DB::select('SHOW COLUMNS FROM ' . Str::plural($table_name));
 
         $allFields = [];
 
@@ -240,13 +248,13 @@ trait Common
 
                 if ($fields_value != '') {
                     $nullable = (count($values) >= 1 && $required == '') ? 'nullable|' : '';
-                    $allFields[$lang.$fields->Field] = "$nullable".$fields_value;
+                    $allFields[$lang . $fields->Field] = "$nullable" . $fields_value;
                 }
 
                 if ($isLang) {
                     //Dont need parent table id: ie. country_id if table is coutry_langs
                     $table_name_main = Str::singular(str_replace('_langs', '', $table_name));
-                    unset($allFields[$lang.$table_name_main.'_id']);
+                    unset($allFields[$lang . $table_name_main . '_id']);
                     unset($allFields['lang_lang_id']);
                 }
 
@@ -269,7 +277,7 @@ trait Common
 
         $data = $this->getFormattedFieldsValue($table_name);
 
-        $lang_table = Str::singular($table_name).'_langs';
+        $lang_table = Str::singular($table_name) . '_langs';
 
         if ($withLang != 0 && Schema::hasTable(Str::plural($lang_table))) {
 
@@ -281,7 +289,7 @@ trait Common
 
         if (count($data) > 0) {
             foreach ($data as $key => $val) {
-                $field_json_str[] = '"'.$key.'"'.' => "'.$val.'"';
+                $field_json_str[] = '"' . $key . '"' . ' => "' . $val . '"';
             }
 
         }

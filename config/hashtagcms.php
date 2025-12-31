@@ -16,9 +16,13 @@ return [
                                     'base_path'=>'/assets/hashtagcms/fe',
                                     'js'=>'js', 'css'=>'css', 'image'=>'img')
         ),*/
-        'assets_path' => ['base_url' => env('ASSET_URL', ''),
+        'assets_path' => [
+            'base_url' => env('ASSET_URL', ''),
             'base_path' => '/assets/hashtagcms/fe',
-            'js' => 'js', 'css' => 'css', 'image' => 'img'],
+            'js' => 'js',
+            'css' => 'css',
+            'image' => 'img'
+        ],
         'media_path' => '/storage/media',
         'records_per_page' => 20,
     ],
@@ -55,13 +59,14 @@ return [
          * will be used in api ie /api/hashtagcms/public/configs/v1/site-configs?site=htcmsctx&api_secret=61d2aeb489bb8df385
          * api_key as header will be set with the same value
          */
-        'htcms' => env('API_SECRET', '61c58507bbac1'),
+        'procms' => env('API_SECRET', '61c58507bbac1'),
     ],
-    
+
     /**
      * Additional middleware to be applied to all HashtagCMS routes
      * Add middleware names that you want to apply to all HashtagCMS routes
      * Example: ['auth', 'invite']
      */
     'additional_middleware' => [],
+    'external_service_timeout' => 5, //in seconds
 ];

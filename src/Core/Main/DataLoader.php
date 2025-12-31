@@ -33,6 +33,7 @@ use MarghoobSuleman\HashtagCms\Models\SiteProp;
 use MarghoobSuleman\HashtagCms\Models\Theme;
 /** Traits */
 use Symfony\Component\HttpFoundation\Response;
+use MarghoobSuleman\HashtagCms\Events\PageLoaded;
 
 class DataLoader
 {
@@ -57,7 +58,7 @@ class DataLoader
         try {
             DB::connection()->getPdo();
         } catch (\Exception $e) {
-            logger()->error('DataLoader->loadConfig: Database Error: '.$e->getMessage());
+            logger()->error('DataLoader->loadConfig: Database Error: ' . $e->getMessage());
 
             return $this->getErrorMessage($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -90,17 +91,17 @@ class DataLoader
 
         //if lang param is not empty fetch the lang info.
         // If found use that else use default lang from the site
-        if (! empty($lang)) {
+        if (!empty($lang)) {
             $langData = Lang::where('iso_code', '=', $lang)->first();
-            if (! empty($langData)) {
+            if (!empty($langData)) {
                 $lang_id = $langData->id;
             }
         }
 
         //if platform param is not empty fetch form the db
-        if (! empty($platform)) {
+        if (!empty($platform)) {
             $platformData = Platform::where('link_rewrite', '=', $platform)->first();
-            if (! empty($platformData)) {
+            if (!empty($platformData)) {
                 $platform_id = $platformData->id;
             }
         }
@@ -145,7 +146,7 @@ class DataLoader
         $data['countries'] = $countriesInfo;
         $data['categories'] = $categoriesInfo;
         $data['props'] = $propsInfo;
-        if (! empty($festivalInfo)) {
+        if (!empty($festivalInfo)) {
             $data['festivals'] = $festivalInfo;
         }
 
@@ -177,7 +178,7 @@ class DataLoader
             $apiSecret = $apiSecretAndContext['apiSecret'];
             $context = $apiSecretAndContext['context'];
 
-            $apiUrl = $apiUrl."?site=$context&api_secret=$apiSecret";
+            $apiUrl = $apiUrl . "?site=$context&api_secret=$apiSecret";
             $headers['Content-Type'] = 'application/json';
             $headers['api_key'] = $apiSecret;
 
@@ -186,13 +187,13 @@ class DataLoader
             if ($http->status() == 200) {
                 $data = $http->json();
             } else {
-                $msg = $http->reason()." :from API: $apiUrl";
+                $msg = $http->reason() . " :from API: $apiUrl";
                 logger()->error($msg);
                 throw new \Exception($msg, $http->status());
             }
 
         } catch (\Exception $exception) {
-            $msg = 'Error while loading config: '.$exception->getMessage();
+            $msg = 'Error while loading config: ' . $exception->getMessage();
             logger()->error($msg);
             $data = ['status' => Response::HTTP_PRECONDITION_FAILED, 'message' => $msg];
         }
@@ -209,7 +210,7 @@ class DataLoader
         try {
             DB::connection()->getPdo();
         } catch (\Exception $e) {
-            logger()->error('DataLoader->loadData: Database Error: '.$e->getMessage());
+            logger()->error('DataLoader->loadData: Database Error: ' . $e->getMessage());
 
             return $this->getErrorMessage($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -297,7 +298,7 @@ class DataLoader
         //Set Context Vars: Category Id
         $this->infoLoader->setContextVars('category_id', $categoryData->id);
 
-        if (! empty($categoryData->link_rewrite_pattern)) {
+        if (!empty($categoryData->link_rewrite_pattern)) {
             $linkRewriteKey = str_replace(['{', '?', '}'], ['', '', ''], $categoryData->link_rewrite_pattern);
             $this->infoLoader->setContextVars($linkRewriteKey, $filterdCategory['param']);
         }
@@ -328,7 +329,8 @@ class DataLoader
         }
 
         //props
-        $propsData = SiteProp::where([['site_id', '=', $siteData->id],
+        $propsData = SiteProp::where([
+            ['site_id', '=', $siteData->id],
             ['platform_id', '=', $platformData->id],
             ['is_public', '=', 1],
         ])->get();
@@ -393,6 +395,13 @@ class DataLoader
 
         logger("loading data completed for: $category ({$categoryData->id}), context: $context ({$siteData->id}), platform: $platform ({$platformData->id}) lang: $lang ({$langData->id})");
 
+        try {
+            //Dispatch Event
+            PageLoaded::dispatch($data);
+        } catch (\Exception $e) {
+            info('PageLoaded Event Dispatch Error: ' . $e->getMessage());
+        }
+
         return $data;
 
     }
@@ -437,18 +446,18 @@ class DataLoader
                 $data = $http->json();
 
                 //Old Compatibility
-                if (! isset($data['meta']['page'])) {
+                if (!isset($data['meta']['page'])) {
                     $data['meta']['page'] = ['id' => -1, 'linkRewrite' => '', 'activeKey' => '', 'name' => ''];
                 }
-                if (! isset($data['isLoginRequired'])) {
+                if (!isset($data['isLoginRequired'])) {
                     $data['isLoginRequired'] = false;
                 }
-                if (! isset($data['isContentFound'])) {
+                if (!isset($data['isContentFound'])) {
                     $data['isContentFound'] = true;
                 }
 
             } else {
-                $msg = $http->reason()." :from API: $apiUrl";
+                $msg = $http->reason() . " :from API: $apiUrl";
                 logger()->error($msg);
                 throw new \Exception($msg, $http->status());
             }
@@ -584,7 +593,7 @@ class DataLoader
         $categoryFooterContent = $this->parseStringForPath($categoryData->siteWise->footer_content, $theme_dir);
 
         //theme header/footer
-        $themeInfo['header_content'] = $neg.$this->parseStringForPath($themeData->header_content, $theme_dir);
+        $themeInfo['header_content'] = $neg . $this->parseStringForPath($themeData->header_content, $theme_dir);
         $themeInfo['footer_content'] = $this->parseStringForPath($themeData->footer_content, $theme_dir);
         $themeInfo['skeleton'] = $this->parseStringForPath($themeData->skeleton, $theme_dir);
 
@@ -615,8 +624,8 @@ class DataLoader
 
             //add seo module header/footer content
 
-            $categoryHeaderContent = $categoryHeaderContent.$this->parseStringForPath($seoContent['headerContent'] ?? '', $theme_dir);
-            $categoryFooterContent = $categoryFooterContent.$this->parseStringForPath($seoContent['footerContent'] ?? '', $theme_dir);
+            $categoryHeaderContent = $categoryHeaderContent . $this->parseStringForPath($seoContent['headerContent'] ?? '', $theme_dir);
+            $categoryFooterContent = $categoryFooterContent . $this->parseStringForPath($seoContent['footerContent'] ?? '', $theme_dir);
 
             //save it for later; might deprecate
             $pageInfo['id'] = ($seoContent['page_id'] == null) ? '' : $seoContent['page_id'];
@@ -641,7 +650,7 @@ class DataLoader
             $metaLinks[] = array("rel" => "canonical", "href" => $metaCanonical);
         }*/
         //fav icon
-        if (isset($siteData->favicon) && ! empty(trim($siteData->favicon))) {
+        if (isset($siteData->favicon) && !empty(trim($siteData->favicon))) {
             $metaLinks[] = ['rel' => 'shortcut icon', 'href' => htcms_get_media($siteData->favicon)]; //this helper is in admin
         } else {
             //add default icon
@@ -654,13 +663,13 @@ class DataLoader
             }
         }
         foreach ($headerMeta as $mKey => $hMeta) {
-            $metaContent .= '<meta name="'.$mKey.'" content="'.$hMeta.'" />';
+            $metaContent .= '<meta name="' . $mKey . '" content="' . $hMeta . '" />';
         }
         //Making header data
 
         $headTag = [];
         $headTag['headerContent'] = [
-            ['order' => 1, 'html' => $themeInfo['header_content'].$categoryHeaderContent],
+            ['order' => 1, 'html' => $themeInfo['header_content'] . $categoryHeaderContent],
         ];
         $headTag['title'] = $metaTitle;
         $headTag['meta'] = $headerMeta;
@@ -668,7 +677,7 @@ class DataLoader
 
         $bodyTag = [];
         $bodyTag['content'] = ['skeleton' => $themeInfo['skeleton']];
-        $bodyTag['footer']['footerContent'][] = ['order' => 1, 'html' => $themeInfo['footer_content'].$categoryFooterContent];
+        $bodyTag['footer']['footerContent'][] = ['order' => 1, 'html' => $themeInfo['footer_content'] . $categoryFooterContent];
 
         //Set html
         $data['html']['head'] = $headTag;

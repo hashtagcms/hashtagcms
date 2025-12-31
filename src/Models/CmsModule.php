@@ -69,15 +69,12 @@ class CmsModule extends AdminBaseModel
      */
     public function getAllTables(): array
     {
-
-        $tables = DB::select('SHOW TABLES');
+        $tables = parent::getTables(); // Uses the driver-agnostic helper from AdminBaseModel
 
         $arr = [];
         $index = 0;
-        foreach ($tables as $key => $table) {
-            foreach ($table as $key => $value) {
-                $arr[] = ['id' => $index++, 'name' => $value];
-            }
+        foreach ($tables as $value) {
+            $arr[] = ['id' => $index++, 'name' => $value];
         }
 
         return $arr;
@@ -90,10 +87,6 @@ class CmsModule extends AdminBaseModel
      */
     public function getFieldsName($table)
     {
-        $db_columns = DB::select('SHOW COLUMNS FROM '.$table);
-
-        return array_map(function ($column) {
-            return $column->Field;
-        }, $db_columns);
+        return \Illuminate\Support\Facades\Schema::getColumnListing($table);
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-if (! function_exists('htcms_get_resource')) {
+if (!function_exists('htcms_get_resource')) {
 
     /**
      * Get resource
@@ -12,14 +12,14 @@ if (! function_exists('htcms_get_resource')) {
         $domain = env('MEIDA_URL');
 
         if ($resource !== '') {
-            return $domain.'/'.$path.'/'.$resource;
+            return $domain . '/' . $path . '/' . $resource;
         }
 
         return '';
     }
 }
 
-if (! function_exists('htcms_get_header_menu')) {
+if (!function_exists('htcms_get_header_menu')) {
 
     /**
      * Get Header Menu
@@ -30,7 +30,7 @@ if (! function_exists('htcms_get_header_menu')) {
     }
 }
 
-if (! function_exists('htcms_get_header_menu_html')) {
+if (!function_exists('htcms_get_header_menu_html')) {
 
     /**
      * Get Header Menu
@@ -50,7 +50,7 @@ if (! function_exists('htcms_get_header_menu_html')) {
     }
 }
 
-if (! function_exists('htcms_parse_string_for_view')) {
+if (!function_exists('htcms_parse_string_for_view')) {
 
     /**
      * Get Header Menu
@@ -61,7 +61,7 @@ if (! function_exists('htcms_parse_string_for_view')) {
     }
 }
 
-if (! function_exists('findIndexInAssocArray')) {
+if (!function_exists('findIndexInAssocArray')) {
 
     /**
      * Find index in associate array
@@ -80,7 +80,7 @@ if (! function_exists('findIndexInAssocArray')) {
 
 }
 
-if (! function_exists('getFormattedDate')) {
+if (!function_exists('getFormattedDate')) {
 
     /**
      * Get Formatted Date
@@ -92,7 +92,7 @@ if (! function_exists('getFormattedDate')) {
 
 }
 
-if (! function_exists('sanitize')) {
+if (!function_exists('sanitize')) {
     /**
      * Sanitize string
      *
@@ -107,7 +107,7 @@ if (! function_exists('sanitize')) {
 
 }
 
-if (! function_exists('htcms_get_domain_path')) {
+if (!function_exists('htcms_get_domain_path')) {
 
     /**
      * Get domain path
@@ -120,13 +120,13 @@ if (! function_exists('htcms_get_domain_path')) {
         } else {
             $path = ($path == '/') ? '' : $path;
 
-            return $domain.'/'.$path;
+            return $domain . '/' . $path;
         }
     }
 
 }
 
-if (! function_exists('htcms_get_path')) {
+if (!function_exists('htcms_get_path')) {
 
     /**
      * Get path
@@ -139,7 +139,7 @@ if (! function_exists('htcms_get_path')) {
             $lang = htcms_get_lang_info('isoCode');
             $platform = htcms_get_platform_info('linkRewrite');
 
-            return htcms_get_domain_path($lang.'/'.$platform.'/'.$path);
+            return htcms_get_domain_path($lang . '/' . $platform . '/' . $path);
         }
 
         return htcms_get_domain_path($path);
@@ -147,7 +147,7 @@ if (! function_exists('htcms_get_path')) {
 
 }
 
-if (! function_exists('htcms_get_js_resource')) {
+if (!function_exists('htcms_get_js_resource')) {
 
     /**
      * Get get js path
@@ -159,7 +159,7 @@ if (! function_exists('htcms_get_js_resource')) {
 
 }
 
-if (! function_exists('htcms_get_css_resource')) {
+if (!function_exists('htcms_get_css_resource')) {
 
     /**
      * Get get css path
@@ -171,7 +171,7 @@ if (! function_exists('htcms_get_css_resource')) {
 
 }
 
-if (! function_exists('htcms_get_image_resource')) {
+if (!function_exists('htcms_get_image_resource')) {
 
     /**
      * Get get image path
@@ -189,7 +189,7 @@ if (! function_exists('htcms_get_image_resource')) {
  *
  */
 
-if (! function_exists('htcms_get_site_info')) {
+if (!function_exists('htcms_get_site_info')) {
 
     /**
      * Get site info from the request
@@ -201,7 +201,7 @@ if (! function_exists('htcms_get_site_info')) {
 
 }
 
-if (! function_exists('htcms_get_site_id')) {
+if (!function_exists('htcms_get_site_id')) {
 
     /**
      * Get site id from the request
@@ -213,7 +213,7 @@ if (! function_exists('htcms_get_site_id')) {
 
 }
 
-if (! function_exists('htcms_get_lang_info')) {
+if (!function_exists('htcms_get_lang_info')) {
 
     /**
      * Get lang info from the request
@@ -225,7 +225,7 @@ if (! function_exists('htcms_get_lang_info')) {
 
 }
 
-if (! function_exists('htcms_data_key_or_null')) {
+if (!function_exists('htcms_data_key_or_null')) {
 
     /**
      * Get the data or data's value based on key
@@ -240,7 +240,7 @@ if (! function_exists('htcms_data_key_or_null')) {
     }
 }
 
-if (! function_exists('htcms_get_language_id')) {
+if (!function_exists('htcms_get_language_id')) {
 
     /**
      * Get Language Id from the request
@@ -251,7 +251,7 @@ if (! function_exists('htcms_get_language_id')) {
     }
 }
 
-if (! function_exists('htcms_get_platform_info')) {
+if (!function_exists('htcms_get_platform_info')) {
 
     /**
      * Get platform info from the request
@@ -263,7 +263,7 @@ if (! function_exists('htcms_get_platform_info')) {
 
 }
 
-if (! function_exists('htcms_get_category_info')) {
+if (!function_exists('htcms_get_category_info')) {
 
     /**
      * Get category info from the request
@@ -274,7 +274,7 @@ if (! function_exists('htcms_get_category_info')) {
     }
 }
 
-if (! function_exists('htcms_get_page_info')) {
+if (!function_exists('htcms_get_page_info')) {
 
     /**
      * Get page info from the request
@@ -285,7 +285,7 @@ if (! function_exists('htcms_get_page_info')) {
     }
 }
 
-if (! function_exists('htcms_get_theme_info')) {
+if (!function_exists('htcms_get_theme_info')) {
 
     /**
      * Get category info from the request
@@ -296,7 +296,7 @@ if (! function_exists('htcms_get_theme_info')) {
     }
 }
 
-if (! function_exists('htcms_get_body_content')) {
+if (!function_exists('htcms_get_body_content')) {
 
     /**
      * Get body content
@@ -307,7 +307,7 @@ if (! function_exists('htcms_get_body_content')) {
     }
 }
 
-if (! function_exists('htcms_get_header_content')) {
+if (!function_exists('htcms_get_header_content')) {
 
     /**
      * Get header content
@@ -317,13 +317,13 @@ if (! function_exists('htcms_get_header_content')) {
         $layoutManager = app()->HashtagCms->layoutManager();
         $category = $layoutManager->getMetaObject('category');
         $theme = $layoutManager->getMetaObject('theme');
-        $content = ($reverse == true) ? $category['header_content'].$theme['header_content'] : $theme['header_content'].$category['header_content'];
+        $content = ($reverse == true) ? $category['header_content'] . $theme['header_content'] : $theme['header_content'] . $category['header_content'];
 
         return app()->HashtagCms->layoutManager()->parseStringForPath($content);
     }
 }
 
-if (! function_exists('htcms_get_footer_content')) {
+if (!function_exists('htcms_get_footer_content')) {
 
     /**
      * Get footer content
@@ -333,13 +333,13 @@ if (! function_exists('htcms_get_footer_content')) {
         $layoutManager = app()->HashtagCms->layoutManager();
         $category = $layoutManager->getMetaObject('category');
         $theme = $layoutManager->getMetaObject('theme');
-        $content = ($reverse == true) ? $theme['footer_content'].$category['footer_content'] : $category['footer_content'].$theme['footer_content'];
+        $content = ($reverse == true) ? $theme['footer_content'] . $category['footer_content'] : $category['footer_content'] . $theme['footer_content'];
 
         return app()->HashtagCms->layoutManager()->parseStringForPath($content);
     }
 }
 
-if (! function_exists('htcms_get_header_title')) {
+if (!function_exists('htcms_get_header_title')) {
 
     /**
      * Get header title
@@ -350,7 +350,7 @@ if (! function_exists('htcms_get_header_title')) {
     }
 }
 
-if (! function_exists('htcms_get_all_meta_tags')) {
+if (!function_exists('htcms_get_all_meta_tags')) {
 
     /**
      * Get all meta as tags
@@ -361,7 +361,7 @@ if (! function_exists('htcms_get_all_meta_tags')) {
     }
 }
 
-if (! function_exists('htcms_get_shared_data')) {
+if (!function_exists('htcms_get_shared_data')) {
 
     /**
      * Get shared module data
@@ -372,7 +372,7 @@ if (! function_exists('htcms_get_shared_data')) {
     }
 }
 
-if (! function_exists('htcms_get_site_props')) {
+if (!function_exists('htcms_get_site_props')) {
 
     /**
      * Get site props for frontend use
@@ -403,7 +403,7 @@ if (! function_exists('htcms_get_site_props')) {
     }
 }
 
-if (! function_exists('____')) {
+if (!function_exists('____')) {
 
     /**
      * Four underscore
@@ -432,5 +432,18 @@ if (! function_exists('____')) {
         }
 
         return $str;
+    }
+}
+
+if (!function_exists('htcms_trans')) {
+    /**
+     * Alias for ____
+     * For lang translation by key
+     *
+     * @param string $key
+     */
+    function htcms_trans(string $key): string
+    {
+        return ____($key);
     }
 }
