@@ -92,8 +92,16 @@ class LanguageController extends BaseAdminController
             $savedData = $this->saveData($arrSaveData);
 
             //Add default language in all tables based on new id
+            //Add default language in all tables based on new id
             if ($savedData['id']) {
-                Lang::insertLangInAllTables($savedData['id']);
+                //Lang::insertLangInAllTables($savedData['id']);
+                try {
+                    $sourceLang = Lang::withoutGlobalScopes()->first();
+                    $tables = Lang::getOnlyLangTables();
+                    (new Lang())->copyLangData($sourceLang->id, $savedData['id'], $tables, true);
+                } catch (\Exception $e) {
+                    logger()->error("Error adding language to queue: " . $e->getMessage());
+                }
             }
             //$savedData = $this->saveDataWithLang($arrSaveData, $arrLangData);
 

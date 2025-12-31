@@ -130,6 +130,23 @@ class Lang extends AdminBaseModel
     }
 
     /**
+     * Get only language tables (ending with _langs)
+     *
+     * @return array
+     */
+    public static function getOnlyLangTables()
+    {
+        $allTables = self::getTables();
+        $langTables = [];
+        foreach ($allTables as $table) {
+            if (Str::endsWith($table, '_langs')) {
+                $langTables[] = $table;
+            }
+        }
+        return $langTables;
+    }
+
+    /**
      * Get all language tables
      *
      * @return array
