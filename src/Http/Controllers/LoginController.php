@@ -13,6 +13,12 @@ use Illuminate\Support\Str;
 use Illuminate\Auth\Events\Lockout;
 //use Laravel\Socialite;
 use Laravel\Socialite\Facades\Socialite;
+use Illuminate\Support\Facades\Http;
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\ValidationException;
+use Illuminate\Cache\RateLimiter as CacheRateLimiter;
+use Illuminate\Http\JsonResponse;
 
 class LoginController extends FrontendBaseController
 {
@@ -170,6 +176,9 @@ class LoginController extends FrontendBaseController
      */
     protected function attemptLogin(Request $request)
     {
+        if (config('hashtagcms.enable_external_api')) {
+            return $this->loginViaExternalApi($request);
+        }
         return $this->guard()->attempt(
             $this->credentials($request),
             $request->filled('remember')
@@ -196,6 +205,10 @@ class LoginController extends FrontendBaseController
         $request->session()->regenerate();
 
         $this->clearLoginAttempts($request);
+
+        if ($request->wantsJson() || $request->ajax()) {
+            return new JsonResponse(['message' => 'Login successful', 'redirect' => $this->redirectPath()], 200);
+        }
 
         return $this->authenticated($request, $this->guard()->user())
             ?: redirect()->intended($this->redirectPath()); //URL::previous()
@@ -225,6 +238,9 @@ class LoginController extends FrontendBaseController
      */
     protected function sendFailedLoginResponse(Request $request)
     {
+        if ($request->wantsJson() || $request->ajax()) {
+            return new JsonResponse(['message' => trans('auth.failed'), 'errors' => [$this->username() => [trans('auth.failed')]]], 422);
+        }
 
         return redirect($this->route)
             ->withErrors([
@@ -289,6 +305,11 @@ class LoginController extends FrontendBaseController
      */
     public function logout(Request $request)
     {
+
+        if (config('hashtagcms.enable_external_api')) {
+            $this->logoutViaExternalApi($request);
+        }
+
         $this->guard()->logout();
 
         $request->session()->invalidate();
@@ -300,7 +321,7 @@ class LoginController extends FrontendBaseController
         }
 
         return $request->wantsJson()
-            ? new \Illuminate\Http\JsonResponse([], 204)
+            ? new JsonResponse(['message' => 'Logged out'], 204)
             : redirect('/');
     }
 
@@ -382,13 +403,101 @@ class LoginController extends FrontendBaseController
     {
         $seconds = RateLimiter::availableIn($this->throttleKey($request));
 
-        throw \Illuminate\Validation\ValidationException::withMessages([
+        throw ValidationException::withMessages([
             $this->username() => [Lang::get('auth.throttle', ['seconds' => $seconds, 'minutes' => ceil($seconds / 60)])],
         ])->status(429);
     }
 
     protected function limiter()
     {
-        return app(\Illuminate\Cache\RateLimiter::class);
+        return app(CacheRateLimiter::class);
+    }
+
+    /**
+     * Login via external API
+     * @param Request $request
+     * @return bool
+     */
+    private function loginViaExternalApi(Request $request)
+    {
+        try {
+            $loginUrl = config('hashtagcms.login_api');
+            $apiSecret = config('hashtagcms.api_secret');
+
+            $response = Http::withHeaders([
+                'Content-Type' => 'application/json',
+                'api_key' => $apiSecret
+            ])->post($loginUrl, [
+                        'email' => $request->input('email'),
+                        'password' => $request->input('password')
+                    ]);
+
+            if ($response->successful()) {
+                $data = $response->json();
+                $token = $data['token']['access_token'] ?? null;
+                $userData = $data['user'] ?? null;
+
+                if ($token && $userData) {
+
+                    //Store token
+                    session(['hashtagcms_api_token' => $token]);
+                    session(['hashtagcms_api_user' => $userData]);
+
+                    // Login locally using the custom provider
+                    // We need to retrieve the user instance that our custom provider creates from the session
+                    // Since we just put it in the session, retrieveById should find it.
+
+                    // However, Auth::loginUsingId() expects the user to be in the DB for the default provider.
+                    // But if we are using our custom provider, it should work if configured.
+                    // Alternatively, we can manually log them in if we get the user instance.
+
+                    // Let's try to get the user instance via the provider logic (or manually hydrate)
+                    // If we haven't switched the 'provider' in auth.php, Auth::loginUsingId might fail.
+                    // But we can hydrate a User model and pass it to Auth::login().
+
+                    $user = new User();
+                    $user->forceFill($userData);
+                    $user->id = $userData['id'] ?? 0; //Ensure ID is set
+                    $user->exists = true; // Pretend existence
+
+                    $this->guard()->login($user, $request->filled('remember'));
+                    return true;
+                }
+            } else {
+                $msg = $response->json()['message'] ?? 'Login failed';
+                //We could flash this message but attemptLogin returns bool.
+                //Log it?
+                info("External Login Failed: " . $msg);
+            }
+
+        } catch (\Exception $e) {
+            info("External Login Error: " . $e->getMessage());
+        }
+        return false;
+    }
+
+    /**
+     * Logout via external API
+     * @param Request $request
+     * @return void
+     */
+    private function logoutViaExternalApi(Request $request)
+    {
+        try {
+            $token = session('hashtagcms_api_token');
+            if ($token) {
+                $logoutUrl = config('hashtagcms.logout_api');
+                $apiSecret = config('hashtagcms.api_secret');
+
+                Http::withHeaders([
+                    'Content-Type' => 'application/json',
+                    'Authorization' => 'Bearer ' . $token,
+                    'api_key' => $apiSecret
+                ])->post($logoutUrl);
+            }
+        } catch (\Exception $e) {
+            //Ignore logout errors
+            info("External Logout Error: " . $e->getMessage());
+        }
     }
 }

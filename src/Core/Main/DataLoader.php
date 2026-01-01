@@ -4,6 +4,7 @@ namespace MarghoobSuleman\HashtagCms\Core\Main;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 use MarghoobSuleman\HashtagCms\Core\Traits\LayoutHandler;
 use MarghoobSuleman\HashtagCms\Http\Resources\CategoryResource;
@@ -169,33 +170,50 @@ class DataLoader
         try {
             $apiUrl = app()->HashtagCms->getConfigApiSource();
 
-            $apiSecretAndContext = $this->getApiKeyAndContext($apiUrl);
+            $apiSecretList = config('hashtagcms.api_secrets');
+            $apiSecret = $apiSecretList[$context] ?? null;
 
-            if ($apiSecretAndContext['apiSecret'] == null) {
-                dd('Unable to find api secret key in config');
-            }
-
-            $apiSecret = $apiSecretAndContext['apiSecret'];
-            $context = $apiSecretAndContext['context'];
-
-            $apiUrl = $apiUrl . "?site=$context&api_secret=$apiSecret";
-            $headers['Content-Type'] = 'application/json';
-            $headers['api_key'] = $apiSecret;
-
-            $http = Http::withHeaders($headers)->get($apiUrl);
-
-            if ($http->status() == 200) {
-                $data = $http->json();
-            } else {
-                $msg = $http->reason() . " :from API: $apiUrl";
+            if (empty($apiSecret)) {
+                $msg = "Unable to find api secret key in config for context: $context";
                 logger()->error($msg);
-                throw new \Exception($msg, $http->status());
+                return $this->getErrorMessage($msg, Response::HTTP_FORBIDDEN);
             }
+
+            $queryParams = [
+                'site' => $context,
+                'api_secret' => $apiSecret
+            ];
+
+            if ($lang) {
+                $queryParams['lang'] = $lang;
+            }
+            if ($platform) {
+                $queryParams['platform'] = $platform;
+            }
+
+            // Cache Key
+            $cacheKey = "hashtagcms_external_config_{$context}_{$lang}_{$platform}";
+            $cacheTTL = config('hashtagcms.external_config_cache_ttl', 60); // Default 60 minutes
+
+            $data = Cache::remember($cacheKey, now()->addMinutes($cacheTTL), function () use ($apiUrl, $apiSecret, $queryParams) {
+                $response = Http::withHeaders([
+                    'Content-Type' => 'application/json',
+                    'api_key' => $apiSecret
+                ])->get($apiUrl, $queryParams);
+
+                if ($response->successful()) {
+                    return $response->json();
+                } else {
+                    $msg = $response->reason() . " :from API: $apiUrl";
+                    logger()->error($msg);
+                    throw new \Exception($msg, $response->status());
+                }
+            });
 
         } catch (\Exception $exception) {
             $msg = 'Error while loading config: ' . $exception->getMessage();
             logger()->error($msg);
-            $data = ['status' => Response::HTTP_PRECONDITION_FAILED, 'message' => $msg];
+            $data = $this->getErrorMessage($msg, Response::HTTP_PRECONDITION_FAILED);
         }
 
         return $data;
@@ -416,51 +434,56 @@ class DataLoader
         try {
             $apiUrl = app()->HashtagCms->getLoadDataApiSource();
 
-            $apiSecretAndContext = $this->getApiKeyAndContext($apiUrl);
+            $apiSecretList = config('hashtagcms.api_secrets');
+            $apiSecret = $apiSecretList[$context] ?? null;
 
-            if ($apiSecretAndContext['apiSecret'] == null) {
-                throw new \Exception('Unable to find api secret key in config', Response::HTTP_BAD_REQUEST);
+            if (empty($apiSecret)) {
+                throw new \Exception("Unable to find api secret key in config for context: $context", Response::HTTP_FORBIDDEN);
             }
 
-            $apiSecret = $apiSecretAndContext['apiSecret'];
-            $context = $apiSecretAndContext['context'];
+            $requestParams = request()->query();
+            // Sort to ensure cache consistency
+            ksort($requestParams);
 
-            $fullUrl = request()->fullUrl();
-            $queryParams = '';
+            $payload = array_merge($requestParams, [
+                'site' => $context,
+                'platform' => $platform,
+                'lang' => $lang,
+                'category' => $category,
+                'api_secret' => $apiSecret
+            ]);
 
-            if (strpos($fullUrl, '?') > 0) {
-                $queryParams = substr($fullUrl, strpos($fullUrl, '?') + 1, strlen($fullUrl));
-            }
+            // Cache Key
+            $paramHash = md5(json_encode($requestParams));
+            $cacheKey = "hashtagcms_external_data_{$context}_{$lang}_{$platform}_{$category}_{$microsite}_{$paramHash}";
+            $cacheTTL = config('hashtagcms.external_data_cache_ttl', 30); // Default 30 minutes
 
-            $apiUrl .= "?site={$context}&platform={$platform}&lang={$lang}&category={$category}&api_secret={$apiSecret}";
+            $data = Cache::remember($cacheKey, now()->addMinutes($cacheTTL), function () use ($apiUrl, $payload, $apiSecret) {
+                $response = Http::withHeaders([
+                    'Content-Type' => 'application/json',
+                    'api_key' => $apiSecret
+                ])->get($apiUrl, $payload);
 
-            if ($queryParams != '') {
-                $apiUrl .= "&{$queryParams}";
-            }
+                if ($response->successful()) {
+                    $json = $response->json();
 
-            $headers['Content-Type'] = 'application/json';
-            $headers['api_key'] = $apiSecret;
-            $http = Http::withHeaders($headers)->get($apiUrl);
-
-            if ($http->status() == 200) {
-                $data = $http->json();
-
-                //Old Compatibility
-                if (!isset($data['meta']['page'])) {
-                    $data['meta']['page'] = ['id' => -1, 'linkRewrite' => '', 'activeKey' => '', 'name' => ''];
+                    //Old Compatibility and Normalization
+                    if (!isset($json['meta']['page'])) {
+                        $json['meta']['page'] = ['id' => -1, 'linkRewrite' => '', 'activeKey' => '', 'name' => ''];
+                    }
+                    if (!isset($json['isLoginRequired'])) {
+                        $json['isLoginRequired'] = false;
+                    }
+                    if (!isset($json['isContentFound'])) {
+                        $json['isContentFound'] = true;
+                    }
+                    return $json;
+                } else {
+                    $msg = $response->reason() . " :from API: $apiUrl";
+                    logger()->error($msg);
+                    throw new \Exception($msg, $response->status());
                 }
-                if (!isset($data['isLoginRequired'])) {
-                    $data['isLoginRequired'] = false;
-                }
-                if (!isset($data['isContentFound'])) {
-                    $data['isContentFound'] = true;
-                }
-
-            } else {
-                $msg = $http->reason() . " :from API: $apiUrl";
-                logger()->error($msg);
-                throw new \Exception($msg, $http->status());
-            }
+            });
         } catch (\Exception $exception) {
             $data = ['status' => Response::HTTP_PRECONDITION_FAILED, 'message' => $exception->getMessage()];
         }
@@ -724,24 +747,7 @@ class DataLoader
         return ['linkRewrite' => $linkRewrite, 'param' => $param, 'fullPath' => $path, 'categoryData' => $selectedCategory, 'paramRequired' => $isParamRequired];
     }
 
-    /**
-     * Get api key
-     *
-     * @return mixed|null
-     */
-    private function getApiKeyAndContext(string $url)
-    {
-        $domain = parse_url($url)['host'];
-        $domainList = config('hashtagcms.domains');
-        $context = $domainList[$domain];
 
-        $apiSecretList = config('hashtagcms.api_secrets');
-        $apiSecret = $apiSecretList[$context] ?? null;
-        $data['apiSecret'] = $apiSecret;
-        $data['context'] = $context;
-
-        return $data;
-    }
 
     /**
      * Get error message

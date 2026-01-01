@@ -13,6 +13,7 @@ use MarghoobSuleman\HashtagCms\Console\Commands\CmsValidatorCommand;
 use MarghoobSuleman\HashtagCms\Console\Commands\Cmsversion;
 use MarghoobSuleman\HashtagCms\Console\Commands\ImportDatabaseData;
 use MarghoobSuleman\HashtagCms\Console\Commands\ExportDatabaseData;
+use MarghoobSuleman\HashtagCms\Console\Commands\SetupStandalone;
 use MarghoobSuleman\HashtagCms\Core\Middleware\Admin\BeMiddleware;
 use MarghoobSuleman\HashtagCms\Core\Middleware\Admin\CmsModuleInfo;
 use MarghoobSuleman\HashtagCms\Core\Middleware\API\Etag;
@@ -26,6 +27,8 @@ use MarghoobSuleman\HashtagCms\Events\UserVisit;
 use MarghoobSuleman\HashtagCms\Listeners\RecordUserVisit;
 use MarghoobSuleman\HashtagCms\Events\CopyLangData;
 use MarghoobSuleman\HashtagCms\Listeners\ProcessLangCopy;
+use Illuminate\Support\Facades\Auth;
+use MarghoobSuleman\HashtagCms\Core\Auth\ExternalApiUserProvider;
 
 class HashtagCmsServiceProvider extends ServiceProvider
 {
@@ -38,6 +41,11 @@ class HashtagCmsServiceProvider extends ServiceProvider
      */
     public function boot(RouteRegistrar $router)
     {
+        //Register Custom User Provider for External API
+        Auth::provider('hashtagcms_external_api', function ($app, array $config) {
+            return new ExternalApiUserProvider();
+        });
+
         //Register Event Listener
 //Register Event Listener
         Event::listen(UserVisit::class, RecordUserVisit::class);
@@ -193,7 +201,8 @@ class HashtagCmsServiceProvider extends ServiceProvider
 
                 // Data management commands
             ImportDatabaseData::class,
-            ExportDatabaseData::class
+            ExportDatabaseData::class,
+            SetupStandalone::class
         ]);
     }
 

@@ -75,7 +75,7 @@ class AuthController extends ApiBaseController
         $loginData['email'] = $data['email'];
         $loginData['password'] = $data['password'];
 
-        if (! auth()->attempt($loginData)) {
+        if (!auth()->attempt($loginData)) {
             return response(['message' => 'Email or password is incorrect.'])
                 ->setStatusCode(422);
         }
@@ -99,19 +99,21 @@ class AuthController extends ApiBaseController
 
         $tokens = $user->createToken($tokenName);
 
-        return ['access_token' => $tokens->plainTextToken,
+        return [
+            'access_token' => $tokens->plainTextToken,
             'scope' => $tokens->accessToken->abilities,
-            'expires_at' => date(config('hashtagcmsapi.login_session_expiry_format'), strtotime($tokens->accessToken->created_at.' '.config('hashtagcmsapi.login_session')))];
+            'expires_at' => date(config('hashtagcmsapi.login_session_expiry_format'), strtotime($tokens->accessToken->created_at . ' ' . config('hashtagcmsapi.login_session')))
+        ];
     }
 
-  /**
+    /**
      * Get token name
      *
      * @return string
      */
     private function getTokenName($user)
     {
-        return date('Y-m-d H:i:s').'_login_'.$user->name.'_'.$user->id;
+        return date('Y-m-d H:i:s') . '_login_' . $user->name . '_' . $user->id;
     }
 
     /**
@@ -125,5 +127,17 @@ class AuthController extends ApiBaseController
         $user = $request->user();
 
         return new UserResource($user);
+    }
+
+    /**
+     * Logout
+     *
+     * @param Request $request
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
+     */
+    public function logout(Request $request)
+    {
+        $request->user()->currentAccessToken()->delete();
+        return response(['message' => 'Logged out successfully'])->setStatusCode(200);
     }
 }
