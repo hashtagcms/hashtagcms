@@ -80,6 +80,8 @@ return [
     'data_api' => env('HASHTAG_CMS_DATA_API', env('HASHTAG_CMS_EXTERNAL_API_BASE_URL') . '/api/hashtagcms/public/sites/v1/load-data'),
     'login_api' => env('HASHTAG_CMS_LOGIN_API', env('HASHTAG_CMS_EXTERNAL_API_BASE_URL') . '/api/hashtagcms/public/sites/v1/login'),
     'logout_api' => env('HASHTAG_CMS_LOGOUT_API', env('HASHTAG_CMS_EXTERNAL_API_BASE_URL') . '/api/hashtagcms/public/user/v1/logout'),
+    'user_me_api' => env('HASHTAG_CMS_USER_ME_API', env('HASHTAG_CMS_EXTERNAL_API_BASE_URL') . '/api/hashtagcms/user/v1/me'),
+    'user_profile_update_api' => env('HASHTAG_CMS_USER_PROFILE_UPDATE_API', env('HASHTAG_CMS_EXTERNAL_API_BASE_URL') . '/api/hashtagcms/user/v1/profile'),
     'publish_api' => env('HASHTAG_CMS_PUBLISH_API', env('HASHTAG_CMS_EXTERNAL_API_BASE_URL') . '/api/hashtagcms/public/kpi/v1/publish'),
     'external_service_timeout' => env('HASHTAG_CMS_EXTERNAL_SERVICE_TIMEOUT', 5), //in seconds
     'external_config_cache_ttl' => env('HASHTAG_CMS_EXTERNAL_CONFIG_CACHE_TTL', 60), //in minutes

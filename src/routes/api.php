@@ -101,6 +101,10 @@ Route::middleware(['api', 'auth:sanctum'])->prefix('api/hashtagcms/user')->group
 
     });
 
+    Route::post('v1/profile', function (Request $request) use ($callable) {
+        return app()->call($callable . 'AuthController@updateProfile');
+    });
+
     Route::post('v1/logout', function (Request $request) use ($callable) {
 
         return app()->call($callable . 'AuthController@logout');

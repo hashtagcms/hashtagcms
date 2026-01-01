@@ -10,6 +10,8 @@ use MarghoobSuleman\HashtagCms\Core\Traits\RoleManager;
 use MarghoobSuleman\HashtagCms\Http\Resources\UserResource;
 use MarghoobSuleman\HashtagCms\User;
 
+use MarghoobSuleman\HashtagCms\Models\UserProfile;
+
 class AuthController extends ApiBaseController
 {
     use HasApiTokens, RoleManager;
@@ -137,7 +139,55 @@ class AuthController extends ApiBaseController
      */
     public function logout(Request $request)
     {
-        $request->user()->currentAccessToken()->delete();
         return response(['message' => 'Logged out successfully'])->setStatusCode(200);
+    }
+
+    /**
+     * Update user profile
+     *
+     * @param Request $request
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
+     */
+    public function updateProfile(Request $request)
+    {
+        $user = $request->user();
+
+        $rules = [
+            'name' => 'required|string|max:130',
+            'father_name' => 'nullable|max:255|string',
+            'mother_name' => 'nullable|max:255|string',
+            'mobile' => 'required|max:50|string',
+            'date_of_birth' => 'nullable',
+            'gender' => 'nullable|max:20|string',
+        ];
+
+        $validator = Validator::make($request->all(), $rules);
+
+        if ($validator->fails()) {
+            return response($validator->getMessageBag())->setStatusCode(422);
+        }
+
+        $data = $request->all();
+
+        //Update user
+        $user->name = $data['name'];
+        $user->save();
+
+        //Update Profile
+        $profileData = [
+            'father_name' => $data['father_name'],
+            'mother_name' => $data['mother_name'],
+            'mobile' => $data['mobile'],
+            'date_of_birth' => (!empty($data['date_of_birth'])) ? date('Y-m-d', strtotime($data['date_of_birth'])) : null,
+            'gender' => $data['gender']
+        ];
+
+        if ($user->profile == null) {
+            $user->profile()->create($profileData);
+        } else {
+            $user->profile()->update($profileData);
+        }
+
+        return response(['message' => 'Profile updated successfully', 'user' => new UserResource($user)])->setStatusCode(200);
     }
 }
