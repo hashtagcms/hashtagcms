@@ -115,4 +115,26 @@ class ServiceController extends ApiBaseController
 
         return $result;
     }
+    /**
+     * Get Latest Blogs
+     * @param Request $request
+     * @return array|string|\Illuminate\Http\JsonResponse
+     */
+    public function blogLatests(Request $request)
+    {
+        $query = $request->all();
+        $context = $query['site'] ?? $request->header('x-site');
+        $lang = $query['lang'] ?? $request->header('x-lang');
+        $platform = $query['platform'] ?? $request->header('x-platform');
+        $limit = $query['limit'] ?? 10;
+
+        $loader = new ServiceLoader();
+        try {
+            $category = $query['category'] ?? null;
+            $result = $loader->blogLatests($context, $lang, $platform, $category, $limit);
+        } catch (\Exception $exception) {
+            return response()->json($exception->getMessage(), $exception->getCode() ?? Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+        return $result;
+    }
 }

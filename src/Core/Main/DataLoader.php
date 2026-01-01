@@ -12,10 +12,12 @@ use MarghoobSuleman\HashtagCms\Http\Resources\CategoryResource;
 use MarghoobSuleman\HashtagCms\Http\Resources\CategorySiteResource;
 use MarghoobSuleman\HashtagCms\Http\Resources\CountryResource;
 use MarghoobSuleman\HashtagCms\Http\Resources\CurrencyResource;
+
 use MarghoobSuleman\HashtagCms\Http\Resources\FestivalResource;
 use MarghoobSuleman\HashtagCms\Http\Resources\HookResource;
 use MarghoobSuleman\HashtagCms\Http\Resources\LangResource;
 use MarghoobSuleman\HashtagCms\Http\Resources\ModuleResource;
+use MarghoobSuleman\HashtagCms\Http\Resources\PageResource;
 use MarghoobSuleman\HashtagCms\Http\Resources\PlatformResource;
 use MarghoobSuleman\HashtagCms\Http\Resources\SitePropResource;
 use MarghoobSuleman\HashtagCms\Http\Resources\SiteResource;
@@ -28,6 +30,7 @@ use MarghoobSuleman\HashtagCms\Models\Hook;
 use MarghoobSuleman\HashtagCms\Models\Lang;
 use MarghoobSuleman\HashtagCms\Models\Module;
 use MarghoobSuleman\HashtagCms\Models\ModuleSite;
+use MarghoobSuleman\HashtagCms\Models\Page;
 use MarghoobSuleman\HashtagCms\Models\Platform;
 use MarghoobSuleman\HashtagCms\Models\Site;
 use MarghoobSuleman\HashtagCms\Models\SiteProp;
@@ -422,6 +425,61 @@ class DataLoader
 
         return $data;
 
+    }
+
+    /**
+     * Get Latest Blogs
+     * @return array
+     */
+    public function blogLatests(string $context, ?string $lang = null, ?string $platform = null, ?string $category = null, int $limit = 10)
+    {
+        try {
+            DB::connection()->getPdo();
+        } catch (\Exception $e) {
+            logger()->error('DataLoader->blogLatests: Database Error: ' . $e->getMessage());
+            return $this->getErrorMessage($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+
+        if (empty($context)) {
+            return $this->getErrorMessage('Site context is missing', Response::HTTP_BAD_REQUEST);
+        }
+
+        $siteData = Site::where('context', '=', $context)->first();
+        if (empty($siteData)) {
+            return $this->getErrorMessage('Site not found', Response::HTTP_NOT_FOUND);
+        }
+
+        $langId = $siteData->lang_id;
+        if (!empty($lang)) {
+            $langData = Lang::where('iso_code', '=', $lang)->first();
+            if ($langData) {
+                $langId = $langData->id;
+            }
+        }
+
+        // Handle category scenarios: defaults or specific
+        // For external API, category name/slug is usually passed
+        $categoryName = $category ?? 'blog';
+
+        // Check config for more categories if not explicitly checking one
+        $moreCategories = config('hashtagcms.more_categories_on_blog_listing', []);
+        $useMore = false;
+        if (count($moreCategories) > 0 && $category === null) {
+            $useMore = true;
+            if (!in_array($categoryName, $moreCategories)) {
+                $moreCategories[] = $categoryName;
+            }
+        }
+
+        $requestCat = ($useMore) ? $moreCategories : $categoryName;
+
+        try {
+            $results = Page::getLatestBlog($siteData->id, $langId, $requestCat, $limit);
+            return PageResource::collection($results)->toArray(request());
+        } catch (\Exception $e) {
+            logger()->error('DataLoader->blogLatests: Query Error: ' . $e->getMessage());
+            return $this->getErrorMessage($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 
     /**

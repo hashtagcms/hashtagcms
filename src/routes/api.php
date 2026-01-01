@@ -77,6 +77,13 @@ Route::middleware(['api'])->prefix('api/hashtagcms/public')->group(function () u
 
 
     /**
+     * Blog: Get Latests
+     */
+    Route::get('sites/v1/blog/latests', function (Request $request) use ($callable) {
+        return app()->call($callable . 'ServiceController@blogLatests');
+    });
+
+    /**
      * Analytics: Publish
      */
     Route::post('kpi/v1/publish', function (Request $request) use ($callable) {
