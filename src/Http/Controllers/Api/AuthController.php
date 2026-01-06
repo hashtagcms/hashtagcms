@@ -3,7 +3,6 @@
 namespace MarghoobSuleman\HashtagCms\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Laravel\Sanctum\HasApiTokens;
 use MarghoobSuleman\HashtagCms\Core\Traits\RoleManager;
@@ -12,20 +11,18 @@ use MarghoobSuleman\HashtagCms\User;
 
 use MarghoobSuleman\HashtagCms\Models\UserProfile;
 
+use MarghoobSuleman\HashtagCms\Http\Traits\AuthLogic;
+
 class AuthController extends ApiBaseController
 {
-    use HasApiTokens, RoleManager;
+    use HasApiTokens, RoleManager, AuthLogic;
 
     /**
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response|object
      */
     public function register(Request $request)
     {
-        $rules = [
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:6',
-        ];
+        $rules = $this->getApiRegisterRules();
 
         $data = $request->all();
 
@@ -39,12 +36,7 @@ class AuthController extends ApiBaseController
         }
         $data['user_type'] = 'Visitor';
 
-        $user = User::create([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'password' => Hash::make($data['password']),
-            'user_type' => $data['user_type'],
-        ]);
+        $user = $this->createUser($data);
 
         $token = $this->createAccessToken($user);
 

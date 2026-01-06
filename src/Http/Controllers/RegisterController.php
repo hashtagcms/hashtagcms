@@ -5,12 +5,13 @@ namespace MarghoobSuleman\HashtagCms\Http\Controllers;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use MarghoobSuleman\HashtagCms\User;
+use MarghoobSuleman\HashtagCms\Http\Traits\AuthLogic;
 
 class RegisterController extends FrontendBaseController
 {
+    use AuthLogic;
     /*
    |--------------------------------------------------------------------------
    | Register Controller
@@ -56,11 +57,7 @@ class RegisterController extends FrontendBaseController
         //Register
         if ($request->method() == 'POST') {
 
-            $rules = [
-                'name' => 'required|string|max:255',
-                'email' => 'required|string|email|max:255|unique:users',
-                'password' => 'required|string|min:6|confirmed',
-            ];
+            $rules = $this->getRegisterRules();
 
             $validator = Validator::make($request->all(), $rules);
 
@@ -90,12 +87,7 @@ class RegisterController extends FrontendBaseController
      */
     protected function create(array $data)
     {
-        return User::create([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'password' => Hash::make($data['password']),
-            'user_type' => 'Visitor',
-        ]);
+        return $this->createUser($data);
     }
 
     /**

@@ -30,7 +30,13 @@ function makeArrays(themes, resourceDir, targetDir) {
                     entries[`${targetDir}/${theme}/${currentKeyNode.target}`] = `./${resourceDir}/${theme}/${currentKeyNode.source}`;
                     break;
                 case "copy":
-                    copies.push({ from: `${resourceDir}/${theme}/${currentKeyNode.source}`, to: `${targetDir}/${theme}/${currentKeyNode.target}` });
+                    if (fs.existsSync(`${resourceDir}/${theme}/${currentKeyNode.source}`)) {
+                        copies.push({
+                            from: `${resourceDir}/${theme}/${currentKeyNode.source}`,
+                            to: `${targetDir}/${theme}/${currentKeyNode.target}`,
+                            noErrorOnMissing: true
+                        });
+                    }
                     break;
 
             }

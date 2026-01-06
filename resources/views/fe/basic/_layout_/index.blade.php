@@ -40,7 +40,6 @@
 
 {!! app()->HashtagCms->layoutManager()->getFooterContent(); !!}
 
-{!! app()->HashtagCms->layoutManager()->renderStack('scripts') !!}
 
 @if(env('GOOGLE_TAG_MANAGER_KEY') != '')
     <script async
@@ -69,5 +68,6 @@
         console.error(e.message, "@", e.fileName);
     }
 </script>
+{!! app()->HashtagCms->layoutManager()->renderStack('scripts') !!}
 </body>
 </html>

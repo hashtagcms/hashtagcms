@@ -3,6 +3,7 @@
 namespace MarghoobSuleman\HashtagCms\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
+use MarghoobSuleman\HashtagCms\Models\Site;
 use MarghoobSuleman\HashtagCms\Core\Main\ServiceLoader;
 use MarghoobSuleman\HashtagCms\Core\Traits\FeEssential;
 use Symfony\Component\HttpFoundation\Response;
@@ -29,14 +30,7 @@ class ServiceController extends ApiBaseController
         }
 
         $secrets = config('hashtagcms.api_secrets');
-        $foundSecret = false;
-        foreach ($secrets as $key => $secret) {
-            if ($context === $key && $api_secret === $secret) {
-                $foundSecret = true;
-                break;
-            }
-        }
-        if (!$foundSecret) {
+        if (!isset($secrets[$context]) || $secrets[$context] !== $api_secret) {
             return response()->json(['message' => 'API key or site context is not valid', 'status' => Response::HTTP_BAD_REQUEST], Response::HTTP_BAD_REQUEST);
         }
 
@@ -137,4 +131,7 @@ class ServiceController extends ApiBaseController
         }
         return $result;
     }
+
+
+
 }

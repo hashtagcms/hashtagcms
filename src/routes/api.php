@@ -90,6 +90,20 @@ Route::middleware(['api'])->prefix('api/hashtagcms/public')->group(function () u
         return app()->call($callable . 'Kpi\AnalyticsController@publish');
     });
 
+    /**
+     * Contact: Submit
+     */
+    Route::post('common/v1/contact', function (Request $request) use ($callable) {
+        return app()->call($callable . 'CommonController@contact');
+    });
+
+    /**
+     * Subscribe: Submit
+     */
+    Route::post('common/v1/subscribe', function (Request $request) use ($callable) {
+        return app()->call($callable . 'CommonController@subscribe');
+    });
+
 });
 
 //Authentication

@@ -37,7 +37,7 @@ trait Viewer
     {
 
         //info("module_name: ".$module_name. " request module id ".request()->module_info->id);
-        $id = ($module_name == null) ? request()->module_info->id : CmsModule::getInfoByName($module_name)->id;
+        $id = ($module_name == null) ? (request()->module_info?->id ?? 0) : CmsModule::getInfoByName($module_name)->id;
 
         $isSuperAdmin = Auth::user()->isSuperAdmin();
 

@@ -12,14 +12,14 @@ class SetupStandalone extends Command
      *
      * @var string
      */
-    protected $signature = 'cms:standalone {--force : Force publish assets and views}';
+    protected $signature = 'cms:setup-standalone {--force : Force publish assets and views}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Setup a standalone frontend environment by publishing configuration, assets, and views. Use this if you only need the frontend.';
+    protected $description = 'Setup a standalone frontend environment by publishing configuration, assets, views and configuring .env for API usage.';
 
     /**
      * Execute the console command.
@@ -43,7 +43,58 @@ class SetupStandalone extends Command
             '--tag' => 'hashtagcms.views.frontend'
         ]);
 
+        // 4. Configure .env
+        $this->configureEnv();
+
         $this->info('Standalone setup completed successfully.');
+    }
+
+    /**
+     * Configure environment variables
+     */
+    protected function configureEnv()
+    {
+        $this->info('Configuring Environment Variables...');
+
+        $apiUrl = $this->ask('Enter HashtagCMS API URL (e.g. https://admin.example.com)', 'https://admin.hashtagcms.org');
+        $apiToken = $this->ask('Enter HashtagCMS API Token', '');
+        $apiSecret = $this->ask('Enter HashtagCMS API Secret', '');
+
+        $this->updateEnv([
+            'HASHTAG_CMS_API_HOST' => $apiUrl,
+            'HASHTAG_CMS_API_TOKEN' => $apiToken,
+            'HASHTAG_CMS_API_SECRET' => $apiSecret,
+            'HASHTAG_CMS_LOAD_MODULE_FROM_DB' => 'false'
+        ]);
+
+        $this->info('Updated .env file.');
+        $this->info('Please create a site context for your domain in config/hashtagcms.php');
+
+    }
+
+    /**
+     * Update .env file
+     * @param array $data
+     */
+    protected function updateEnv($data = [])
+    {
+        $path = base_path('.env');
+
+        if (file_exists($path)) {
+            $env = file_get_contents($path);
+
+            foreach ($data as $key => $value) {
+                // If key exists, replace it
+                if (strpos($env, $key . '=') !== false) {
+                    $env = preg_replace("/^{$key}=.*/m", "{$key}={$value}", $env);
+                } else {
+                    // If key doesn't exist, append it
+                    $env .= "\n{$key}={$value}";
+                }
+            }
+
+            file_put_contents($path, $env);
+        }
     }
 
     /**
