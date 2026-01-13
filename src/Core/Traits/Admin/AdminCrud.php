@@ -1,15 +1,15 @@
 <?php
 
-namespace MarghoobSuleman\HashtagCms\Core\Traits\Admin;
+namespace HashtagCms\Core\Traits\Admin;
 
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate as GateFacade;
 use Illuminate\Support\Str;
-use MarghoobSuleman\HashtagCms\Core\Helpers\Message;
-use MarghoobSuleman\HashtagCms\Models\Permission;
-use MarghoobSuleman\HashtagCms\Models\QueryLogger;
-use MarghoobSuleman\HashtagCms\Models\Site;
+use HashtagCms\Core\Helpers\Message;
+use HashtagCms\Models\Permission;
+use HashtagCms\Models\QueryLogger;
+use HashtagCms\Models\Site;
 use Mockery\Exception;
 
 trait AdminCrud
@@ -467,7 +467,7 @@ trait AdminCrud
     /**
      * Search the specified resource.
      *
-     * @param  \MarghoobSuleman\HashtagCms\Models\SourceModel
+     * @param  \HashtagCms\Models\SourceModel
      * @return \Illuminate\Http\Response
      */
     public function search()

@@ -1,6 +1,6 @@
 <?php
 
-namespace MarghoobSuleman\HashtagCms\Core\Traits;
+namespace HashtagCms\Core\Traits;
 
 trait FeEssential
 {

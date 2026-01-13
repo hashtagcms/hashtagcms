@@ -1,6 +1,6 @@
 <?php
 
-namespace MarghoobSuleman\HashtagCms\Http\Controllers;
+namespace HashtagCms\Http\Controllers;
 
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Foundation\Auth\RedirectsUsers;
@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
-use MarghoobSuleman\HashtagCms\User;
+use HashtagCms\User;
 
 class RegisterController extends FrontendBaseController
 {
@@ -80,7 +80,7 @@ class RegisterController extends FrontendBaseController
     /**
      * Create a new user instance after a valid registration.
      *
-     * @return \MarghoobSuleman\HashtagCms\User
+     * @return \HashtagCms\User
      */
     protected function create(array $data)
     {

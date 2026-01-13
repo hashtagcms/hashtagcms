@@ -1,6 +1,6 @@
 <?php
 
-namespace MarghoobSuleman\HashtagCms\Core\Traits\Admin;
+namespace HashtagCms\Core\Traits\Admin;
 
 use Illuminate\Http\File;
 use Illuminate\Http\UploadedFile;

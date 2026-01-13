@@ -1,12 +1,12 @@
 <?php
 
-namespace MarghoobSuleman\HashtagCms\Console\Commands;
+namespace HashtagCms\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
-use MarghoobSuleman\HashtagCms\Models\SiteProp;
+use HashtagCms\Models\SiteProp;
 
 class Cmsversion extends Command
 {

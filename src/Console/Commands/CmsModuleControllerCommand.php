@@ -1,6 +1,6 @@
 <?php
 
-namespace MarghoobSuleman\HashtagCms\Console\Commands;
+namespace HashtagCms\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;

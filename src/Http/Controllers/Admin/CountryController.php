@@ -1,13 +1,13 @@
 <?php
 
-namespace MarghoobSuleman\HashtagCms\Http\Controllers\Admin;
+namespace HashtagCms\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-use MarghoobSuleman\HashtagCms\Core\Helpers\Message;
-use MarghoobSuleman\HashtagCms\Models\Country;
-use MarghoobSuleman\HashtagCms\Models\Currency;
-use MarghoobSuleman\HashtagCms\Models\Zone;
+use HashtagCms\Core\Helpers\Message;
+use HashtagCms\Models\Country;
+use HashtagCms\Models\Currency;
+use HashtagCms\Models\Zone;
 
 class CountryController extends BaseAdminController
 {

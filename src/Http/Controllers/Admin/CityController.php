@@ -1,13 +1,13 @@
 <?php
 
-namespace MarghoobSuleman\HashtagCms\Http\Controllers\Admin;
+namespace HashtagCms\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-use MarghoobSuleman\HashtagCms\Core\Helpers\Message;
-use MarghoobSuleman\HashtagCms\Models\City;
-use MarghoobSuleman\HashtagCms\Models\Country;
-use MarghoobSuleman\HashtagCms\Models\Zone;
+use HashtagCms\Core\Helpers\Message;
+use HashtagCms\Models\City;
+use HashtagCms\Models\Country;
+use HashtagCms\Models\Zone;
 
 class CityController extends BaseAdminController
 {

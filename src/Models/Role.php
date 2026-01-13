@@ -1,10 +1,10 @@
 <?php
 
-namespace MarghoobSuleman\HashtagCms\Models;
+namespace HashtagCms\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
-use MarghoobSuleman\HashtagCms\Core\Traits\Admin\Common;
+use HashtagCms\Core\Traits\Admin\Common;
 
 class Role extends AdminBaseModel
 {

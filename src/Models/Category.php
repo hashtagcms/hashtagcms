@@ -1,10 +1,10 @@
 <?php
 
-namespace MarghoobSuleman\HashtagCms\Models;
+namespace HashtagCms\Models;
 
 use Illuminate\Support\Facades\DB;
-use MarghoobSuleman\HashtagCms\Core\Scopes\SiteScope;
-use MarghoobSuleman\HashtagCms\Core\Traits\Admin\Common;
+use HashtagCms\Core\Scopes\SiteScope;
+use HashtagCms\Core\Traits\Admin\Common;
 
 class Category extends AdminBaseModel
 {

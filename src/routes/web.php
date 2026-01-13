@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
-use MarghoobSuleman\HashtagCms\Facades\HashtagCms;
+use HashtagCms\Facades\HashtagCms;
 
 if (HashtagCms::isInstallationRoutesEnabled()) {
     Route::get('/install', config('hashtagcms.namespace')."Http\Controllers\Installer\InstallController@index");

@@ -1,24 +1,24 @@
 <?php
 
-namespace MarghoobSuleman\HashtagCms;
+namespace HashtagCms;
 
 use Illuminate\Routing\Router;
 use Illuminate\Routing\RouteRegistrar;
 use Illuminate\Support\ServiceProvider;
-use MarghoobSuleman\HashtagCms\Console\Commands\CmsFrontendControllerCommand;
-use MarghoobSuleman\HashtagCms\Console\Commands\CmsInstall;
-use MarghoobSuleman\HashtagCms\Console\Commands\CmsModuleControllerCommand;
-use MarghoobSuleman\HashtagCms\Console\Commands\CmsModuleModelCommand;
-use MarghoobSuleman\HashtagCms\Console\Commands\CmsValidatorCommand;
-use MarghoobSuleman\HashtagCms\Console\Commands\Cmsversion;
-use MarghoobSuleman\HashtagCms\Console\Commands\ImportDatabaseData;
-use MarghoobSuleman\HashtagCms\Console\Commands\ExportDatabaseData;
-use MarghoobSuleman\HashtagCms\Core\Middleware\Admin\BeMiddleware;
-use MarghoobSuleman\HashtagCms\Core\Middleware\Admin\CmsModuleInfo;
-use MarghoobSuleman\HashtagCms\Core\Middleware\API\Etag;
-use MarghoobSuleman\HashtagCms\Core\Middleware\FeMiddleware;
-use MarghoobSuleman\HashtagCms\Core\Providers\Admin\AdminServiceProvider;
-use MarghoobSuleman\HashtagCms\Core\Providers\FeServiceProvider;
+use HashtagCms\Console\Commands\CmsFrontendControllerCommand;
+use HashtagCms\Console\Commands\CmsInstall;
+use HashtagCms\Console\Commands\CmsModuleControllerCommand;
+use HashtagCms\Console\Commands\CmsModuleModelCommand;
+use HashtagCms\Console\Commands\CmsValidatorCommand;
+use HashtagCms\Console\Commands\Cmsversion;
+use HashtagCms\Console\Commands\ImportDatabaseData;
+use HashtagCms\Console\Commands\ExportDatabaseData;
+use HashtagCms\Core\Middleware\Admin\BeMiddleware;
+use HashtagCms\Core\Middleware\Admin\CmsModuleInfo;
+use HashtagCms\Core\Middleware\API\Etag;
+use HashtagCms\Core\Middleware\FeMiddleware;
+use HashtagCms\Core\Providers\Admin\AdminServiceProvider;
+use HashtagCms\Core\Providers\FeServiceProvider;
 use Illuminate\Routing\Events\RouteMatched;
 
 class HashtagCmsServiceProvider extends ServiceProvider

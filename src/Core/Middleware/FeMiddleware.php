@@ -1,13 +1,13 @@
 <?php
 
-namespace MarghoobSuleman\HashtagCms\Core\Middleware;
+namespace HashtagCms\Core\Middleware;
 
 use Closure;
-use MarghoobSuleman\HashtagCms\Core\Middleware\Traits\BaseInfo;
+use HashtagCms\Core\Middleware\Traits\BaseInfo;
 
 /**
  * Frontend Interceptor Middleware
- * Registered as 'interceptor' => MarghoobSuleman\HashtagCms\Http\Middleware\FeMiddleware::class
+ * Registered as 'interceptor' => HashtagCms\Http\Middleware\FeMiddleware::class
  */
 class FeMiddleware
 {

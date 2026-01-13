@@ -1,6 +1,6 @@
 <?php
 
-namespace MarghoobSuleman\HashtagCms\Http\Controllers;
+namespace HashtagCms\Http\Controllers;
 
 use Illuminate\Http\Request;
 

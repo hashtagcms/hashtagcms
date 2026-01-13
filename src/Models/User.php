@@ -1,12 +1,12 @@
 <?php
 
-namespace MarghoobSuleman\HashtagCms\Models;
+namespace HashtagCms\Models;
 
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Hash;
-use MarghoobSuleman\HashtagCms\Core\Traits\Admin\Common;
-use MarghoobSuleman\HashtagCms\Core\Traits\RoleManager;
-use MarghoobSuleman\HashtagCms\Core\Traits\SiteManager;
+use HashtagCms\Core\Traits\Admin\Common;
+use HashtagCms\Core\Traits\RoleManager;
+use HashtagCms\Core\Traits\SiteManager;
 
 class User extends AdminBaseModel
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace MarghoobSuleman\HashtagCms\Http\Controllers\Admin;
+namespace HashtagCms\Http\Controllers\Admin;
 
 class LocalizationController extends BaseAdminController
 {

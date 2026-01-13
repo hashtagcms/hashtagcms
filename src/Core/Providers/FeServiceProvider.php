@@ -1,14 +1,14 @@
 <?php
 
-namespace MarghoobSuleman\HashtagCms\Core\Providers;
+namespace HashtagCms\Core\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use MarghoobSuleman\HashtagCms\Core\Common;
-use MarghoobSuleman\HashtagCms\Core\Main\DataLoader;
-use MarghoobSuleman\HashtagCms\Core\Main\InfoLoader;
-use MarghoobSuleman\HashtagCms\Core\Main\LayoutManager;
-use MarghoobSuleman\HashtagCms\Core\Main\ModuleLoader;
-use MarghoobSuleman\HashtagCms\Core\Main\SessionManager;
+use HashtagCms\Core\Common;
+use HashtagCms\Core\Main\DataLoader;
+use HashtagCms\Core\Main\InfoLoader;
+use HashtagCms\Core\Main\LayoutManager;
+use HashtagCms\Core\Main\ModuleLoader;
+use HashtagCms\Core\Main\SessionManager;
 
 class FeServiceProvider extends ServiceProvider
 {

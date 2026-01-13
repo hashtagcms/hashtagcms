@@ -1,11 +1,11 @@
 <?php
 
-namespace MarghoobSuleman\HashtagCms\Core\Main;
+namespace HashtagCms\Core\Main;
 
 use Illuminate\Support\Str;
-use MarghoobSuleman\HashtagCms\Core\Utils\InfoKeys;
-use MarghoobSuleman\HashtagCms\Models\Module;
-use MarghoobSuleman\HashtagCms\Models\ModuleProp;
+use HashtagCms\Core\Utils\InfoKeys;
+use HashtagCms\Models\Module;
+use HashtagCms\Models\ModuleProp;
 
 /**
  * Class ModuleLoader

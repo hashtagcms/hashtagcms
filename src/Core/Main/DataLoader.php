@@ -1,36 +1,36 @@
 <?php
 
-namespace MarghoobSuleman\HashtagCms\Core\Main;
+namespace HashtagCms\Core\Main;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
-use MarghoobSuleman\HashtagCms\Core\Traits\LayoutHandler;
-use MarghoobSuleman\HashtagCms\Http\Resources\CategoryResource;
+use HashtagCms\Core\Traits\LayoutHandler;
+use HashtagCms\Http\Resources\CategoryResource;
 /** Models */
-use MarghoobSuleman\HashtagCms\Http\Resources\CategorySiteResource;
-use MarghoobSuleman\HashtagCms\Http\Resources\CountryResource;
-use MarghoobSuleman\HashtagCms\Http\Resources\CurrencyResource;
-use MarghoobSuleman\HashtagCms\Http\Resources\FestivalResource;
-use MarghoobSuleman\HashtagCms\Http\Resources\HookResource;
-use MarghoobSuleman\HashtagCms\Http\Resources\LangResource;
-use MarghoobSuleman\HashtagCms\Http\Resources\ModuleResource;
-use MarghoobSuleman\HashtagCms\Http\Resources\PlatformResource;
-use MarghoobSuleman\HashtagCms\Http\Resources\SitePropResource;
-use MarghoobSuleman\HashtagCms\Http\Resources\SiteResource;
+use HashtagCms\Http\Resources\CategorySiteResource;
+use HashtagCms\Http\Resources\CountryResource;
+use HashtagCms\Http\Resources\CurrencyResource;
+use HashtagCms\Http\Resources\FestivalResource;
+use HashtagCms\Http\Resources\HookResource;
+use HashtagCms\Http\Resources\LangResource;
+use HashtagCms\Http\Resources\ModuleResource;
+use HashtagCms\Http\Resources\PlatformResource;
+use HashtagCms\Http\Resources\SitePropResource;
+use HashtagCms\Http\Resources\SiteResource;
 /** Resources */
-use MarghoobSuleman\HashtagCms\Http\Resources\ThemeResource;
-use MarghoobSuleman\HashtagCms\Http\Resources\ZoneResource;
-use MarghoobSuleman\HashtagCms\Models\Category;
-use MarghoobSuleman\HashtagCms\Models\CategorySite;
-use MarghoobSuleman\HashtagCms\Models\Hook;
-use MarghoobSuleman\HashtagCms\Models\Lang;
-use MarghoobSuleman\HashtagCms\Models\Module;
-use MarghoobSuleman\HashtagCms\Models\ModuleSite;
-use MarghoobSuleman\HashtagCms\Models\Platform;
-use MarghoobSuleman\HashtagCms\Models\Site;
-use MarghoobSuleman\HashtagCms\Models\SiteProp;
-use MarghoobSuleman\HashtagCms\Models\Theme;
+use HashtagCms\Http\Resources\ThemeResource;
+use HashtagCms\Http\Resources\ZoneResource;
+use HashtagCms\Models\Category;
+use HashtagCms\Models\CategorySite;
+use HashtagCms\Models\Hook;
+use HashtagCms\Models\Lang;
+use HashtagCms\Models\Module;
+use HashtagCms\Models\ModuleSite;
+use HashtagCms\Models\Platform;
+use HashtagCms\Models\Site;
+use HashtagCms\Models\SiteProp;
+use HashtagCms\Models\Theme;
 /** Traits */
 use Symfony\Component\HttpFoundation\Response;
 

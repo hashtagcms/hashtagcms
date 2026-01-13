@@ -1,17 +1,17 @@
 <?php
 
-namespace MarghoobSuleman\HashtagCms\Http\Controllers\Admin;
+namespace HashtagCms\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
-use MarghoobSuleman\HashtagCms\Core\Helpers\Message;
-use MarghoobSuleman\HashtagCms\Models\Category;
-use MarghoobSuleman\HashtagCms\Models\CmsPermission;
-use MarghoobSuleman\HashtagCms\Models\Module;
-use MarghoobSuleman\HashtagCms\Models\Platform;
-use MarghoobSuleman\HashtagCms\Models\Site;
-use MarghoobSuleman\HashtagCms\Models\Theme;
+use HashtagCms\Core\Helpers\Message;
+use HashtagCms\Models\Category;
+use HashtagCms\Models\CmsPermission;
+use HashtagCms\Models\Module;
+use HashtagCms\Models\Platform;
+use HashtagCms\Models\Site;
+use HashtagCms\Models\Theme;
 
 class HomepageController extends BaseAdminController
 {

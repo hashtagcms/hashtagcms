@@ -1,8 +1,8 @@
 <?php
 
-namespace MarghoobSuleman\HashtagCms\Http\Controllers\Admin;
+namespace HashtagCms\Http\Controllers\Admin;
 
-use MarghoobSuleman\HashtagCms\Core\Helpers\Message;
+use HashtagCms\Core\Helpers\Message;
 
 class OauthController extends BaseAdminController
 {

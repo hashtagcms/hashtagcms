@@ -1,6 +1,6 @@
 <?php
 
-namespace MarghoobSuleman\HashtagCms\Http\Controllers\Admin;
+namespace HashtagCms\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -8,26 +8,26 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Lcobucci\JWT\Exception;
-use MarghoobSuleman\HashtagCms\Core\Helpers\Message;
-use MarghoobSuleman\HashtagCms\Models\Category;
-use MarghoobSuleman\HashtagCms\Models\CategoryLang;
-use MarghoobSuleman\HashtagCms\Models\CategorySite;
-use MarghoobSuleman\HashtagCms\Models\Country;
-use MarghoobSuleman\HashtagCms\Models\CountryLang;
-use MarghoobSuleman\HashtagCms\Models\Currency;
-use MarghoobSuleman\HashtagCms\Models\Hook;
-use MarghoobSuleman\HashtagCms\Models\Lang;
-use MarghoobSuleman\HashtagCms\Models\Module;
-use MarghoobSuleman\HashtagCms\Models\ModuleProp;
-use MarghoobSuleman\HashtagCms\Models\ModulePropLang;
-use MarghoobSuleman\HashtagCms\Models\Platform;
-use MarghoobSuleman\HashtagCms\Models\Site;
-use MarghoobSuleman\HashtagCms\Models\SiteProp;
-use MarghoobSuleman\HashtagCms\Models\StaticModuleContent;
-use MarghoobSuleman\HashtagCms\Models\StaticModuleContentLang;
-use MarghoobSuleman\HashtagCms\Models\Theme;
-use MarghoobSuleman\HashtagCms\Models\User;
-use MarghoobSuleman\HashtagCms\Models\Zone;
+use HashtagCms\Core\Helpers\Message;
+use HashtagCms\Models\Category;
+use HashtagCms\Models\CategoryLang;
+use HashtagCms\Models\CategorySite;
+use HashtagCms\Models\Country;
+use HashtagCms\Models\CountryLang;
+use HashtagCms\Models\Currency;
+use HashtagCms\Models\Hook;
+use HashtagCms\Models\Lang;
+use HashtagCms\Models\Module;
+use HashtagCms\Models\ModuleProp;
+use HashtagCms\Models\ModulePropLang;
+use HashtagCms\Models\Platform;
+use HashtagCms\Models\Site;
+use HashtagCms\Models\SiteProp;
+use HashtagCms\Models\StaticModuleContent;
+use HashtagCms\Models\StaticModuleContentLang;
+use HashtagCms\Models\Theme;
+use HashtagCms\Models\User;
+use HashtagCms\Models\Zone;
 
 class SiteController extends BaseAdminController
 {

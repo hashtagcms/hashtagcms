@@ -1,15 +1,15 @@
 <?php
 
-namespace MarghoobSuleman\HashtagCms;
+namespace HashtagCms;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
-use MarghoobSuleman\HashtagCms\Core\Traits\RoleManager;
-use MarghoobSuleman\HashtagCms\Models\Site;
-use MarghoobSuleman\HashtagCms\Models\UserProfile;
-use MarghoobSuleman\HashtagCms\Models\Role;
-use MarghoobSuleman\HashtagCms\Models\UserSite;
+use HashtagCms\Core\Traits\RoleManager;
+use HashtagCms\Models\Site;
+use HashtagCms\Models\UserProfile;
+use HashtagCms\Models\Role;
+use HashtagCms\Models\UserSite;
 
 class User extends Authenticatable
 {

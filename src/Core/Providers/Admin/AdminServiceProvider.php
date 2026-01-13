@@ -1,14 +1,14 @@
 <?php
 
-namespace MarghoobSuleman\HashtagCms\Core\Providers\Admin;
+namespace HashtagCms\Core\Providers\Admin;
 
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\View;
-use MarghoobSuleman\HashtagCms\Core\Policies\CmsPolicy;
-use MarghoobSuleman\HashtagCms\Core\ViewComposers\Admin\CmsModuleComposer;
-use MarghoobSuleman\HashtagCms\Models\CmsPermission;
-use MarghoobSuleman\HashtagCms\Models\Permission;
+use HashtagCms\Core\Policies\CmsPolicy;
+use HashtagCms\Core\ViewComposers\Admin\CmsModuleComposer;
+use HashtagCms\Models\CmsPermission;
+use HashtagCms\Models\Permission;
 
 class AdminServiceProvider extends ServiceProvider
 {

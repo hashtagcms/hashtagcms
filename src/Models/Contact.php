@@ -1,10 +1,10 @@
 <?php
 
-namespace MarghoobSuleman\HashtagCms\Models;
+namespace HashtagCms\Models;
 
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
-use MarghoobSuleman\HashtagCms\Core\Scopes\SiteScope;
+use HashtagCms\Core\Scopes\SiteScope;
 
 class Contact extends AdminBaseModel
 {

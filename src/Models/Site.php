@@ -1,10 +1,10 @@
 <?php
 
-namespace MarghoobSuleman\HashtagCms\Models;
+namespace HashtagCms\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
-use MarghoobSuleman\HashtagCms\Core\Scopes\SiteScope;
+use HashtagCms\Core\Scopes\SiteScope;
 
 class Site extends AdminBaseModel
 {

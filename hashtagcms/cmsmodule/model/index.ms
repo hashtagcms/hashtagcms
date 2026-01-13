@@ -3,7 +3,7 @@
 namespace {{namespace}}Models;
 
 use Illuminate\Database\Eloquent\SoftDeletes;
-use MarghoobSuleman\HashtagCms\Models\AdminBaseModel;
+use HashtagCms\Models\AdminBaseModel;
 
 {{useModels}}
 {{useLangScope}}

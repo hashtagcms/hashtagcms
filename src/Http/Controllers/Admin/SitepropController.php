@@ -1,13 +1,13 @@
 <?php
 
-namespace MarghoobSuleman\HashtagCms\Http\Controllers\Admin;
+namespace HashtagCms\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-use MarghoobSuleman\HashtagCms\Core\Helpers\Message;
-use MarghoobSuleman\HashtagCms\Models\Platform;
-use MarghoobSuleman\HashtagCms\Models\Site;
-use MarghoobSuleman\HashtagCms\Models\SiteProp;
+use HashtagCms\Core\Helpers\Message;
+use HashtagCms\Models\Platform;
+use HashtagCms\Models\Site;
+use HashtagCms\Models\SiteProp;
 
 class SitepropController extends BaseAdminController
 {

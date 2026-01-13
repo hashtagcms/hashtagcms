@@ -1,10 +1,10 @@
 <?php
 
-namespace MarghoobSuleman\HashtagCms\Core\Main;
+namespace HashtagCms\Core\Main;
 
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\View;
-use MarghoobSuleman\HashtagCms\Core\Utils\LayoutKeys;
+use HashtagCms\Core\Utils\LayoutKeys;
 use Mockery\Exception;
 
 class LayoutManager extends Results

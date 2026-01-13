@@ -1,6 +1,6 @@
 <?php
 
-namespace MarghoobSuleman\HashtagCms\Tests\Unit;
+namespace HashtagCms\Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
 

@@ -1,11 +1,11 @@
 <?php
 
-namespace MarghoobSuleman\HashtagCms\Http\Controllers\Admin;
+namespace HashtagCms\Http\Controllers\Admin;
 
-use MarghoobSuleman\HashtagCms\Models\Category;
-use MarghoobSuleman\HashtagCms\Models\Comment;
-use MarghoobSuleman\HashtagCms\Models\Contact;
-use MarghoobSuleman\HashtagCms\Models\Subscriber;
+use HashtagCms\Models\Category;
+use HashtagCms\Models\Comment;
+use HashtagCms\Models\Contact;
+use HashtagCms\Models\Subscriber;
 
 class DashboardController extends BaseAdminController
 {

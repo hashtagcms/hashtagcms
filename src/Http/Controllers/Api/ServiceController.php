@@ -1,10 +1,10 @@
 <?php
 
-namespace MarghoobSuleman\HashtagCms\Http\Controllers\Api;
+namespace HashtagCms\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
-use MarghoobSuleman\HashtagCms\Core\Main\ServiceLoader;
-use MarghoobSuleman\HashtagCms\Core\Traits\FeEssential;
+use HashtagCms\Core\Main\ServiceLoader;
+use HashtagCms\Core\Traits\FeEssential;
 use Symfony\Component\HttpFoundation\Response;
 
 class ServiceController extends ApiBaseController

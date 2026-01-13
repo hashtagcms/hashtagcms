@@ -1,11 +1,11 @@
 <?php
 
-namespace MarghoobSuleman\HashtagCms\Http\Controllers;
+namespace HashtagCms\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-use MarghoobSuleman\HashtagCms\Models\Contact;
-use MarghoobSuleman\HashtagCms\Models\Subscriber;
+use HashtagCms\Models\Contact;
+use HashtagCms\Models\Subscriber;
 
 class CommonController extends FrontendBaseController
 {

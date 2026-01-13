@@ -1,6 +1,6 @@
 {
   "name": "hashtagcms",
-  "version": "1.4.7",
+  "version": "2.0.0",
   "description": "Hashtag CMS, Use it as Headless CMS or Bundled, API enabled, Admin Panel, Multisite, Multi-platform, Multilingual.",
   "main": "app.js",
   "directories": {
@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/marghoobsuleman/hashtagcms.git"
+    "url": "git+https://github.com/hashtagcms/hashtagcms.git"
   },
   "keywords": [
     "HashtagCms",
@@ -19,9 +19,9 @@
   "author": "Marghoob Suleman",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/marghoobsuleman/hashtagcms/issues"
+    "url": "https://github.com/hashtagcms/hashtagcms/issues"
   },
-  "homepage": "https://github.com/marghoobsuleman/hashtagcms#readme",
+  "homepage": "https://github.com/hashtagcms/hashtagcms#readme",
   "scripts": {
     "dev": "webpack --mode development --watch",
     "build": "webpack --mode production",

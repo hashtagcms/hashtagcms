@@ -1,8 +1,8 @@
 <?php
 
-namespace MarghoobSuleman\HashtagCms\Models;
+namespace HashtagCms\Models;
 
-use MarghoobSuleman\HashtagCms\Core\Scopes\LangScope;
+use HashtagCms\Core\Scopes\LangScope;
 
 class SiteLang extends AdminBaseModel
 {

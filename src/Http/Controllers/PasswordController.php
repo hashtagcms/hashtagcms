@@ -1,6 +1,6 @@
 <?php
 
-namespace MarghoobSuleman\HashtagCms\Http\Controllers;
+namespace HashtagCms\Http\Controllers;
 
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Foundation\Auth\RedirectsUsers;
@@ -45,7 +45,7 @@ class PasswordController extends FrontendBaseController
     }
 
     /**
-     * Hint: password.request | MarghoobSuleman\HashtagCms\Http\Controllers\Auth\ForgotPasswordController@showLinkRequestForm
+     * Hint: password.request | HashtagCms\Http\Controllers\Auth\ForgotPasswordController@showLinkRequestForm
      *
      * Render page (@override)
      *
@@ -62,7 +62,7 @@ class PasswordController extends FrontendBaseController
      * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse
      */
 
-    //Hint: password.email   | MarghoobSuleman\HashtagCms\Http\Controllers\Auth\ForgotPasswordController@sendResetLinkEmail
+    //Hint: password.email   | HashtagCms\Http\Controllers\Auth\ForgotPasswordController@sendResetLinkEmail
     public function email(Request $request)
     {
         if ($request->method() == 'GET') {
@@ -86,7 +86,7 @@ class PasswordController extends FrontendBaseController
      * * If no token is present, display the link request form.
      */
 
-    //Hint: password.reset   | MarghoobSuleman\HashtagCms\Http\Controllers\Auth\ResetPasswordController@showResetForm
+    //Hint: password.reset   | HashtagCms\Http\Controllers\Auth\ResetPasswordController@showResetForm
     public function reset(Request $request, $token = null)
     {
 
@@ -102,7 +102,7 @@ class PasswordController extends FrontendBaseController
      * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse
      */
 
-    //Hint: password.update  | MarghoobSuleman\HashtagCms\Http\Controllers\Auth\ResetPasswordController@reset
+    //Hint: password.update  | HashtagCms\Http\Controllers\Auth\ResetPasswordController@reset
     public function update(Request $request)
     {
 

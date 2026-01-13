@@ -1,18 +1,18 @@
 <?php
 
-namespace MarghoobSuleman\HashtagCms\Http\Controllers\Admin;
+namespace HashtagCms\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
-use MarghoobSuleman\HashtagCms\Core\Helpers\Message;
-use MarghoobSuleman\HashtagCms\Models\Category;
-use MarghoobSuleman\HashtagCms\Models\CategorySite;
-use MarghoobSuleman\HashtagCms\Models\Platform;
-use MarghoobSuleman\HashtagCms\Models\Site;
-use MarghoobSuleman\HashtagCms\Models\Theme;
+use HashtagCms\Core\Helpers\Message;
+use HashtagCms\Models\Category;
+use HashtagCms\Models\CategorySite;
+use HashtagCms\Models\Platform;
+use HashtagCms\Models\Site;
+use HashtagCms\Models\Theme;
 use Mockery\Exception;
 
 class CategoryController extends BaseAdminController

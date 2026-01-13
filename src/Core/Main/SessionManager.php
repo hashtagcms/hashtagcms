@@ -1,6 +1,6 @@
 <?php
 
-namespace MarghoobSuleman\HashtagCms\Core\Main;
+namespace HashtagCms\Core\Main;
 
 use Illuminate\Support\Facades\Session;
 

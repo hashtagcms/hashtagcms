@@ -1,10 +1,10 @@
 <?php
 
-namespace MarghoobSuleman\HashtagCms\Http\Controllers;
+namespace HashtagCms\Http\Controllers;
 
 use Illuminate\Http\Request;
-use MarghoobSuleman\HashtagCms\Http\Resources\PageResource;
-use MarghoobSuleman\HashtagCms\Models\Page;
+use HashtagCms\Http\Resources\PageResource;
+use HashtagCms\Models\Page;
 
 class BlogController extends FrontendBaseController
 {

@@ -1,12 +1,12 @@
 <?php
 
-namespace MarghoobSuleman\HashtagCms\Http\Controllers\Admin;
+namespace HashtagCms\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-use MarghoobSuleman\HashtagCms\Core\Helpers\Message;
-use MarghoobSuleman\HashtagCms\Models\Hook;
-use MarghoobSuleman\HashtagCms\Models\Site;
+use HashtagCms\Core\Helpers\Message;
+use HashtagCms\Models\Hook;
+use HashtagCms\Models\Site;
 
 class HookController extends BaseAdminController
 {

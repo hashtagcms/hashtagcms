@@ -1,9 +1,9 @@
 <?php
 
-namespace MarghoobSuleman\HashtagCms\Core\Traits;
+namespace HashtagCms\Core\Traits;
 
 use Illuminate\Support\Facades\DB;
-use MarghoobSuleman\HashtagCms\Models\Site;
+use HashtagCms\Models\Site;
 
 trait SiteManager
 {

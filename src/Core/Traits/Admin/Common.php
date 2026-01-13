@@ -1,9 +1,9 @@
 <?php
 
-namespace MarghoobSuleman\HashtagCms\Core\Traits\Admin;
+namespace HashtagCms\Core\Traits\Admin;
 
-use MarghoobSuleman\HashtagCms\Models\Lang;
-use MarghoobSuleman\HashtagCms\Models\Site;
+use HashtagCms\Models\Lang;
+use HashtagCms\Models\Site;
 
 trait Common
 {

@@ -1,10 +1,10 @@
 <?php
 
-namespace MarghoobSuleman\HashtagCms\Core\Traits;
+namespace HashtagCms\Core\Traits;
 
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
-use MarghoobSuleman\HashtagCms\Models\Role;
+use HashtagCms\Models\Role;
 
 trait RoleManager
 {

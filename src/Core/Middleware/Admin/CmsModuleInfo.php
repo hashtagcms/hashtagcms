@@ -1,9 +1,9 @@
 <?php
 
-namespace MarghoobSuleman\HashtagCms\Core\Middleware\Admin;
+namespace HashtagCms\Core\Middleware\Admin;
 
 use Closure;
-use MarghoobSuleman\HashtagCms\Models\CmsModule;
+use HashtagCms\Models\CmsModule;
 
 class CmsModuleInfo
 {

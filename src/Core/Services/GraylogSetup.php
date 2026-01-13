@@ -1,6 +1,6 @@
 <?php
 
-namespace MarghoobSuleman\HashtagCms\Core\Services;
+namespace HashtagCms\Core\Services;
 
 use Gelf\Publisher;
 use Gelf\Transport\TcpTransport;

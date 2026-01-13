@@ -1,8 +1,8 @@
 <?php
 
-namespace MarghoobSuleman\HashtagCms\Http\Controllers\Admin;
+namespace HashtagCms\Http\Controllers\Admin;
 
-use MarghoobSuleman\HashtagCms\Models\Subscriber;
+use HashtagCms\Models\Subscriber;
 
 class SubscriberController extends BaseAdminController
 {

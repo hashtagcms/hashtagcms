@@ -1,18 +1,18 @@
 <?php
 
-namespace MarghoobSuleman\HashtagCms\Core\Middleware\Traits;
+namespace HashtagCms\Core\Middleware\Traits;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
-use MarghoobSuleman\HashtagCms\Core\Main\DataLoader;
-use MarghoobSuleman\HashtagCms\Core\Main\InfoLoader;
+use HashtagCms\Core\Main\DataLoader;
+use HashtagCms\Core\Main\InfoLoader;
 /**
  * Trait BaseInfo
  */
-use MarghoobSuleman\HashtagCms\Core\Main\LayoutManager;
-use MarghoobSuleman\HashtagCms\Core\Main\SessionManager;
-use MarghoobSuleman\HashtagCms\Core\Utils\LayoutKeys;
-use MarghoobSuleman\HashtagCms\Models\Category;
+use HashtagCms\Core\Main\LayoutManager;
+use HashtagCms\Core\Main\SessionManager;
+use HashtagCms\Core\Utils\LayoutKeys;
+use HashtagCms\Models\Category;
 
 trait BaseInfo
 {

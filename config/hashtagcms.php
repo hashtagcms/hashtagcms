@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'namespace' => 'MarghoobSuleman\\HashtagCms\\',
+    'namespace' => 'HashtagCms\\',
     'context' => env('CONTEXT', 'hashtagcms'),
     'info' => [
         'view_folder' => 'hashtagcms::fe',

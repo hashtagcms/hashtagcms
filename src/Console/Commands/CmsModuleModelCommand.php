@@ -1,6 +1,6 @@
 <?php
 
-namespace MarghoobSuleman\HashtagCms\Console\Commands;
+namespace HashtagCms\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
@@ -257,7 +257,7 @@ class CmsModuleModelCommand extends Command
         $data['useMethod'] = '';
 
         if (isset($this->hasLangScope[$model])) {
-            $data['useScope'] = "use MarghoobSuleman\HashtagCms\Core\Scopes\LangScope;";
+            $data['useScope'] = "use HashtagCms\Core\Scopes\LangScope;";
             $data['useMethod'] = 'protected static function boot() {
 
         parent::boot();

@@ -6,8 +6,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
 use {{namespace}}Models\{{dataSource}};
-use MarghoobSuleman\HashtagCms\Core\Helpers\Message;
-use MarghoobSuleman\HashtagCms\Http\Controllers\Admin\BaseAdminController;
+use HashtagCms\Core\Helpers\Message;
+use HashtagCms\Http\Controllers\Admin\BaseAdminController;
 
 class {{controller_name}} extends BaseAdminController
 {

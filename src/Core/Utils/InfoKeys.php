@@ -1,6 +1,6 @@
 <?php
 
-namespace MarghoobSuleman\HashtagCms\Core\Utils;
+namespace HashtagCms\Core\Utils;
 
 class InfoKeys
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace MarghoobSuleman\HashtagCms\Core\Middleware\Api;
+namespace HashtagCms\Core\Middleware\Api;
 
 use Closure;
 use Illuminate\Http\Request;

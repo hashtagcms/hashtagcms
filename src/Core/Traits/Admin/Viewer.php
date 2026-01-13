@@ -1,11 +1,11 @@
 <?php
 
-namespace MarghoobSuleman\HashtagCms\Core\Traits\Admin;
+namespace HashtagCms\Core\Traits\Admin;
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
-use MarghoobSuleman\HashtagCms\Models\CmsModule;
-use MarghoobSuleman\HashtagCms\Models\CmsPermission;
+use HashtagCms\Models\CmsModule;
+use HashtagCms\Models\CmsPermission;
 
 trait Viewer
 {

@@ -1,15 +1,15 @@
 <?php
 
-namespace MarghoobSuleman\HashtagCms\Http\Controllers\Admin;
+namespace HashtagCms\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-use MarghoobSuleman\HashtagCms\Core\Helpers\Message;
-use MarghoobSuleman\HashtagCms\Models\CmsModule;
-use MarghoobSuleman\HashtagCms\Models\CmsPermission;
-use MarghoobSuleman\HashtagCms\Models\Role;
-use MarghoobSuleman\HashtagCms\Models\Site;
-use MarghoobSuleman\HashtagCms\Models\User;
+use HashtagCms\Core\Helpers\Message;
+use HashtagCms\Models\CmsModule;
+use HashtagCms\Models\CmsPermission;
+use HashtagCms\Models\Role;
+use HashtagCms\Models\Site;
+use HashtagCms\Models\User;
 
 class AuthorController extends BaseAdminController
 {

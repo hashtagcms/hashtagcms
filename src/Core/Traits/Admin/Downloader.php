@@ -1,10 +1,10 @@
 <?php
 
-namespace MarghoobSuleman\HashtagCms\Core\Traits\Admin;
+namespace HashtagCms\Core\Traits\Admin;
 
 use Illuminate\Support\Facades\Auth;
-use MarghoobSuleman\HashtagCms\Models\CmsModule;
-use MarghoobSuleman\HashtagCms\Models\User;
+use HashtagCms\Models\CmsModule;
+use HashtagCms\Models\User;
 
 trait Downloader
 {

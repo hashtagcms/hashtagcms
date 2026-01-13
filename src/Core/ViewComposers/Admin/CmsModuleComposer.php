@@ -1,11 +1,11 @@
 <?php
 
-namespace MarghoobSuleman\HashtagCms\Core\ViewComposers\Admin;
+namespace HashtagCms\Core\ViewComposers\Admin;
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
-use MarghoobSuleman\HashtagCms\Models\CmsModule;
-use MarghoobSuleman\HashtagCms\Models\User;
+use HashtagCms\Models\CmsModule;
+use HashtagCms\Models\User;
 
 class CmsModuleComposer
 {

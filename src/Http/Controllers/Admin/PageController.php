@@ -1,15 +1,15 @@
 <?php
 
-namespace MarghoobSuleman\HashtagCms\Http\Controllers\Admin;
+namespace HashtagCms\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-use MarghoobSuleman\HashtagCms\Core\Helpers\Message;
-use MarghoobSuleman\HashtagCms\Core\Traits\Admin\BlogPageCommon;
-use MarghoobSuleman\HashtagCms\Models\Category;
-use MarghoobSuleman\HashtagCms\Models\Page;
-use MarghoobSuleman\HashtagCms\Models\Platform;
-use MarghoobSuleman\HashtagCms\Models\User as UserData;
+use HashtagCms\Core\Helpers\Message;
+use HashtagCms\Core\Traits\Admin\BlogPageCommon;
+use HashtagCms\Models\Category;
+use HashtagCms\Models\Page;
+use HashtagCms\Models\Platform;
+use HashtagCms\Models\User as UserData;
 
 class PageController extends BaseAdminController
 {

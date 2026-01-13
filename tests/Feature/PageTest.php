@@ -1,6 +1,6 @@
 <?php
 
-namespace MarghoobSuleman\HashtagCms\Tests\Feature;
+namespace HashtagCms\Tests\Feature;
 
 use Illuminate\Support\Facades\Artisan;
 use Tests\TestCase;

@@ -1,10 +1,10 @@
 <?php
 
-namespace MarghoobSuleman\HashtagCms\Core\Policies;
+namespace HashtagCms\Core\Policies;
 
 use Gate;
 use Illuminate\Auth\Access\HandlesAuthorization;
-use MarghoobSuleman\HashtagCms\Models\CmsPermission;
+use HashtagCms\Models\CmsPermission;
 
 class CmsPolicy
 {
@@ -13,8 +13,8 @@ class CmsPolicy
     /**
      * Determine whether the user can view.
      *
-     * @param  \MarghoobSuleman\HashtagCms\User  $user
-     * @param  \MarghoobSuleman\HashtagCms\Models\CmsPermission  $crayonPermission
+     * @param  \HashtagCms\User  $user
+     * @param  \HashtagCms\Models\CmsPermission  $crayonPermission
      * @return mixed
      */
     public function before($user)
@@ -29,7 +29,7 @@ class CmsPolicy
     /**
      * Determine whether the user can view.
      *
-     * @param  \MarghoobSuleman\HashtagCms\User  $user
+     * @param  \HashtagCms\User  $user
      * @return mixed
      */
     public function view($user, CmsPermission $crayonPermission)
@@ -43,7 +43,7 @@ class CmsPolicy
     /**
      * Determine whether the user can create.
      *
-     * @param  \MarghoobSuleman\HashtagCms\User  $user
+     * @param  \HashtagCms\User  $user
      * @return mixed
      */
     public function create($user, CmsPermission $crayonPermission)
@@ -54,7 +54,7 @@ class CmsPolicy
     /**
      * Determine whether the user can update.
      *
-     * @param  \MarghoobSuleman\HashtagCms\User  $user
+     * @param  \HashtagCms\User  $user
      * @return mixed
      */
     public function update($user, CmsPermission $crayonPermission)
@@ -65,7 +65,7 @@ class CmsPolicy
     /**
      * Determine whether the user can delete.
      *
-     * @param  \MarghoobSuleman\HashtagCms\User  $user
+     * @param  \HashtagCms\User  $user
      * @return mixed
      */
     public function delete($user, CmsPermission $crayonPermission)
@@ -76,7 +76,7 @@ class CmsPolicy
     /**
      * Determine whether the user can publish
      *
-     * @param  \MarghoobSuleman\HashtagCms\User  $user
+     * @param  \HashtagCms\User  $user
      * @return mixed
      */
     public function publish($user, CmsPermission $crayonPermission)
@@ -87,7 +87,7 @@ class CmsPolicy
     /**
      * Determine whether the user can approve
      *
-     * @param  \MarghoobSuleman\HashtagCms\User  $user
+     * @param  \HashtagCms\User  $user
      * @return mixed
      */
     public function approve($user, CmsPermission $crayonPermission)

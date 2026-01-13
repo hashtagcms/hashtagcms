@@ -1,6 +1,6 @@
 <?php
 
-namespace MarghoobSuleman\HashtagCms\Facades;
+namespace HashtagCms\Facades;
 
 use Illuminate\Support\Facades\Facade;
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace MarghoobSuleman\HashtagCms\Core\Main;
+namespace HashtagCms\Core\Main;
 
 class QueryModuleLoader extends Results implements ModuleLoaderImp
 {

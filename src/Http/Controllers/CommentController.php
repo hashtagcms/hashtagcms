@@ -1,11 +1,11 @@
 <?php
 
-namespace MarghoobSuleman\HashtagCms\Http\Controllers;
+namespace HashtagCms\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-use MarghoobSuleman\HashtagCms\Models\Comment;
-use MarghoobSuleman\HashtagCms\Models\Page;
+use HashtagCms\Models\Comment;
+use HashtagCms\Models\Page;
 
 class CommentController extends FrontendBaseController
 {

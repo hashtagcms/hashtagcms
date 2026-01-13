@@ -1,9 +1,9 @@
 <?php
 
-namespace MarghoobSuleman\HashtagCms\Http\Resources;
+namespace HashtagCms\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
-use MarghoobSuleman\HashtagCms\Core\Traits\LayoutHandler;
+use HashtagCms\Core\Traits\LayoutHandler;
 
 class CategoryResource extends JsonResource
 {

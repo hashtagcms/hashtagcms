@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Validator;
-use MarghoobSuleman\HashtagCms\Http\Controllers\FrontendBaseController;
+use HashtagCms\Http\Controllers\FrontendBaseController;
 
 //use Laravel\Socialite;
 use Laravel\Socialite\Facades\Socialite;

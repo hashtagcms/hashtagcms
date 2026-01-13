@@ -1,6 +1,6 @@
 <?php
 
-namespace MarghoobSuleman\HashtagCms\Core\Traits\Api;
+namespace HashtagCms\Core\Traits\Api;
 
 trait ErrorHandler
 {

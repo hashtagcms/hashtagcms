@@ -1,13 +1,13 @@
 <?php
 
-namespace MarghoobSuleman\HashtagCms\Http\Controllers\Admin;
+namespace HashtagCms\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
-use MarghoobSuleman\HashtagCms\Core\Helpers\Message;
-use MarghoobSuleman\HashtagCms\Models\Lang;
-use MarghoobSuleman\HashtagCms\Models\Site;
+use HashtagCms\Core\Helpers\Message;
+use HashtagCms\Models\Lang;
+use HashtagCms\Models\Site;
 use PHPUnit\Exception;
 
 class LanguageController extends BaseAdminController

@@ -1,15 +1,15 @@
 <?php
 
-namespace MarghoobSuleman\HashtagCms\Http\Controllers\Installer;
+namespace HashtagCms\Http\Controllers\Installer;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
-use MarghoobSuleman\HashtagCms\Http\Controllers\Controller;
-use MarghoobSuleman\HashtagCms\Models\Site;
-use MarghoobSuleman\HashtagCms\Models\SiteProp;
-use MarghoobSuleman\HashtagCms\User;
+use HashtagCms\Http\Controllers\Controller;
+use HashtagCms\Models\Site;
+use HashtagCms\Models\SiteProp;
+use HashtagCms\User;
 
 class InstallController extends Controller
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace MarghoobSuleman\HashtagCms;
+namespace HashtagCms;
 
 use Illuminate\Support\Facades\Route;
 

@@ -1,8 +1,8 @@
 <?php
 
-namespace MarghoobSuleman\HashtagCms\Core\Traits;
+namespace HashtagCms\Core\Traits;
 
-use MarghoobSuleman\HashtagCms\Models\Theme;
+use HashtagCms\Models\Theme;
 
 trait LayoutHandler
 {

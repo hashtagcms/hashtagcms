@@ -1,10 +1,10 @@
 <?php
 
-namespace MarghoobSuleman\HashtagCms\Core\Main;
+namespace HashtagCms\Core\Main;
 
-use MarghoobSuleman\HashtagCms\Models\Lang;
-use MarghoobSuleman\HashtagCms\Models\Platform;
-use MarghoobSuleman\HashtagCms\Models\Site;
+use HashtagCms\Models\Lang;
+use HashtagCms\Models\Platform;
+use HashtagCms\Models\Site;
 
 class ServiceLoaderOld extends DataLoader
 {

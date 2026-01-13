@@ -1,8 +1,8 @@
 <?php
 
-namespace MarghoobSuleman\HashtagCms\Core\Main;
+namespace HashtagCms\Core\Main;
 
-use MarghoobSuleman\HashtagCms\Models\Site;
+use HashtagCms\Models\Site;
 
 /** v2 */
 class ServiceLoader extends DataLoader

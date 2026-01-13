@@ -1,14 +1,14 @@
 <?php
 
-namespace MarghoobSuleman\HashtagCms\Http\Controllers\Admin;
+namespace HashtagCms\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
-use MarghoobSuleman\HashtagCms\Core\Helpers\Message;
-use MarghoobSuleman\HashtagCms\Models\CmsModule;
-use MarghoobSuleman\HashtagCms\Models\QueryLogger;
+use HashtagCms\Core\Helpers\Message;
+use HashtagCms\Models\CmsModule;
+use HashtagCms\Models\QueryLogger;
 
 class CmsmoduleController extends BaseAdminController
 {

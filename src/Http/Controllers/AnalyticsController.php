@@ -1,9 +1,9 @@
 <?php
 
-namespace MarghoobSuleman\HashtagCms\Http\Controllers;
+namespace HashtagCms\Http\Controllers;
 
-use MarghoobSuleman\HashtagCms\Models\Category;
-use MarghoobSuleman\HashtagCms\Models\Page;
+use HashtagCms\Models\Category;
+use HashtagCms\Models\Page;
 
 //Keeping out of hahatgcms controller scope;
 class AnalyticsController extends Controller

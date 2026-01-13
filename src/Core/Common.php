@@ -1,13 +1,13 @@
 <?php
 
-namespace MarghoobSuleman\HashtagCms\Core;
+namespace HashtagCms\Core;
 
-use MarghoobSuleman\HashtagCms\Core\Main\DataLoader;
-use MarghoobSuleman\HashtagCms\Core\Main\InfoLoader;
-use MarghoobSuleman\HashtagCms\Core\Main\LayoutManager;
-use MarghoobSuleman\HashtagCms\Core\Main\ModuleLoader;
-use MarghoobSuleman\HashtagCms\Core\Main\Results;
-use MarghoobSuleman\HashtagCms\Core\Main\SessionManager;
+use HashtagCms\Core\Main\DataLoader;
+use HashtagCms\Core\Main\InfoLoader;
+use HashtagCms\Core\Main\LayoutManager;
+use HashtagCms\Core\Main\ModuleLoader;
+use HashtagCms\Core\Main\Results;
+use HashtagCms\Core\Main\SessionManager;
 
 class Common extends Results
 {

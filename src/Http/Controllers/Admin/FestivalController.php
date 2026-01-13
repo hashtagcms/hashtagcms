@@ -1,12 +1,12 @@
 <?php
 
-namespace MarghoobSuleman\HashtagCms\Http\Controllers\Admin;
+namespace HashtagCms\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-use MarghoobSuleman\HashtagCms\Core\Helpers\Message;
-use MarghoobSuleman\HashtagCms\Models\Festival;
-use MarghoobSuleman\HashtagCms\Models\QueryLogger;
+use HashtagCms\Core\Helpers\Message;
+use HashtagCms\Models\Festival;
+use HashtagCms\Models\QueryLogger;
 
 class FestivalController extends BaseAdminController
 {

@@ -1,14 +1,14 @@
 <?php
 
-namespace MarghoobSuleman\HashtagCms\Http\Controllers\Admin;
+namespace HashtagCms\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-use MarghoobSuleman\HashtagCms\Core\Helpers\Message;
-use MarghoobSuleman\HashtagCms\Models\Module;
-use MarghoobSuleman\HashtagCms\Models\ModuleProp;
-use MarghoobSuleman\HashtagCms\Models\Platform;
-use MarghoobSuleman\HashtagCms\Models\QueryLogger;
+use HashtagCms\Core\Helpers\Message;
+use HashtagCms\Models\Module;
+use HashtagCms\Models\ModuleProp;
+use HashtagCms\Models\Platform;
+use HashtagCms\Models\QueryLogger;
 
 class ModulepropertyController extends BaseAdminController
 {

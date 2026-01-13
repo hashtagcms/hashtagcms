@@ -1,12 +1,12 @@
 <?php
 
-namespace MarghoobSuleman\HashtagCms\Http\Controllers;
+namespace HashtagCms\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
-use MarghoobSuleman\HashtagCms\Models\User;
-use MarghoobSuleman\HashtagCms\Models\UserProfile;
+use HashtagCms\Models\User;
+use HashtagCms\Models\UserProfile;
 
 class ProfileController extends FrontendBaseController
 {

@@ -1,13 +1,13 @@
 <?php
 
-namespace MarghoobSuleman\HashtagCms\Http\Controllers\Admin;
+namespace HashtagCms\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
-use MarghoobSuleman\HashtagCms\Core\Helpers\Message;
-use MarghoobSuleman\HashtagCms\Models\Site;
-use MarghoobSuleman\HashtagCms\Models\StaticModuleContent;
+use HashtagCms\Core\Helpers\Message;
+use HashtagCms\Models\Site;
+use HashtagCms\Models\StaticModuleContent;
 
 class StaticmoduleController extends BaseAdminController
 {

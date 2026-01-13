@@ -20,7 +20,7 @@ return [
                      व्यवस्थापक पैनल, मल्टीसाइट, मल्टीप्लेटफ़ॉर्म, बहुभाषी, और oAuth 2.0<br>
                     आप और क्या मांगेंगे?<br>
                     सबसे शक्तिशाली, तेज, उपयोगकर्ता के अनुकूल और सुरक्षित मंच।
-                    <br /> <a style="margin-top: 20px" class="btn btn-primary" href="https://github.com/marghoobsuleman/hashtagcms" target="_blank">Download from Github</a>
+                    <br /> <a style="margin-top: 20px" class="btn btn-primary" href="https://github.com/hashtagcms/hashtagcms" target="_blank">Download from Github</a>
                     ',
     'products_1' => 'मॉड्यूल के प्रबंधन के लिए सहज ज्ञान युक्त अंतरफलक',
     'products_2' => 'आप सीएमएस से आसानी से फ्रंटएंड मॉड्यूल बना और प्रबंधित कर सकते हैं। अपनी वेबसाइट को प्रबंधित करने का एक आसान तरीका।
@@ -49,7 +49,7 @@ return [
     "Yes, It's MIT license. You can ask for other license." => 'हाँ, यह एमआईटी लाइसेंस है। आप अन्य लाइसेंस के लिए पूछ सकते हैं।',
 
     'If there is any bug?' => 'अगर कोई बग है?',
-    'bug_post' => "ज़रूर, घबराइए मत। यह प्राकृतिक है। कृपया <a href='https://github.com/marghoobsuleman/hashtagcms/issues'>github फ़ोरम</a> पर पोस्ट करें। हम जल्द से जल्द ठीक कर देंगे।",
+    'bug_post' => "ज़रूर, घबराइए मत। यह प्राकृतिक है। कृपया <a href='https://github.com/hashtagcms/hashtagcms/issues'>github फ़ोरम</a> पर पोस्ट करें। हम जल्द से जल्द ठीक कर देंगे।",
 
     'Professional Help?' => 'पेशेवर मदद?',
     'Of course, we provide professional consultants.' => 'बेशक, हम पेशेवर सलाहकार प्रदान करते हैं।',

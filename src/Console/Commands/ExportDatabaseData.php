@@ -1,8 +1,8 @@
 <?php
 
-namespace MarghoobSuleman\HashtagCms\Console\Commands;
+namespace HashtagCms\Console\Commands;
 
-use MarghoobSuleman\HashtagCms\Database\Seeds\BaseSeeder;
+use HashtagCms\Database\Seeds\BaseSeeder;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
@@ -421,7 +421,7 @@ class ExportDatabaseData extends Command
         
         $content = "<?php\n\n";
         $content .= "namespace Database\\Seeders;\n\n";
-        $content .= "use MarghoobSuleman\\HashtagCms\\Database\\Seeds\\BaseSeeder as PackageBaseSeeder;\n\n";
+        $content .= "use HashtagCms\\Database\\Seeds\\BaseSeeder as PackageBaseSeeder;\n\n";
         $content .= "/**\n";
         $content .= " * Base seeder class extending the HashtagCMS package BaseSeeder\n";
         $content .= " */\n";

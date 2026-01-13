@@ -1,16 +1,16 @@
 <?php
 
-namespace MarghoobSuleman\HashtagCms\Http\Controllers;
+namespace HashtagCms\Http\Controllers;
 
 use Illuminate\Http\Request;
-use MarghoobSuleman\HashtagCms\Core\Main\LayoutManager;
-use MarghoobSuleman\HashtagCms\Core\Traits\FeEssential;
+use HashtagCms\Core\Main\LayoutManager;
+use HashtagCms\Core\Traits\FeEssential;
 use Symfony\Component\HttpFoundation\Response;
 
 /****
  * Class FrontendBaseController
  * Renderer
- * @package MarghoobSuleman\HashtagCms\Http\Controllers
+ * @package HashtagCms\Http\Controllers
  */
 
 class FrontendBaseController extends Controller

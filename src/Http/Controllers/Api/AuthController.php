@@ -1,14 +1,14 @@
 <?php
 
-namespace MarghoobSuleman\HashtagCms\Http\Controllers\Api;
+namespace HashtagCms\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Laravel\Sanctum\HasApiTokens;
-use MarghoobSuleman\HashtagCms\Core\Traits\RoleManager;
-use MarghoobSuleman\HashtagCms\Http\Resources\UserResource;
-use MarghoobSuleman\HashtagCms\User;
+use HashtagCms\Core\Traits\RoleManager;
+use HashtagCms\Http\Resources\UserResource;
+use HashtagCms\User;
 
 class AuthController extends ApiBaseController
 {

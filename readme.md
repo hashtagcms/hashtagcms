@@ -15,13 +15,13 @@ Via Composer
 ``` bash
 composer create-project laravel/laravel mysite
 cd mysite
-composer require marghoobsuleman/hashtagcms
+composer require hashtagcms/hashtagcms
 ```
 
 ## Hashtag CMS installation guidelines
 - Open `config/app.php` and add below line in the array. (only needed less than v1.4.3 version)  
 ``` bash
-MarghoobSuleman\HashtagCms\HashtagCmsServiceProvider::class
+HashtagCms\HashtagCmsServiceProvider::class
 ```
 - Open `.env` file and update `APP_URL`, and make sure database information is correct.
 - Change DB_CONNECTION to `mysql` and update database information. 
@@ -40,7 +40,7 @@ DB_PASSWORD=your_db_password (leave it blank if no password)
 ```
 - Add below lines in the same file (`app/Models/User.php`)
 ``` bash
-use MarghoobSuleman\HashtagCms\User as Authenticatable;
+use HashtagCms\User as Authenticatable;
 ```
 - You might want to comment/remove below route in `routes/web.php`
 
@@ -66,7 +66,7 @@ http://www.hashtagcms.org/install
 
 ## Test
 ```bash 
-php artisan test vendor/marghoobsuleman/hashtagcms
+php artisan test vendor/hashtagcms/hashtagcms
 ```
 
 ## Recent change logs [more...](changelog.md)
@@ -117,14 +117,14 @@ If you discover any security related issues, please email author email instead o
 
 license. Please see the [license file](license.md) for more information.
 
-[ico-version]: https://img.shields.io/packagist/v/marghoobsuleman/hashtagcms.svg?style=flat-square
-[ico-downloads]: https://img.shields.io/packagist/dt/marghoobsuleman/hashtagcms.svg?style=flat-square
-[ico-travis]: https://img.shields.io/travis/marghoobsuleman/hashtagcms/master.svg?style=flat-square
+[ico-version]: https://img.shields.io/packagist/v/hashtagcms/hashtagcms.svg?style=flat-square
+[ico-downloads]: https://img.shields.io/packagist/dt/hashtagcms/hashtagcms.svg?style=flat-square
+[ico-travis]: https://img.shields.io/travis/hashtagcms/hashtagcms/master.svg?style=flat-square
 [ico-styleci]: https://styleci.io/repos/12345678/shield
 
-[link-packagist]: https://packagist.org/packages/marghoobsuleman/hashtagcms
-[link-downloads]: https://packagist.org/packages/marghoobsuleman/hashtagcms
-[link-travis]: https://travis-ci.org/marghoobsuleman/hashtagcms
+[link-packagist]: https://packagist.org/packages/hashtagcms/hashtagcms
+[link-downloads]: https://packagist.org/packages/hashtagcms/hashtagcms
+[link-travis]: https://travis-ci.org/hashtagcms/hashtagcms
 [link-styleci]: https://styleci.io/repos/12345678
 [link-author]: https://github.com/marghoobsuleman
 [link-contributors]: ../../contributors

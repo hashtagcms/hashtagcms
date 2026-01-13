@@ -1,15 +1,15 @@
 <?php
 
-namespace MarghoobSuleman\HashtagCms\Core\Main;
+namespace HashtagCms\Core\Main;
 
-use MarghoobSuleman\HashtagCms\Core\Utils\InfoKeys;
-use MarghoobSuleman\HashtagCms\Core\Utils\LayoutKeys;
-use MarghoobSuleman\HashtagCms\Models\Category;
-use MarghoobSuleman\HashtagCms\Models\Lang;
-use MarghoobSuleman\HashtagCms\Models\Platform;
-use MarghoobSuleman\HashtagCms\Models\Site;
-use MarghoobSuleman\HashtagCms\Models\SiteProp;
-use MarghoobSuleman\HashtagCms\Models\Theme;
+use HashtagCms\Core\Utils\InfoKeys;
+use HashtagCms\Core\Utils\LayoutKeys;
+use HashtagCms\Models\Category;
+use HashtagCms\Models\Lang;
+use HashtagCms\Models\Platform;
+use HashtagCms\Models\Site;
+use HashtagCms\Models\SiteProp;
+use HashtagCms\Models\Theme;
 
 class InfoLoader
 {

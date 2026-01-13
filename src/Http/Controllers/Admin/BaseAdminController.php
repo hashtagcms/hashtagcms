@@ -1,6 +1,6 @@
 <?php
 
-namespace MarghoobSuleman\HashtagCms\Http\Controllers\Admin;
+namespace HashtagCms\Http\Controllers\Admin;
 
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
@@ -8,10 +8,10 @@ use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Support\Facades\Session;
-use MarghoobSuleman\HashtagCms\Core\Traits\Admin\AdminCrud;
-use MarghoobSuleman\HashtagCms\Core\Traits\Admin\BaseAdmin;
-use MarghoobSuleman\HashtagCms\Core\Traits\Admin\LogManager;
-use MarghoobSuleman\HashtagCms\Core\Traits\Admin\UploadManager;
+use HashtagCms\Core\Traits\Admin\AdminCrud;
+use HashtagCms\Core\Traits\Admin\BaseAdmin;
+use HashtagCms\Core\Traits\Admin\LogManager;
+use HashtagCms\Core\Traits\Admin\UploadManager;
 
 class BaseAdminController extends BaseController
 {

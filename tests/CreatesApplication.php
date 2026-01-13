@@ -1,6 +1,6 @@
 <?php
 
-namespace MarghoobSuleman\HashtagCms\Tests;
+namespace HashtagCms\Tests;
 
 use Illuminate\Contracts\Console\Kernel;
 

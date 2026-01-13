@@ -1,12 +1,12 @@
 <?php
 
-namespace MarghoobSuleman\HashtagCms\Http\Controllers\Admin;
+namespace HashtagCms\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-use MarghoobSuleman\HashtagCms\Core\Helpers\Message;
-use MarghoobSuleman\HashtagCms\Models\Permission;
-use MarghoobSuleman\HashtagCms\Models\Role;
+use HashtagCms\Core\Helpers\Message;
+use HashtagCms\Models\Permission;
+use HashtagCms\Models\Role;
 
 class RoleController extends BaseAdminController
 {

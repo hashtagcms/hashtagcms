@@ -1,6 +1,6 @@
 <?php
 
-namespace MarghoobSuleman\HashtagCms\Http\Resources;
+namespace HashtagCms\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 

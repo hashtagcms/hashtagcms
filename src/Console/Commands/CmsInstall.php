@@ -1,12 +1,12 @@
 <?php
 
-namespace MarghoobSuleman\HashtagCms\Console\Commands;
+namespace HashtagCms\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
-use MarghoobSuleman\HashtagCms\Models\SiteProp;
+use HashtagCms\Models\SiteProp;
 
 class CmsInstall extends Command
 {
@@ -117,7 +117,7 @@ class CmsInstall extends Command
         $this->info('> Seeding Tables...');
 
         Artisan::call('db:seed', [
-            '--class' => 'MarghoobSuleman\\HashtagCms\\Database\\Seeds\\HashtagCmsDatabaseSeeder',
+            '--class' => 'HashtagCms\\Database\\Seeds\\HashtagCmsDatabaseSeeder',
         ]);
 
     }

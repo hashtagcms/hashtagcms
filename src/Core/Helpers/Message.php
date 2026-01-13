@@ -1,6 +1,6 @@
 <?php
 
-namespace MarghoobSuleman\HashtagCms\Core\Helpers;
+namespace HashtagCms\Core\Helpers;
 
 class Message
 {

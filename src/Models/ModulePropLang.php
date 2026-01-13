@@ -1,9 +1,9 @@
 <?php
 
-namespace MarghoobSuleman\HashtagCms\Models;
+namespace HashtagCms\Models;
 
 use Illuminate\Database\Eloquent\SoftDeletes;
-use MarghoobSuleman\HashtagCms\Core\Scopes\LangScope;
+use HashtagCms\Core\Scopes\LangScope;
 
 class ModulePropLang extends AdminBaseModel
 {
