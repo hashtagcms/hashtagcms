@@ -2,7 +2,7 @@
 
 namespace HashtagCms\Tests\Feature;
 
-use HashtagCms\Tests\TestCase;
+use HashtagCms\Testing\TestCase;
 use HashtagCms\Models\SiteProp;
 
 class InstallationTest extends TestCase

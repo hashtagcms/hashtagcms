@@ -1,6 +1,6 @@
 <?php
 
-namespace HashtagCms\Tests;
+namespace HashtagCms\Testing;
 
 //use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 
