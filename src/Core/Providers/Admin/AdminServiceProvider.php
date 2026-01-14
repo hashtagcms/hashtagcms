@@ -3,6 +3,7 @@
 namespace HashtagCms\Core\Providers\Admin;
 
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\View;
 use HashtagCms\Core\Policies\CmsPolicy;
@@ -26,7 +27,16 @@ class AdminServiceProvider extends ServiceProvider
 
         $this->registerPolicies();
 
-        $allPermission = $this->getPermission();
+        // Cache permissions for 1 hour to reduce database queries
+        // Fallback to direct call if cache fails
+        $allPermission = Cache::remember('cms_permissions_boot', 3600, function () {
+            return $this->getPermission();
+        });
+
+        // Fallback if cache returns null
+        if ($allPermission === null) {
+            $allPermission = $this->getPermission();
+        }
 
         if ($allPermission != null) {
 
@@ -42,7 +52,7 @@ class AdminServiceProvider extends ServiceProvider
         //Only For Admin
         $theme = config('hashtagcmsadmin.cmsInfo.theme');
 
-        View::composer($theme.'.common.*', CmsModuleComposer::class);
+        View::composer($theme . '.common.*', CmsModuleComposer::class);
     }
 
     /**

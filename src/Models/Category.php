@@ -238,8 +238,17 @@ class Category extends AdminBaseModel
             ['categories.link_rewrite', '=', $link_rewrite],
         ];
 
+        $now = now();
         $data = DB::table('category_site')
             ->where($where)
+            ->where(function ($q) use ($now) {
+                $q->whereNull('categories.publish_at')
+                  ->orWhere('categories.publish_at', '<=', $now);
+            })
+            ->where(function ($q) use ($now) {
+                $q->whereNull('categories.expire_at')
+                  ->orWhere('categories.expire_at', '>=', $now);
+            })
             ->join('categories', 'categories.id', '=', 'category_site.category_id')
             ->join('category_langs', 'category_langs.category_id', '=', 'category_site.category_id')
             ->select('category_site.*', 'categories.*', 'category_langs.*')

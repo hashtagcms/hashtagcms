@@ -60,27 +60,29 @@ class ServiceModuleLoader extends Results implements ModuleLoaderServiceImp
 
         try {
 
+            $timeout = config('hashtagcms.external_service_timeout', 60);
+
             switch (strtolower($method_type)) {
                 case 'get':
                     if ($contentType === 'text') {
-                        $data = Http::withHeaders($headers)->get($url, $arguments)->body();
+                        $data = Http::withHeaders($headers)->timeout($timeout)->get($url, $arguments)->body();
                     } else {
-                        $data = Http::withHeaders($headers)->get($url, $arguments)->json();
+                        $data = Http::withHeaders($headers)->timeout($timeout)->get($url, $arguments)->json();
                     }
                     break;
                 case 'post':
                     if ($contentType === 'text') {
-                        $data = Http::withHeaders($headers)->post($url, $arguments)->body();
+                        $data = Http::withHeaders($headers)->timeout($timeout)->post($url, $arguments)->body();
                     } else {
-                        $data = Http::withHeaders($headers)->post($url, $arguments)->json();
+                        $data = Http::withHeaders($headers)->timeout($timeout)->post($url, $arguments)->json();
                     }
 
                     break;
             }
 
         } catch (\Exception $exception) {
-            $err = 'Error: getServiceModule '.$exception->getMessage();
-            info('Error: getServiceModule '.$exception->getMessage());
+            $err = 'Error: getServiceModule ' . $exception->getMessage();
+            info('Error: getServiceModule ' . $exception->getMessage());
             $data = [];
             $this->foundError = true;
             $this->errorMessage = $exception->getMessage();

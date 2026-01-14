@@ -5,6 +5,7 @@ namespace HashtagCms\Models;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
+use HashtagCms\Events\CopyLangData;
 
 class Lang extends AdminBaseModel
 {
@@ -20,6 +21,7 @@ class Lang extends AdminBaseModel
         return $this->belongsToMany(Site::class);
     }
 
+
     /**
      * Insert Lang in all tables
      *
@@ -34,45 +36,45 @@ class Lang extends AdminBaseModel
 
         $newLangId = $id;
 
-        $tables = DB::select('SHOW TABLES');
+        $tableNames = self::getTables();
 
         $lang = Lang::first(); // @todo: should fetch default site language
 
-        foreach ($tables as $key => $tables) {
+        foreach ($tableNames as $table_name) {
 
-            foreach ($tables as $tKey => $table_name) {
+            if (Str::endsWith($table_name, '_langs')) {
 
-                if (Str::endsWith($table_name, '_langs')) {
+                $where = [['lang_id', '=', $lang->id]]; //get first lang
 
-                    $where = [['lang_id', '=', $lang->id]]; //get first lang
+                //fetched default lang
+                $fetchedData = DB::table($table_name)->where($where)->get()->toArray();
 
-                    //fetched default lang
-                    $fetchedData = DB::table($table_name)->where($where)->get()->toArray();
+                $toBeInsertedData = [];
 
-                    $toBeInsertedData = [];
-
-                    if (count($fetchedData) > 0) {
-                        //$fetchedData = json_decode(json_encode($fetchedData), true);
-                        foreach ($fetchedData as $currentData) {
-                            $currentData->lang_id = $newLangId;
-                            // in case there is any primary key in lang table
-                            if (isset($currentData->id)) {
-                                unset($currentData->id); //remove primary key
-                            }
-                            $toBeInsertedData[] = (array) $currentData;
+                if (count($fetchedData) > 0) {
+                    //$fetchedData = json_decode(json_encode($fetchedData), true);
+                    foreach ($fetchedData as $currentData) {
+                        $currentData->lang_id = $newLangId;
+                        // in case there is any primary key in lang table
+                        if (isset($currentData->id)) {
+                            unset($currentData->id); //remove primary key
                         }
-
-                        if (count($toBeInsertedData) > 0) {
-
-                            DB::table($table_name)->insert($toBeInsertedData);
-
+                        if (isset($currentData->_id)) {
+                            unset($currentData->_id); //remove mongo primary key
                         }
+                        $toBeInsertedData[] = (array) $currentData;
+                    }
+
+                    if (count($toBeInsertedData) > 0) {
+
+                        DB::table($table_name)->insert($toBeInsertedData);
 
                     }
 
                 }
 
             }
+
         }
 
     }
@@ -82,22 +84,39 @@ class Lang extends AdminBaseModel
      *
      * @return array
      */
-    public function copyLangData($sourceLangId = null, $targetLangId = null, $tables = [])
+    public function copyLangData($sourceLangId = null, $targetLangId = null, $tables = [], $isQueue = false)
     {
+
+        if ($isQueue) {
+            event(new CopyLangData($sourceLangId, $targetLangId, $tables));
+
+            return [['table' => 'Queue', 'status' => 1, 'message' => 'Process has been added in the queue.']];
+        }
 
         $data = [];
         foreach ($tables as $table) {
-            $rows = DB::select("select * from $table where lang_id=:lang_id", ['lang_id' => $sourceLangId]);
-            $targetRows = DB::select("select * from $table where lang_id=:lang_id", ['lang_id' => $targetLangId]);
-            if ($targetRows->count() == 0) {
+            $rows = DB::table($table)->where('lang_id', $sourceLangId)->get();
+            $targetCount = DB::table($table)->where('lang_id', $targetLangId)->count();
+
+            if ($targetCount == 0) {
+                $insertData = [];
                 //manipulate data
                 foreach ($rows as $row) {
-                    $row->lang_id = $targetLangId;
-                    $row->created_at = date('Y-m-d H:is');
-                    $row->updated_at = date('Y-m-d H:is');
+                    $item = (array) $row;
+                    $item['lang_id'] = $targetLangId;
+                    $item['created_at'] = date('Y-m-d H:i:s');
+                    $item['updated_at'] = date('Y-m-d H:i:s');
+                    if (isset($item['id'])) {
+                        unset($item['id']);
+                    }
+                    if (isset($item['_id'])) {
+                        unset($item['_id']);
+                    }
+
+                    $insertData[] = $item;
                 }
 
-                $status = $this->rawInsert($table, $rows);
+                $status = $this->rawInsert($table, $insertData);
                 $msg = ($status == 0) ? 'There is some error while copying content.' : "$table has been copied.";
             } else {
                 $status = 0;
@@ -111,22 +130,37 @@ class Lang extends AdminBaseModel
     }
 
     /**
+     * Get only language tables (ending with _langs)
+     *
+     * @return array
+     */
+    public static function getOnlyLangTables()
+    {
+        $allTables = self::getTables();
+        $langTables = [];
+        foreach ($allTables as $table) {
+            if (Str::endsWith($table, '_langs')) {
+                $langTables[] = $table;
+            }
+        }
+        return $langTables;
+    }
+
+    /**
      * Get all language tables
      *
      * @return array
      */
     public static function getAllLangTables()
     {
-        $tables = DB::select('SHOW TABLES');
+        $rawTables = self::getTables();
         $arr = [];
-        foreach ($tables as $key => $table) {
-            foreach ($table as $key => $value) {
-                if (! Str::endsWith($value, '_langs')) {
-                    $table = $value;
-                    $langTable = Str::singular($value).'_langs';
-                    if (Schema::hasTable($langTable)) {
-                        $arr[] = ['name' => $langTable, 'baseTable' => $table];
-                    }
+        foreach ($rawTables as $value) {
+            if (!Str::endsWith($value, '_langs')) {
+                $table = $value;
+                $langTable = Str::singular($value) . '_langs';
+                if (Schema::hasTable($langTable)) {
+                    $arr[] = ['name' => $langTable, 'baseTable' => $table];
                 }
             }
         }

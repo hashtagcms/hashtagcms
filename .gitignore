@@ -18,6 +18,7 @@ yarn-error.log
 .DS_Store
 dump.rdb
 /v8-compile-cache-0
-/docs
 .scannerwork
 .scannerwork/
+/summaries
+/old-resources

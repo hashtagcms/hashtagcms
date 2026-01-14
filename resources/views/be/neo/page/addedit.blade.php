@@ -22,6 +22,8 @@
         $content_type = old("content_type", $defaultContentType ?? "");
         $publish_status = old("publish_status");
         $enable_comments = old("enable_comments");
+        $publish_at = old("publish_at");
+        $expire_at = old("expire_at");
 
 
         $attachment = old("attachment");
@@ -401,6 +403,24 @@
                                 {!! FormHelper::input('text', 'content_source', $content_source, array('class'=>'form-control')) !!}
                             </div>
                         </div>
+
+                        <div class="form-group row">
+                            <div class="col-sm-2">
+                                {!!  FormHelper::label('publish_at', 'Publish Date') !!}
+                            </div>
+                            <div class="col-sm-10">
+                                {!! FormHelper::input('datetime-local', 'publish_at', $publish_at, array('class'=>'form-control')) !!}
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-sm-2">
+                                {!!  FormHelper::label('expire_at', 'Expire Date') !!}
+                            </div>
+                            <div class="col-sm-10">
+                                {!! FormHelper::input('datetime-local', 'expire_at', $expire_at, array('class'=>'form-control')) !!}
+                            </div>
+                        </div>
+
                         <div class="form-group row">
                             <div class="col-sm-2">
                                 {!!  FormHelper::label('enable_comments', 'Enable Comments') !!}
@@ -425,7 +445,7 @@
                             <div class="col-sm-10">
                                 {!! FormHelper::checkbox('publish_status', $publish_status) !!}
                             </div>
-                        </div>
+                        </div>                        
                     </fieldset>
                 </div>
                 <div class="row">

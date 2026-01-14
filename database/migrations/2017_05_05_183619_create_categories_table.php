@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      *
@@ -42,11 +41,18 @@ return new class extends Migration
 
             $table->tinyInteger('publish_status')->nullable()->default(0);
             $table->bigInteger('read_count')->nullable()->default(0);
+            
+            $table->timestamp('publish_at')->nullable()->comment('Start displaying content');
+            $table->timestamp('expire_at')->nullable()->comment('Stop displaying content');
 
             $table->timestamps();
             $table->softDeletes();
-
         });
+
+        //auto increment
+        if (config('database.default') !== 'sqlite') {
+            DB::statement("ALTER TABLE categories AUTO_INCREMENT = 5000");
+        }
 
         //Language
         Schema::create('category_langs', function (Blueprint $table) {

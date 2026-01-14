@@ -1,6 +1,6 @@
 {
   "name": "hashtagcms",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Hashtag CMS, Use it as Headless CMS or Bundled, API enabled, Admin Panel, Multisite, Multi-platform, Multilingual.",
   "main": "app.js",
   "directories": {
@@ -24,24 +24,25 @@
   "homepage": "https://github.com/hashtagcms/hashtagcms#readme",
   "scripts": {
     "dev": "webpack --mode development --watch",
+    "dev:build": "webpack --mode development",
     "build": "webpack --mode production",
     "dev:fe": "cross-env MODE=fe webpack --mode development --watch",
     "dev:be": "cross-env MODE=be webpack --mode development --watch",
     "build:fe": "cross-env MODE=fe webpack --mode production",
-    "build:be": "cross-env MODE=be webpack --mode production"
-  },
+    "build:be": "cross-env MODE=be webpack --mode production",
+    "dev:kit": "cross-env MODE=both webpack --mode development && cp -r public/assets/ ../packages-testing/public/assets/hashtagcms/"
+  }, 
   "dependencies": {
+    "@hashtagcms/jskit": "^1.0.4",
+    "@hashtagcms/themes": "^1.0.2",
     "axios": "^1.8.4",
     "bootstrap": "^5.3.3",
     "font-awesome": "^4.7.0",
-    "fs": "^0.0.1-security",
     "mitt": "^3.0.1",
     "motion": "^12.6.2",
-    "path": "^0.12.7",
     "pluralize": "^8.0.0",
     "secure-ls": "^2.0.0",
     "sortablejs": "^1.15.6",
-    "uglify-js": "^3.19.3",
     "vue": "^3.5.13"
   },
   "devDependencies": {
@@ -51,7 +52,6 @@
     "autoprefixer": "^10.4.21",
     "babel-loader": "^10.0.0",
     "case-sensitive-paths-webpack-plugin": "^2.4.0",
-    "clean-webpack-plugin": "^4.0.0",
     "copy-webpack-plugin": "^13.0.0",
     "cross-env": "^7.0.3",
     "css-loader": "^7.1.2",

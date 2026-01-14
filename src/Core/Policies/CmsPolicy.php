@@ -2,106 +2,107 @@
 
 namespace HashtagCms\Core\Policies;
 
-use Gate;
-use Illuminate\Auth\Access\HandlesAuthorization;
 use HashtagCms\Models\CmsPermission;
+use HashtagCms\Models\User;
 
-class CmsPolicy
+/**
+ * Class CmsPolicy
+ *
+ * Policy for checking user permissions on CMS modules.
+ *
+ * This policy verifies:
+ * 1. User has access to the module (via cms_permissions table)
+ * 2. User's role has the required permission (read, edit, delete, etc.)
+ *
+ * Note: SuperAdmins bypass all checks via the before() method (inherited from BaseCmsPolicy).
+ * Note: The 'readonly' flag is checked in Viewer::checkPolicy(), not here.
+ *       readonly=1 only blocks 'edit' operations, not delete/publish/approve.
+ *
+ * @package HashtagCms\Core\Policies
+ */
+class CmsPolicy extends BaseCmsPolicy
 {
-    use HandlesAuthorization;
-
     /**
-     * Determine whether the user can view.
+     * Determine whether the user can view the module.
      *
-     * @param  \HashtagCms\User  $user
-     * @param  \HashtagCms\Models\CmsPermission  $crayonPermission
-     * @return mixed
-     */
-    public function before($user)
-    {
-
-        if ($user->isSuperAdmin()) {
-            return true;
-        }
-
-    }
-
-    /**
-     * Determine whether the user can view.
+     * Checks if the user has access to the module and has 'read' permission via their role.
      *
-     * @param  \HashtagCms\User  $user
-     * @return mixed
-     */
-    public function view($user, CmsPermission $crayonPermission)
-    {
-
-        //info("CmsPolicy::view ".$user->id == $crayonPermission->user_id);
-        return ($user->id == $crayonPermission->user_id) && ($this->hasPermissionTo('read') == true);
-
-    }
-
-    /**
-     * Determine whether the user can create.
-     *
-     * @param  \HashtagCms\User  $user
-     * @return mixed
-     */
-    public function create($user, CmsPermission $crayonPermission)
-    {
-        return ($user->id == $crayonPermission->user_id) && ($this->hasPermissionTo('edit') == true);
-    }
-
-    /**
-     * Determine whether the user can update.
-     *
-     * @param  \HashtagCms\User  $user
-     * @return mixed
-     */
-    public function update($user, CmsPermission $crayonPermission)
-    {
-        return ($user->id == $crayonPermission->user_id) && ($this->hasPermissionTo('edit') == true);
-    }
-
-    /**
-     * Determine whether the user can delete.
-     *
-     * @param  \HashtagCms\User  $user
-     * @return mixed
-     */
-    public function delete($user, CmsPermission $crayonPermission)
-    {
-        return ($user->id == $crayonPermission->user_id) && ($this->hasPermissionTo('delete') == true);
-    }
-
-    /**
-     * Determine whether the user can publish
-     *
-     * @param  \HashtagCms\User  $user
-     * @return mixed
-     */
-    public function publish($user, CmsPermission $crayonPermission)
-    {
-        return ($user->id == $crayonPermission->user_id) && ($this->hasPermissionTo('publish') == true);
-    }
-
-    /**
-     * Determine whether the user can approve
-     *
-     * @param  \HashtagCms\User  $user
-     * @return mixed
-     */
-    public function approve($user, CmsPermission $crayonPermission)
-    {
-        return ($user->id == $crayonPermission->user_id) && ($this->hasPermissionTo('approve') == true);
-    }
-
-    /**
-     * Check permission
-     *
+     * @param  \HashtagCms\Models\User|null  $user
+     * @param  \HashtagCms\Models\CmsPermission|null  $permission
      * @return bool
      */
-    private function hasPermissionTo($permission)
+    public function view(?User $user, ?CmsPermission $permission): bool
     {
-        return Gate::allows($permission) == true;
+        return $this->canPerform($user, $permission, 'read');
+    }
+
+    /**
+     * Determine whether the user can create in the module.
+     *
+     * Checks if the user has access to the module and has 'edit' permission via their role.
+     *
+     * @param  \HashtagCms\Models\User|null  $user
+     * @param  \HashtagCms\Models\CmsPermission|null  $permission
+     * @return bool
+     */
+    public function create(?User $user, ?CmsPermission $permission): bool
+    {
+        return $this->canPerform($user, $permission, 'edit');
+    }
+
+    /**
+     * Determine whether the user can update in the module.
+     *
+     * Checks if the user has access to the module and has 'edit' permission via their role.
+     *
+     * @param  \HashtagCms\Models\User|null  $user
+     * @param  \HashtagCms\Models\CmsPermission|null  $permission
+     * @return bool
+     */
+    public function update(?User $user, ?CmsPermission $permission): bool
+    {
+        return $this->canPerform($user, $permission, 'edit');
+    }
+
+    /**
+     * Determine whether the user can delete in the module.
+     *
+     * Checks if the user has access to the module and has 'delete' permission via their role.
+     *
+     * @param  \HashtagCms\Models\User|null  $user
+     * @param  \HashtagCms\Models\CmsPermission|null  $permission
+     * @return bool
+     */
+    public function delete(?User $user, ?CmsPermission $permission): bool
+    {
+        return $this->canPerform($user, $permission, 'delete');
+    }
+
+    /**
+     * Determine whether the user can publish in the module.
+     *
+     * Checks if the user has access to the module and has 'publish' permission via their role.
+     *
+     * @param  \HashtagCms\Models\User|null  $user
+     * @param  \HashtagCms\Models\CmsPermission|null  $permission
+     * @return bool
+     */
+    public function publish(?User $user, ?CmsPermission $permission): bool
+    {
+        return $this->canPerform($user, $permission, 'publish');
+    }
+
+    /**
+     * Determine whether the user can approve in the module.
+     *
+     * Checks if the user has access to the module and has 'approve' permission via their role.
+     *
+     * @param  \HashtagCms\Models\User|null  $user
+     * @param  \HashtagCms\Models\CmsPermission|null  $permission
+     * @return bool
+     */
+    public function approve(?User $user, ?CmsPermission $permission): bool
+    {
+        return $this->canPerform($user, $permission, 'approve');
     }
 }

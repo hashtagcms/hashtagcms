@@ -9,8 +9,8 @@ use Illuminate\Support\Str;
 use HashtagCms\Facades\HashtagCms;
 
 if (HashtagCms::isInstallationRoutesEnabled()) {
-    Route::get('/install', config('hashtagcms.namespace')."Http\Controllers\Installer\InstallController@index");
-    Route::post('/install/save', config('hashtagcms.namespace')."Http\Controllers\Installer\InstallController@save");
+    Route::get('/install', config('hashtagcms.namespace') . "Http\Controllers\Installer\InstallController@index");
+    Route::post('/install/save', config('hashtagcms.namespace') . "Http\Controllers\Installer\InstallController@save");
 }
 // Get configuration values once outside the route to avoid calling on each request
 $namespace = config('hashtagcms.namespace');
@@ -25,10 +25,11 @@ Route::prefix('admin')->group(function () use ($namespace, $appNamespace, $defau
         $controller = ($controller === '') ? $defaultPage : $controller;
 
         $methodType = $request->method();
+
         //Hashtag Controller
-        $callable = $namespace."Http\Controllers\\Admin\\".str_replace('-', '', Str::title($controller)).'Controller';
+        $callable = $namespace . "Http\Controllers\\Admin\\" . str_replace('-', '', Str::title($controller)) . 'Controller';
         //App Controller
-        $callableApp = $appNamespace."Http\Controllers\\Admin\\".str_replace('-', '', Str::title($controller)).'Controller';
+        $callableApp = $appNamespace . "Http\Controllers\\Admin\\" . str_replace('-', '', Str::title($controller)) . 'Controller';
 
         $controllerName = class_exists($callableApp) ? $callableApp : $callable;
 
@@ -36,7 +37,7 @@ Route::prefix('admin')->group(function () use ($namespace, $appNamespace, $defau
 
             $method = ($method === '' && $methodType === 'GET') ? 'index' : $method;
 
-            $callable = $controllerName.'@'.$method;
+            $callable = $controllerName . '@' . $method;
             $values = explode('/', $params);
             $ref = new ReflectionMethod($controllerName, $method);
             $params = $ref->getParameters();
@@ -147,5 +148,22 @@ if (HashtagCms::isRoutesEnabled()) {
 
     })->where('all', HashtagCms::getIgnoredPath())->middleware(['web', 'interceptor']);
     //Keep some original routes
-    Auth::routes();
+    //Auth::routes();
+
+    // Authentication Routes...
+    Route::get('login', 'App\Http\Controllers\LoginController@index')->name('login');
+    Route::post('login', 'App\Http\Controllers\LoginController@index');
+    Route::post('logout', 'App\Http\Controllers\LoginController@logout')->name('logout');
+
+    // Registration Routes...
+    if (Route::has('register')) {
+        Route::get('register', 'App\Http\Controllers\RegisterController@index')->name('register');
+        Route::post('register', 'App\Http\Controllers\RegisterController@register');
+    }
+
+    // Password Reset Routes...
+    Route::get('password/reset', 'App\Http\Controllers\PasswordController@index')->name('password.request');
+    Route::post('password/email', 'App\Http\Controllers\PasswordController@email')->name('password.email');
+    Route::get('password/reset/{token}', 'App\Http\Controllers\PasswordController@reset')->name('password.reset');
+    Route::post('password/reset', 'App\Http\Controllers\PasswordController@update')->name('password.update');
 }

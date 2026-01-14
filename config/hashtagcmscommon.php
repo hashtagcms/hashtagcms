@@ -1,5 +1,6 @@
 <?php
 
+$packageJson = json_decode(file_get_contents(__DIR__.'/../package.json'), true);
 return [
-    'version' => '1.5.2',
+    'version' => $packageJson['version'] ?? '2.x.x',
 ];

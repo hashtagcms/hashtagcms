@@ -2,7 +2,7 @@ const path = require('path');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const { VueLoaderPlugin } = require('vue-loader');
-const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+
 
 const autoprefixer = require('autoprefixer');
 const cssnano = require('cssnano');
@@ -17,11 +17,11 @@ let package_dir = "";
 function makeArrays(themes, resourceDir, targetDir) {
     let entries = {};
     let copies = [];
-    for(let i=0; i<themes.length; i++) {
+    for (let i = 0; i < themes.length; i++) {
         let current = themes[i];
         let theme = current.theme.source;
         let assets = current.assets;
-        for(let k in assets) {
+        for (let k in assets) {
             let type = assets[k]["type"];
             let currentKeyNode = assets[k];
             switch (type) {
@@ -30,38 +30,43 @@ function makeArrays(themes, resourceDir, targetDir) {
                     entries[`${targetDir}/${theme}/${currentKeyNode.target}`] = `./${resourceDir}/${theme}/${currentKeyNode.source}`;
                     break;
                 case "copy":
-                    copies.push({ from: `${resourceDir}/${theme}/${currentKeyNode.source}`, to: `${targetDir}/${theme}/${currentKeyNode.target}` });
+                    if (fs.existsSync(`${resourceDir}/${theme}/${currentKeyNode.source}`)) {
+                        copies.push({
+                            from: `${resourceDir}/${theme}/${currentKeyNode.source}`,
+                            to: `${targetDir}/${theme}/${currentKeyNode.target}`,
+                            noErrorOnMissing: true
+                        });
+                    }
                     break;
 
             }
         }
     }
-    return {entries, copies};
+    return { entries, copies };
 }
 
 let themesForFrontend = [
     {
-        theme:{source:'basic', type:'theme'}, //folder
+        theme: { source: 'basic', type: 'theme' }, //folder
         assets: [
-            {source:'js/app.js', target:'js/app', type:'js'},
-            {source:'sass/app.scss', target:'css/app', type:'css'},
-            {source:'img', target:'img', type:'copy'},
-            {source:'fonts', target:'fonts', type:'copy'}
+            { source: 'js/app.js', target: 'js/app', type: 'js' },
+            { source: 'sass/app.scss', target: 'css/app', type: 'css' },
+            { source: 'img', target: 'img', type: 'copy' },
+            { source: 'fonts', target: 'fonts', type: 'copy' }
         ]
     }
 ];
 
 let themesForBackend = [
     {
-        theme:{source:'neo', type:'theme'}, //folder
+        theme: { source: 'neo', type: 'theme' }, //folder
         assets: [
-            {source:'js/app.js', target:'js/app', type:'js'},
-            {source:'js/dashboard.js', target:'js/dashboard', type:'js'},
-            {source:'js/error-handler.js', target:'js/error-handler', type:'js'},
-            {source:'js/editor.js', target:'js/editor', type:'js'},
-            {source:'sass/app.scss', target:'css/app', type:'css'},
-            {source:'../common/js/vendors', target:'js/vendors', type:'copy'},
-            {source:'img', target:'img', type:'copy'}
+            { source: 'js/app.js', target: 'js/app', type: 'js' },
+            { source: 'js/dashboard.js', target: 'js/dashboard', type: 'js' },
+            { source: 'js/error-handler.js', target: 'js/error-handler', type: 'js' },
+            { source: 'js/editor.js', target: 'js/editor', type: 'js' },
+            { source: 'sass/app.scss', target: 'css/app', type: 'css' },
+            { source: 'img', target: 'img', type: 'copy' }
         ]
     }
 ];
@@ -69,7 +74,7 @@ let themesForBackend = [
 
 
 let toBeBuildF = makeArrays(themesForFrontend, `resources/assets${package_dir}/fe`, `public/assets${package_dir}/fe`);
-let toBeBuildB =  makeArrays(themesForBackend, `resources/assets${package_dir}/be`, `public/assets${package_dir}/be`);
+let toBeBuildB = makeArrays(themesForBackend, `resources/assets${package_dir}/be`, `public/assets${package_dir}/be`);
 //add installer
 toBeBuildB.entries[`public/assets/installer/js/installer`] = `./resources/assets${package_dir}/js/installer.js`;
 
@@ -81,13 +86,13 @@ if (mode === 'fe') {
     console.log("Building Frontend...");
     buildEntries = toBeBuildF.entries;
     buildCopies = toBeBuildF.copies;
-} else if(mode === 'be') {
+} else if (mode === 'be') {
     console.log("Building Backend...");
     buildEntries = toBeBuildB.entries;
     buildCopies = toBeBuildB.copies;
 } else {
     console.log("Building Everything...");
-    buildEntries = {...toBeBuildB.entries, ...toBeBuildF.entries};
+    buildEntries = { ...toBeBuildB.entries, ...toBeBuildF.entries };
     buildCopies = [...toBeBuildB.copies, ...toBeBuildF.copies];
 }
 console.log(buildEntries);
@@ -116,22 +121,29 @@ module.exports = {
                 use: 'babel-loader'
             },
             {
+                test: /\.css$/i,
+                use: [
+                    MiniCssExtractPlugin.loader,
+                    { loader: "css-loader", options: { url: false, importLoaders: 1 } },
+                    { loader: 'postcss-loader', options: { postcssOptions: { plugins: [autoprefixer(), cssnano()], }, } },
+                ],
+            },
+            {
                 test: /\.s[ac]ss$/i,
                 use: [
-                    'vue-style-loader',
                     MiniCssExtractPlugin.loader,
                     // Load the CSS, set url = false to prevent following urls to fonts and images.
                     { loader: "css-loader", options: { url: false, importLoaders: 1 } },
                     // Add browser prefixes and minify CSS.
-                    { loader: 'postcss-loader', options: { postcssOptions: { plugins: [autoprefixer(), cssnano()], }, }},
+                    { loader: 'postcss-loader', options: { postcssOptions: { plugins: [autoprefixer(), cssnano()], }, } },
                     // Load the SCSS/SASS
-                    { loader: 'sass-loader'}
+                    { loader: 'sass-loader' }
                 ],
             }
         ]
     },
     plugins: [
-        //new CleanWebpackPlugin(),
+
         new CaseSensitivePathsPlugin(),
         new VueLoaderPlugin(),
         new MiniCssExtractPlugin({
@@ -151,8 +163,9 @@ module.exports = {
     ],
     resolve: {
         alias: {
-            vue: 'vue/dist/vue.esm-bundler.js',
+            vue: path.resolve(__dirname, 'node_modules/vue/dist/vue.esm-bundler.js'),
         },
-        extensions: ['.js', '.vue']
+        extensions: ['.js', '.vue'],
+        symlinks: false
     },
 };

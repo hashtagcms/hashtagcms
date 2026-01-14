@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      *
@@ -22,8 +21,12 @@ return new class extends Migration
             $table->string('alias', 60);
             $table->timestamps();
             $table->softDeletes();
-
         });
+
+        //auto increment
+        if (config('database.default') !== 'sqlite') {
+            DB::statement("ALTER TABLE static_module_contents AUTO_INCREMENT = 5000");
+        }
 
         //Language
         Schema::create('static_module_content_langs', function (Blueprint $table) {

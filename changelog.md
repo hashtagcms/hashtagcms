@@ -1,10 +1,5 @@
 # Changelog
 
-#v2.0.0
-- Package Renamed: The package has been renamed from `marghoobsuleman/hashtagcms` to `hashtagcms/hashtagcms`.
-- Breaking Change: You must update your `composer.json` to require `hashtagcms/hashtagcms`.
-- Documentation: Updated readme, contributing guide, and internal links to reflect the new repository location.
-
 #v1.5.2 Changes
 - General: When you edit a new site in the backend, the frontend breaks in the same browser due to a global scope issue. Fixed.
 
@@ -158,7 +153,7 @@ The `--update-domain` flag ensures that the domain field in the sites table is u
 - Added test cases
 ```bash
 php artisan config:cache 
-php artisan test vendor/marghoobsuleman/hashtagcms
+php artisan test vendor/hashtagcms/hashtagcms
 ```
 
 #v1.3.4 Changes

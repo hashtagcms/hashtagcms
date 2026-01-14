@@ -1,4 +1,9 @@
-
+// Variables
 @import "./variables";
+
+
+// Bootstrap (if needed by your local overrides, otherwise package might include it or expect it)
 @import "~bootstrap/scss/bootstrap";
-@import "admin";
+
+// Import HashtagCMS JS Kit Styles (Source)
+@import "~@hashtagcms/jskit/packages/styles/src/app";

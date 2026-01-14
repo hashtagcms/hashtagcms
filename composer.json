@@ -14,7 +14,6 @@
     "require": {
         "guzzlehttp/guzzle": "^7.9",
         "laravel/sanctum": "^4.0",
-        "laravel/ui": "^4.6",
         "usmanhalalit/laracsv": "^2.1"
     },
     "php": "^8.2",

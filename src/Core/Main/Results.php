@@ -3,7 +3,7 @@
 namespace HashtagCms\Core\Main;
 
 use Illuminate\Support\Facades\DB;
-
+use HashtagCms\Core\Utils\SmartQuery;
 /**
  * Using session for now
  */
@@ -32,9 +32,34 @@ class Results
 
         $select = ($selectOne === true) ? 'selectOne' : 'select';
 
-        /*info("======================== query ============= ");
-        info(json_encode($query));
-        info(json_encode($queryParams));*/
+        // ---------------------------------------------------------
+        // SmartQuery Support (JSON / MongoDB)
+        // ---------------------------------------------------------
+        // Try to execute as SmartQuery (JSON). If it returns non-null, use it.
+        if (htcms_admin_config('json_query_in_query_module', false) === true) {
+            try {
+                // Need to pass replacements. SmartQuery expects keys without colon in replacements if defined that way,
+                // but findAndReplaceGlobalIds returns ['site_id' => 1].
+                // SmartQuery logic handles ':site_id' mapping if needed.
+                $smartResult = SmartQuery::execute($query, $queryParams);
+
+                if ($smartResult !== null) {
+                    if ($selectOne === true) {
+                        $result = $smartResult->first();
+                    } else {
+                        $result = $smartResult; // Collection
+                    }
+                    return $this->makeArray($result);
+                }
+            } catch (\Exception $e) {
+                // If SmartQuery fails (e.g. invalid JSON), ignore and fall back to SQL
+                // info("SmartQuery fallback: " . $e->getMessage());
+            }
+        }
+        // ---------------------------------------------------------
+
+
+
         try {
             if ($database === null) {
                 if (count($queryParams) > 0) {
@@ -51,7 +76,7 @@ class Results
             }
 
         } catch (\Exception $e) {
-            info('dbSelect: There is an error: '.$e->getMessage());
+            info('dbSelect: There is an error: ' . $e->getMessage());
 
             return [];
         }

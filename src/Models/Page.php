@@ -99,6 +99,16 @@ class Page extends AdminBaseModel
             $query = $query->whereIn('categories.link_rewrite', $link_rewrite);
         }
 
+        // Add scheduling Logic
+        $now = now();
+        $query->where(function ($q) use ($now) {
+            $q->whereNull('pages.publish_at')
+              ->orWhere('pages.publish_at', '<=', $now);
+        })->where(function ($q) use ($now) {
+            $q->whereNull('pages.expire_at')
+              ->orWhere('pages.expire_at', '>=', $now);
+        });
+
         $results = $query->where($where)->orderBy('pages.created_at', 'DESC')->paginate($limit);
 
         if (count($results) > 0) {

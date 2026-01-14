@@ -6,6 +6,7 @@ use Illuminate\Support\Str;
 use HashtagCms\Core\Utils\InfoKeys;
 use HashtagCms\Models\Module;
 use HashtagCms\Models\ModuleProp;
+use HashtagCms\Events\ModuleLoaded;
 
 /**
  * Class ModuleLoader
@@ -43,19 +44,19 @@ class ModuleLoader
     {
         $moduleHeaderJson = $module->headers;
         $headerJson = [];
-        if (! empty($moduleHeaderJson)) {
+        if (!empty($moduleHeaderJson)) {
             try {
                 $headerJson = json_decode($moduleHeaderJson, true);
-                if (! empty($headerJson)) {
+                if (!empty($headerJson)) {
                     foreach ($headerJson as $key => $value) {
                         $headerJson[$key] = ($value === '') ? request()->headers->get($key) : $value;
                     }
                 } else {
-                    info('Unable to parse header json for the module name: '.$module->name.', alias: '.$module->alias);
+                    info('Unable to parse header json for the module name: ' . $module->name . ', alias: ' . $module->alias);
                     $headerJson = [];
                 }
             } catch (\Exception $exception) {
-                info('Invalid header json for the module name: '.$module->name.', alias: '.$module->alias);
+                info('Invalid header json for the module name: ' . $module->name . ', alias: ' . $module->alias);
                 $headerJson = [];
             }
         }
@@ -166,7 +167,38 @@ class ModuleLoader
      */
     public function getCustomModule(mixed $module): ?array
     {
-        return [];
+        $handler = $module->data_handler;
+        $data = [];
+        try {
+            if (strpos($handler, '@') !== false) {
+                list($class, $method) = explode('@', $handler);
+                if (class_exists($class)) {
+                    $instance = app($class);
+                    if (method_exists($instance, $method)) {
+                        // Pass module info and params
+                        $params = $module->service_params;
+                        $args = [];
+                        if ($params) {
+                            parse_str($params, $args);
+                        }
+                        // Call the method
+                        $data = $instance->{$method}($module, $args);
+                        // Ensure array return
+                        $data = (is_array($data)) ? $data : json_decode(json_encode($data), true);
+                    } else {
+                        info("ModuleLoader: Method $method not found in $class");
+                    }
+                } else {
+                    info("ModuleLoader: Class $class not found");
+                }
+            } else {
+                info("ModuleLoader: Invalid handler format. Expected Class@method");
+            }
+        } catch (\Exception $e) {
+            info("ModuleLoader: Error executing custom module: " . $e->getMessage());
+        }
+
+        return $data;
     }
 
     public function getServiceLaterModule(mixed $module): ?array
@@ -185,7 +217,7 @@ class ModuleLoader
         $dataType = $module->data_type;
         $moduleType = "get{$dataType}Module";
         $appNamespace = app()->getNamespace();
-        $callableApp = $appNamespace."Parser\ModuleParser";
+        $callableApp = $appNamespace . "Parser\ModuleParser";
         if (class_exists($callableApp) && method_exists($callableApp, $moduleType)) {
             $moduleParser = new $callableApp;
             $data = $moduleParser->{$moduleType}($module);
@@ -211,7 +243,7 @@ class ModuleLoader
         $moduleTypeFn = Str::camel(strtolower($dataType));
 
         $appNamespace = app()->getNamespace();
-        $callableModifierApp = $appNamespace."Parser\ModuleDataModifier";
+        $callableModifierApp = $appNamespace . "Parser\ModuleDataModifier";
         if (class_exists($callableModifierApp) && method_exists($callableModifierApp, $moduleNameFn)) {
             $moduleModifier = new $callableModifierApp;
             $data = $moduleModifier->{$moduleNameFn}($data, $module_obj);
@@ -257,13 +289,13 @@ class ModuleLoader
                 info('=== Set this data for seo module === ');
                 //info(json_encode($forSeo));
                 $this->foundSeoModule = true;
-                $active_key = (isset($forSeo['active_key']) && ! empty($forSeo['active_key'])) ? $forSeo['active_key'] : null;
-                $page_link_rewrite = (isset($forSeo['link_rewrite']) && ! empty($forSeo['link_rewrite'])) ? $forSeo['link_rewrite'] : null;
-                $meta_title = (isset($forSeo['meta_title']) && ! empty($forSeo['meta_title'])) ? $forSeo['meta_title'] : null;
-                $meta_keywords = (isset($forSeo['meta_keywords']) && ! empty($forSeo['meta_keywords'])) ? $forSeo['meta_keywords'] : null;
-                $meta_description = (isset($forSeo['meta_description']) && ! empty($forSeo['meta_description'])) ? $forSeo['meta_description'] : null;
-                $meta_robots = (isset($forSeo['meta_robots']) && ! empty($forSeo['meta_robots'])) ? $forSeo['meta_robots'] : null;
-                $meta_canonical = (isset($forSeo['meta_canonical']) && ! empty($forSeo['meta_canonical'])) ? $forSeo['meta_canonical'] : null;
+                $active_key = (isset($forSeo['active_key']) && !empty($forSeo['active_key'])) ? $forSeo['active_key'] : null;
+                $page_link_rewrite = (isset($forSeo['link_rewrite']) && !empty($forSeo['link_rewrite'])) ? $forSeo['link_rewrite'] : null;
+                $meta_title = (isset($forSeo['meta_title']) && !empty($forSeo['meta_title'])) ? $forSeo['meta_title'] : null;
+                $meta_keywords = (isset($forSeo['meta_keywords']) && !empty($forSeo['meta_keywords'])) ? $forSeo['meta_keywords'] : null;
+                $meta_description = (isset($forSeo['meta_description']) && !empty($forSeo['meta_description'])) ? $forSeo['meta_description'] : null;
+                $meta_robots = (isset($forSeo['meta_robots']) && !empty($forSeo['meta_robots'])) ? $forSeo['meta_robots'] : null;
+                $meta_canonical = (isset($forSeo['meta_canonical']) && !empty($forSeo['meta_canonical'])) ? $forSeo['meta_canonical'] : null;
 
                 $this->seoModuleInfo = [
                     'metaTitle' => $meta_title,
@@ -278,8 +310,8 @@ class ModuleLoader
                 ];
 
                 if (isset($forSeo['header_content'])) {
-                    $this->seoModuleInfo['headerContent'] = (isset($forSeo['header_content']) && ! empty($forSeo['header_content'])) ? $forSeo['header_content'] : '';
-                    $this->seoModuleInfo['footerContent'] = (isset($forSeo['footer_content']) && ! empty($forSeo['footer_content'])) ? $forSeo['footer_content'] : '';
+                    $this->seoModuleInfo['headerContent'] = (isset($forSeo['header_content']) && !empty($forSeo['header_content'])) ? $forSeo['header_content'] : '';
+                    $this->seoModuleInfo['footerContent'] = (isset($forSeo['footer_content']) && !empty($forSeo['footer_content'])) ? $forSeo['footer_content'] : '';
                 }
             }
         }
@@ -307,6 +339,13 @@ class ModuleLoader
             $this->setSharedModuleData($module_obj->alias, $data);
         }
 
+        try {
+            //Dispatch Event
+            ModuleLoaded::dispatch($module_obj, $data);
+        } catch (\Exception $e) {
+            info('ModuleLoaded Event Dispatch Error: ' . $e->getMessage());
+        }
+
         return $data;
     }
 
@@ -316,7 +355,7 @@ class ModuleLoader
     public function setSharedModuleData(string $alias, mixed $data): void
     {
         $infoLoader = app()->HashtagCms->infoLoader();
-        $alias = $alias.'_'.$infoLoader->getContextVars(InfoKeys::SITE_ID);
+        $alias = $alias . '_' . $infoLoader->getContextVars(InfoKeys::SITE_ID);
         $this->sharedModuleData[$alias] = $data;
     }
 
@@ -326,9 +365,9 @@ class ModuleLoader
     public function getSharedModuleData(string $alias): mixed
     {
         $infoLoader = app()->HashtagCms->infoLoader();
-        $alias = $alias.'_'.$infoLoader->getContextVars(InfoKeys::SITE_ID);
+        $alias = $alias . '_' . $infoLoader->getContextVars(InfoKeys::SITE_ID);
 
-        return (isset($this->sharedModuleData[$alias]) && ! empty($this->sharedModuleData[$alias])) ? $this->sharedModuleData[$alias] : null;
+        return (isset($this->sharedModuleData[$alias]) && !empty($this->sharedModuleData[$alias])) ? $this->sharedModuleData[$alias] : null;
     }
 
     /**

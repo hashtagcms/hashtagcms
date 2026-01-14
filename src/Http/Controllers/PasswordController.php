@@ -15,17 +15,17 @@ use Illuminate\Support\Str;
 class PasswordController extends FrontendBaseController
 {
     /*
-   |--------------------------------------------------------------------------
-   | Password Reset Controller
-   |--------------------------------------------------------------------------
-   |
-   | This controller is responsible for handling password reset requests
-   | and uses a simple trait to include this behavior. You're free to
-   | explore this trait and override any methods you wish to tweak.
-   |
-   */
-    use RedirectsUsers;
-    use SendsPasswordResetEmails;
+    |--------------------------------------------------------------------------
+    | Password Reset Controller
+    |--------------------------------------------------------------------------
+    |
+    | This controller is responsible for handling password reset requests
+    | and uses a simple trait to include this behavior. You're free to
+    | explore this trait and override any methods you wish to tweak.
+    |
+    */
+    // use RedirectsUsers;
+    // use SendsPasswordResetEmails;
 
     /**
      * Where to redirect users after resetting their password.
@@ -33,6 +33,79 @@ class PasswordController extends FrontendBaseController
      * @var string
      */
     protected $redirectTo = '/';
+
+    /**
+     * Get the post register / login redirect path.
+     *
+     * @return string
+     */
+    public function redirectPath()
+    {
+        if (method_exists($this, 'redirectTo')) {
+            return $this->redirectTo();
+        }
+
+        return property_exists($this, 'redirectTo') ? $this->redirectTo : '/home';
+    }
+
+    /**
+     * Send a reset link to the given user.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Http\JsonResponse
+     */
+    public function sendResetLinkEmail(Request $request)
+    {
+        $this->validateEmail($request);
+
+        // We will send the password reset link to this user. Once we have attempted
+        // to send the link, we will examine the response then see the message we
+        // need to show to the user. Finally, we'll send out a proper response.
+        $response = $this->broker()->sendResetLink(
+            $this->credentials($request)
+        );
+
+        return $response == Password::RESET_LINK_SENT
+            ? $this->sendResetLinkResponse($request, $response)
+            : $this->sendResetLinkFailedResponse($request, $response);
+    }
+
+    /**
+     * Validate the email for the given request.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return void
+     */
+    protected function validateEmail(Request $request)
+    {
+        $request->validate(['email' => 'required|email']);
+    }
+
+    /**
+     * Get the response for a successful password reset link.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  string  $response
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Http\JsonResponse
+     */
+    protected function sendResetLinkResponse(Request $request, $response)
+    {
+        return back()->with('status', trans($response));
+    }
+
+    /**
+     * Get the response for a failed password reset link.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  string  $response
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Http\JsonResponse
+     */
+    protected function sendResetLinkFailedResponse(Request $request, $response)
+    {
+        return back()
+            ->withInput($request->only('email'))
+            ->withErrors(['email' => trans($response)]);
+    }
 
     /**
      * Create a new controller instance.
@@ -119,7 +192,8 @@ class PasswordController extends FrontendBaseController
         // will update the password on an actual user model and persist it to the
         // database. Otherwise we will parse the error and return the response.
         $response = $this->broker()->reset(
-            $this->credentials($request), function ($user, $password) {
+            $this->credentials($request),
+            function ($user, $password) {
                 $this->resetPassword($user, $password);
             }
         );
@@ -168,7 +242,10 @@ class PasswordController extends FrontendBaseController
     protected function credentials(Request $request)
     {
         return $request->only(
-            'email', 'password', 'password_confirmation', 'token'
+            'email',
+            'password',
+            'password_confirmation',
+            'token'
         );
     }
 

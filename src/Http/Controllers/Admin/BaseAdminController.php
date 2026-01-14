@@ -21,15 +21,18 @@ class BaseAdminController extends BaseController
     public function __construct(Request $request)
     {
 
-        //Some session for layout
-        if (! Session::has('layout')) {
-            $request->session()->put('layout', 'table');
-        }
-        //if there is param in url
-        if ($request->get('layout')) {
-            $layoutType = ($request->get('layout') == 'grid') ? 'grid' : 'table';
-            $request->session()->put('layout', $layoutType);
-        }
+        $this->middleware(function ($request, $next) {
+            //Some session for layout
+            if (!Session::has('layout')) {
+                $request->session()->put('layout', 'table');
+            }
+            //if there is param in url
+            if ($request->get('layout')) {
+                $layoutType = ($request->get('layout') == 'grid') ? 'grid' : 'table';
+                $request->session()->put('layout', $layoutType);
+            }
+            return $next($request);
+        });
 
     }
 

@@ -50,6 +50,8 @@ trait BlogPageCommon
             'attachment' => 'nullable',
             'author' => 'nullable|max:255|string',
             'content_source' => 'nullable|max:255|string',
+            'publish_at' => 'nullable|date',
+            'expire_at' => 'nullable|date',
         ];
         if ($request->input('id') > 0) {
             $rules['link_rewrite'] = [
@@ -100,6 +102,8 @@ trait BlogPageCommon
         $saveData['required_login'] = $data['required_login'] ?? 0;
         $saveData['author'] = $data['author'];
         $saveData['content_source'] = $data['content_source'];
+        $saveData['publish_at'] = $data['publish_at'] ?? null;
+        $saveData['expire_at'] = $data['expire_at'] ?? null;
 
         $langData['name'] = $data['lang_name'];
         $langData['title'] = $data['lang_title'];

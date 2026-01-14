@@ -19,7 +19,7 @@ return [
     'hero_text_2' => '<p>
                         Use it as Headless CMS or Bundled. Choose your own frontend technology. This is API enabled for mobile app development too. This CMS has multi-tenant, multi-platform, multilingual support.
                         <br /><span class="text-info">What would you ask for more?</span> <br />The most powerful, fast,  user-friendly and secured platform.
-                        <br /> <a style="margin-top: 20px" class="btn btn-primary" href="https://github.com/hashtagcms/hashtagcms" target="_blank">Download from Github</a>
+                        <br /> <a style="margin-top: 20px" class="btn btn-primary" href="https://github.com/marghoobsuleman/hashtagcms" target="_blank">Download from Github</a>
                     </p>',
 
     'products_1' => 'Intuitive interface for managing modules',
@@ -49,7 +49,7 @@ return [
     "Yes, It's MIT license. You can ask for other license." => "Yes, It's MIT license. You can ask for other license.",
 
     'If there is any bug?' => 'If there is any bug?',
-    'bug_post' => "Sure, Dont' panic. It's natural. Please post on <a href='https://github.com/hashtagcms/hashtagcms/issues'>github forum</a>. We will fix as soon as possible.",
+    'bug_post' => "Sure, Dont' panic. It's natural. Please post on <a href='https://github.com/marghoobsuleman/hashtagcms/issues'>github forum</a>. We will fix as soon as possible.",
 
     'Professional Help?' => 'Professional Help?',
     'Of course, we provide professional consultants.' => 'Of course, we provide professional consultants.',

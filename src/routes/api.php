@@ -3,7 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-$callable = config('hashtagcms.namespace')."Http\Controllers\Api\\";
+$callable = config('hashtagcms.namespace') . "Http\Controllers\Api\\";
 
 /**
  * Health check
@@ -18,7 +18,7 @@ Route::middleware(['api'])->prefix('api/hashtagcms/public')->group(function () u
      * Registration: V1
      */
     Route::post('user/v1/register', function (Request $request) use ($callable) {
-        return app()->call($callable.'AuthController@register');
+        return app()->call($callable . 'AuthController@register');
     });
 
     /**
@@ -26,7 +26,7 @@ Route::middleware(['api'])->prefix('api/hashtagcms/public')->group(function () u
      */
     Route::post('user/v1/login', function (Request $request) use ($callable) {
         //return array("result"=>"okay");
-        return app()->call($callable.'AuthController@login');
+        return app()->call($callable . 'AuthController@login');
     });
 
     /**
@@ -34,7 +34,7 @@ Route::middleware(['api'])->prefix('api/hashtagcms/public')->group(function () u
      */
     Route::get('configs/v1/site-configs', function (Request $request) use ($callable) {
 
-        return app()->call($callable.'ServiceController@siteConfigs');
+        return app()->call($callable . 'ServiceController@siteConfigs');
 
     });
 
@@ -43,7 +43,7 @@ Route::middleware(['api'])->prefix('api/hashtagcms/public')->group(function () u
      */
     Route::get('sites/v1/load-data', function (Request $request) use ($callable) {
 
-        return app()->call($callable.'ServiceController@loadData');
+        return app()->call($callable . 'ServiceController@loadData');
 
     });
 
@@ -52,7 +52,7 @@ Route::middleware(['api'])->prefix('api/hashtagcms/public')->group(function () u
      */
     Route::get('sites/v1/load-data-mobile', function (Request $request) use ($callable) {
 
-        return app()->call($callable.'ServiceController@loadDataMobile');
+        return app()->call($callable . 'ServiceController@loadDataMobile');
 
     });
 
@@ -74,6 +74,71 @@ Route::middleware(['api'])->prefix('api/hashtagcms/public')->group(function () u
 
     });
 
+
+
+    /**
+     * Blog: Get Latests
+     */
+    Route::get('sites/v1/blog/latests', function (Request $request) use ($callable) {
+        return app()->call($callable . 'ServiceController@blogLatests');
+    });
+
+    /**
+     * Analytics: Publish
+     */
+    Route::post('kpi/v1/publish', function (Request $request) use ($callable) {
+        return app()->call($callable . 'Kpi\AnalyticsController@publish');
+    });
+
+    /**
+     * Contact: Submit
+     */
+    Route::post('common/v1/contact', function (Request $request) use ($callable) {
+        return app()->call($callable . 'CommonController@contact');
+    });
+
+    /**
+     * Subscribe: Submit
+     */
+    Route::post('common/v1/subscribe', function (Request $request) use ($callable) {
+        return app()->call($callable . 'CommonController@subscribe');
+    });
+
+    /**
+     * Cache: List Keys
+     */
+    Route::get('cache/v1/keys', function (Request $request) use ($callable) {
+        return app()->call($callable . 'CacheController@index');
+    });
+
+    /**
+     * Cache: Clear Site Config
+     */
+    Route::get('cache/v1/clear-site-config', function (Request $request) use ($callable) {
+        return app()->call($callable . 'CacheController@clearSiteConfig');
+    });
+
+    /**
+     * Cache: Clear Load Data
+     */
+    Route::get('cache/v1/clear-load-data', function (Request $request) use ($callable) {
+        return app()->call($callable . 'CacheController@clearLoadData');
+    });
+
+    /**
+     * Cache: Clear All
+     */
+    Route::get('cache/v1/clear-all', function (Request $request) use ($callable) {
+        return app()->call($callable . 'CacheController@clearAll');
+    });
+
+    /**
+     * Cache: Clear Key
+     */
+    Route::get('cache/v1/clear-key', function (Request $request) use ($callable) {
+        return app()->call($callable . 'CacheController@clearKey');
+    });
+
 });
 
 //Authentication
@@ -81,7 +146,17 @@ Route::middleware(['api', 'auth:sanctum'])->prefix('api/hashtagcms/user')->group
 
     Route::get('v1/me', function (Request $request) use ($callable) {
 
-        return app()->call($callable.'AuthController@me');
+        return app()->call($callable . 'AuthController@me');
+
+    });
+
+    Route::post('v1/profile', function (Request $request) use ($callable) {
+        return app()->call($callable . 'AuthController@updateProfile');
+    });
+
+    Route::post('v1/logout', function (Request $request) use ($callable) {
+
+        return app()->call($callable . 'AuthController@logout');
 
     });
 

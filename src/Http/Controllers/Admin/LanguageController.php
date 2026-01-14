@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use HashtagCms\Core\Helpers\Message;
+
 use HashtagCms\Models\Lang;
 use HashtagCms\Models\Site;
 use PHPUnit\Exception;
@@ -22,9 +23,14 @@ class LanguageController extends BaseAdminController
 
     protected $actionFields = ['edit', 'delete']; //This is last column of the row
 
-    protected $moreActionBarItems = [['label' => 'Translator',
-        'as' => 'icon', 'icon_css' => 'fa fa-language',
-        'action' => 'language/translator']];
+    protected $moreActionBarItems = [
+        [
+            'label' => 'Translator',
+            'as' => 'icon',
+            'icon_css' => 'fa fa-language',
+            'action' => 'language/translator'
+        ]
+    ];
 
     /*protected $bindDataWithAddEdit = array("zones"=>array("dataSource"=>Zone::class, "method"=>"all"),
                                         "currencies"=>array("dataSource"=>Currency::class, "method"=>"all"));*/
@@ -35,16 +41,18 @@ class LanguageController extends BaseAdminController
     public function store(Request $request)
     {
 
-        if (! $this->checkPolicy('edit')) {
+        if (!$this->checkPolicy('edit')) {
             return htcms_admin_view('common.error', Message::getWriteError());
         }
 
-        $rules = ['name' => 'required|max:40|string',
+        $rules = [
+            'name' => 'required|max:40|string',
             'iso_code' => 'required|max:2',
             'language_code' => 'required|max:5|string',
             'date_format_lite' => 'nullable|max:32|string',
             'date_format_full' => 'nullable|max:32|string',
-            'is_rtl' => 'nullable|integer'];
+            'is_rtl' => 'nullable|integer'
+        ];
 
         $validator = Validator::make($request->all(), $rules);
 
@@ -70,7 +78,7 @@ class LanguageController extends BaseAdminController
             $saveData['created_at'] = htcms_get_current_date();
         }
 
-        $arrSaveData = ['model' => $this->dataSource,  'data' => $saveData];
+        $arrSaveData = ['model' => $this->dataSource, 'data' => $saveData];
 
         if ($data['actionPerformed'] == 'edit') {
 
@@ -84,8 +92,16 @@ class LanguageController extends BaseAdminController
             $savedData = $this->saveData($arrSaveData);
 
             //Add default language in all tables based on new id
+            //Add default language in all tables based on new id
             if ($savedData['id']) {
-                Lang::insertLangInAllTables($savedData['id']);
+                //Lang::insertLangInAllTables($savedData['id']);
+                try {
+                    $sourceLang = Lang::withoutGlobalScopes()->first();
+                    $tables = Lang::getOnlyLangTables();
+                    (new Lang())->copyLangData($sourceLang->id, $savedData['id'], $tables, true);
+                } catch (\Exception $e) {
+                    logger()->error("Error adding language to queue: " . $e->getMessage());
+                }
             }
             //$savedData = $this->saveDataWithLang($arrSaveData, $arrLangData);
 
@@ -180,25 +196,15 @@ class LanguageController extends BaseAdminController
           }*/
 
         $mgsArr = [];
-        foreach ($tables as $table) {
-            $rows = DB::select("select * from $table where lang_id=:lang_id", ['lang_id' => $fromLang]);
-            $targetRows = DB::select("select * from $table where lang_id=:lang_id", ['lang_id' => $toLang]);
-            if (count($targetRows) == 0) {
-                //manipulate data
-                foreach ($rows as $row) {
-                    $row->lang_id = $toLang;
-                    $row->created_at = htcms_get_current_date();
-                    $row->updated_at = htcms_get_current_date();
-                }
 
-                $status = $this->rawInsert($table, $rows);
-                $msg = ($status == 0) ? 'There is some error while copying content.' : "$table has been copied.";
-            } else {
-                $status = 0;
-                $msg = "Language Id $toLang is already there in $table. Unable to copy";
-            }
-            $mgsArr[] = ['status' => $status, 'table' => $table, 'message' => $msg];
-        }
+
+        // Dispatch queue logic
+        //event(new CopyLangData($fromLang, $toLang, $tables));
+        $lang = new Lang();
+        $mgsArr = $lang->copyLangData($fromLang, $toLang, $tables, true);
+
+        //$mgsArr[] = ['status' => 1, 'table' => 'Queue', 'message' => "Process has been added in the queue."];
+
 
         $data = ['isSaved' => 1, 'message' => $mgsArr];
 

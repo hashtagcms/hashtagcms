@@ -13,9 +13,14 @@ use HashtagCms\Models\User;
 
 class AuthorController extends BaseAdminController
 {
-    protected $dataFields = ['id', 'name', 'user_type',
+    protected $dataFields = [
+        'id',
+        'name',
+        'user_type',
         ['label' => 'Roles', 'key' => 'roles.name', 'showAllScopes' => true],
-        'email', 'updated_at'];
+        'email',
+        'updated_at'
+    ];
 
     protected $dataSource = User::class;
 
@@ -28,10 +33,12 @@ class AuthorController extends BaseAdminController
     protected $minResults = 1;
 
     protected $moreActionFields = [
-        ['label' => 'Permission',
+        [
+            'label' => 'Permission',
             'icon_css' => 'fa fa-lock',
             'action' => 'permission',
-            'action_append_field' => 'id'],
+            'action_append_field' => 'id'
+        ],
     ];
 
     protected $bindDataWithAddEdit = [
@@ -47,7 +54,7 @@ class AuthorController extends BaseAdminController
     public function store(Request $request)
     {
 
-        if (! $this->checkPolicy('edit')) {
+        if (!$this->checkPolicy('edit')) {
             return htcms_admin_view('common.error', Message::getWriteError());
         }
 
@@ -61,7 +68,7 @@ class AuthorController extends BaseAdminController
         ];
 
         if ($request->input('id') > 0) {
-            $rules['email'] = 'required|email|max:255|unique:users,email,'.$request->input('id');
+            $rules['email'] = 'required|email|max:255|unique:users,email,' . $request->input('id');
         }
 
         $validator = Validator::make($request->all(), $rules);
@@ -84,7 +91,7 @@ class AuthorController extends BaseAdminController
         $sites = $data['sites']; //Save in user_role table
         $updateSites = ($data['updateSites'] == 1) ? true : false;
 
-        if (! empty($data['password'])) {
+        if (!empty($data['password'])) {
             $saveData['password'] = User::makePassword($data['password']);
         }
 
@@ -114,7 +121,7 @@ class AuthorController extends BaseAdminController
         $user = User::find($id);
 
         //Insert/Update Roles
-        if (! empty($roles) && $updateRoles == true) {
+        if (!empty($roles) && $updateRoles == true) {
             $user->detachAllRoles(); //remove old roles
 
             //Get Roles
@@ -124,7 +131,7 @@ class AuthorController extends BaseAdminController
         }
 
         //Insert/Update Site relation
-        if (! empty($sites) && $updateSites == true) {
+        if (!empty($sites) && $updateSites == true) {
             $user->detachAllSites(); //remove old sites
 
             //Get Sites
@@ -150,7 +157,7 @@ class AuthorController extends BaseAdminController
     public function permission($user_id = 0)
     {
 
-        if (! $this->checkPolicy('edit')) {
+        if (!$this->checkPolicy('edit')) {
             return htcms_admin_view('common.error', Message::getReadError(), \request()->ajax());
         }
 
@@ -183,7 +190,7 @@ class AuthorController extends BaseAdminController
     public function saveModulePermissions()
     {
 
-        if (! $this->checkPolicy('edit')) {
+        if (!$this->checkPolicy('edit')) {
             return htcms_admin_view('common.error', Message::getReadError());
         }
         try {
@@ -193,36 +200,43 @@ class AuthorController extends BaseAdminController
 
             $userId = $data['userId'];
 
-            $saveData = [];
+            $saveData = array();
 
-            $savedData = [];
+            $savedData = array();
 
             foreach ($cmsModuleData as $cmsModule) {
+
                 $isReadOnly = (isset($cmsModule['readonly']) && $cmsModule['readonly'] === true) ? 1 : 0;
                 $selected = $cmsModule['selected'] ?? 0;
+
                 if ($selected) {
-                    $saveData[] = ['module_id' => $cmsModule['id'], 'user_id' => $userId, 'readonly' => $isReadOnly];
+                    $saveData[] = array('module_id' => $cmsModule['id'], 'user_id' => $userId, 'readonly' => $isReadOnly);
                 }
 
-                if (! empty($cmsModule['child'])) {
+                if (!empty($cmsModule['child'])) {
+
                     foreach ($cmsModule['child'] as $child) {
+
                         $isReadOnly = (isset($child['readonly']) && $child['readonly'] === true) ? 1 : 0;
                         $selected = $child['selected'] ?? 0;
+
                         if ($selected) {
-                            $saveData[] = ['module_id' => $child['id'], 'user_id' => $userId, 'readonly' => $isReadOnly];
+                            $saveData[] = array('module_id' => $child['id'], 'user_id' => $userId, 'readonly' => $isReadOnly);
                         }
                     }
+
                 }
             }
 
             //Delete old
             CmsPermission::detachOldModules($userId);
-            $arrSaveData = ['model' => CmsPermission::class, 'data' => $saveData];
 
-            $savedData = $this->saveData($arrSaveData);
+            //return $arrSaveData = array('model' => CmsPermission::class, 'data' => $saveData);
+            $this->rawInsert('cms_permissions', $saveData);
+            $savedData = ['isSaved' => true];
 
-        } catch (Exception $exception) {
-            $savedData = ['message' => $exception->getMessage()];
+        } catch (\Exception $exception) {
+            $savedData = array('message' => $exception->getMessage());
         }
 
         return $savedData;

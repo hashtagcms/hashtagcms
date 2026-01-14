@@ -116,6 +116,8 @@ class CategoryController extends BaseAdminController
             'lang_meta_description' => 'nullable|max:255|string',
             'lang_meta_robots' => 'nullable|max:255|string',
             'lang_meta_canonical' => 'nullable|max:255|string',
+            'publish_at' => 'nullable|date',
+            'expire_at' => 'nullable|date',
         ];
 
         if ($request->input('id') > 0) {
@@ -167,6 +169,8 @@ class CategoryController extends BaseAdminController
         $saveData['required_login'] = $data['required_login'] ?? 0;
         $saveData['publish_status'] = $data['publish_status'] ?? 0;
         $saveData['controller_name'] = $data['controller_name'] ?? null;
+        $saveData['publish_at'] = $data['publish_at'] ?? null;
+        $saveData['expire_at'] = $data['expire_at'] ?? null;
 
         //Language
         $langData['lang_id'] = $data['lang_id'] ?? htcms_get_language_id_for_admin();

@@ -8,11 +8,11 @@ namespace HashtagCms\Models;
  *
  */
 
-use Illuminate\Database\Eloquent\Model;
+use HashtagCms\Models\BaseModel;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
-abstract class AdminBaseModel extends Model
+abstract class AdminBaseModel extends BaseModel
 {
     public function __construct(array $attributes = [])
     {
@@ -81,10 +81,10 @@ abstract class AdminBaseModel extends Model
 
             switch ($opr) {
                 case 'like%':
-                    $val = $val.'%';
+                    $val = $val . '%';
                     break;
                 case '%like%':
-                    $val = '%'.$val.'%';
+                    $val = '%' . $val . '%';
                     break;
             }
 
@@ -182,12 +182,58 @@ abstract class AdminBaseModel extends Model
     }
 
     /**
+     * Get all tables (Driver agnostic)
+     * @return array
+     */
+    public static function getTables()
+    {
+        $connection = DB::connection();
+        $driver = $connection->getDriverName();
+        $tables = [];
+
+        if ($driver === 'mongodb') {
+            try {
+                foreach ($connection->getMongoDB()->listCollections() as $collection) {
+                    $tables[] = $collection->getName();
+                }
+            } catch (\Exception $e) {
+                // Fallback
+            }
+        } elseif ($driver === 'sqlite') {
+            $results = DB::select("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'");
+            foreach ($results as $row) {
+                $tables[] = $row->name;
+            }
+        } elseif ($driver === 'pgsql') {
+            $results = DB::select("SELECT tablename FROM pg_catalog.pg_tables WHERE schemaname = 'public'");
+            foreach ($results as $row) {
+                $tables[] = $row->tablename;
+            }
+        } else {
+            // MySQL/MariaDB
+            $results = DB::select('SHOW TABLES');
+            foreach ($results as $row) {
+                // Determine the key (e.g. "Tables_in_database")
+                $rowArray = (array) $row;
+                $tables[] = array_shift($rowArray);
+            }
+        }
+        return $tables;
+    }
+
+    /**
      * Get Enum Values from any table
      */
     public static function getEnumValues(?string $table = null, ?string $field = null): array
     {
 
         $enum = [];
+        // Check if connection is mysql, as SHOW COLUMNS is mysql specific
+        $connection = config('database.default');
+        if ($connection !== 'mysql') {
+            return $enum;
+        }
+
         if ($table != '' && $field != '') {
             $type = DB::select("SHOW COLUMNS FROM {$table} WHERE Field = '{$field}'");
             if (count($type) > 0) {

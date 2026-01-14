@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
@@ -42,6 +41,9 @@ return new class extends Migration
             $table->tinyInteger('required_login')->nullable()->default(0);
             $table->tinyInteger('publish_status')->nullable()->default(0);
             $table->bigInteger('read_count')->nullable()->default(0);
+            
+            $table->timestamp('publish_at')->nullable()->comment('Start displaying content');
+            $table->timestamp('expire_at')->nullable()->comment('Stop displaying content');
 
             $table->string('attachment', 255)->nullable();
             $table->string('img', 500)->nullable();
@@ -50,8 +52,12 @@ return new class extends Migration
 
             $table->timestamps();
             $table->softDeletes();
-
         });
+
+        //auto increment
+        if (config('database.default') !== 'sqlite') {
+            DB::statement("ALTER TABLE pages AUTO_INCREMENT = 5000");
+        }
 
         //Language
         Schema::create('page_langs', function (Blueprint $table) {

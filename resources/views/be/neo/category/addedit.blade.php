@@ -41,6 +41,8 @@
         $lang["excerpt"] = old('lang_excerpt');
 
         $publish_status = old('publish_status');
+        $publish_at = old('publish_at');
+        $expire_at = old('expire_at');
 
         $lang["target"] = old('lang_target');
         $lang["active_key"] = old('lang_active_key');
@@ -531,6 +533,26 @@
 
                             <div class="col-sm-10">
                                 {!! FormHelper::input('checkbox', 'publish_status', $publish_status) !!}
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <div class="col-sm-2">
+                                {!!  FormHelper::label('publish_at', 'Publish Date') !!}
+                            </div>
+
+                            <div class="col-sm-10">
+                                {!! FormHelper::input('datetime-local', 'publish_at', $publish_at, array('class'=>'form-control')) !!}
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <div class="col-sm-2">
+                                {!!  FormHelper::label('expire_at', 'Expire Date') !!}
+                            </div>
+
+                            <div class="col-sm-10">
+                                {!! FormHelper::input('datetime-local', 'expire_at', $expire_at, array('class'=>'form-control')) !!}
                             </div>
                         </div>
 

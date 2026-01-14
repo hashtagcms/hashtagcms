@@ -4,6 +4,7 @@ namespace HashtagCms\Core\Main;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 use HashtagCms\Core\Traits\LayoutHandler;
 use HashtagCms\Http\Resources\CategoryResource;
@@ -11,10 +12,12 @@ use HashtagCms\Http\Resources\CategoryResource;
 use HashtagCms\Http\Resources\CategorySiteResource;
 use HashtagCms\Http\Resources\CountryResource;
 use HashtagCms\Http\Resources\CurrencyResource;
+
 use HashtagCms\Http\Resources\FestivalResource;
 use HashtagCms\Http\Resources\HookResource;
 use HashtagCms\Http\Resources\LangResource;
 use HashtagCms\Http\Resources\ModuleResource;
+use HashtagCms\Http\Resources\PageResource;
 use HashtagCms\Http\Resources\PlatformResource;
 use HashtagCms\Http\Resources\SitePropResource;
 use HashtagCms\Http\Resources\SiteResource;
@@ -27,12 +30,14 @@ use HashtagCms\Models\Hook;
 use HashtagCms\Models\Lang;
 use HashtagCms\Models\Module;
 use HashtagCms\Models\ModuleSite;
+use HashtagCms\Models\Page;
 use HashtagCms\Models\Platform;
 use HashtagCms\Models\Site;
 use HashtagCms\Models\SiteProp;
 use HashtagCms\Models\Theme;
 /** Traits */
 use Symfony\Component\HttpFoundation\Response;
+use HashtagCms\Events\PageLoaded;
 
 class DataLoader
 {
@@ -57,7 +62,7 @@ class DataLoader
         try {
             DB::connection()->getPdo();
         } catch (\Exception $e) {
-            logger()->error('DataLoader->loadConfig: Database Error: '.$e->getMessage());
+            logger()->error('DataLoader->loadConfig: Database Error: ' . $e->getMessage());
 
             return $this->getErrorMessage($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -90,17 +95,17 @@ class DataLoader
 
         //if lang param is not empty fetch the lang info.
         // If found use that else use default lang from the site
-        if (! empty($lang)) {
+        if (!empty($lang)) {
             $langData = Lang::where('iso_code', '=', $lang)->first();
-            if (! empty($langData)) {
+            if (!empty($langData)) {
                 $lang_id = $langData->id;
             }
         }
 
         //if platform param is not empty fetch form the db
-        if (! empty($platform)) {
+        if (!empty($platform)) {
             $platformData = Platform::where('link_rewrite', '=', $platform)->first();
-            if (! empty($platformData)) {
+            if (!empty($platformData)) {
                 $platform_id = $platformData->id;
             }
         }
@@ -145,7 +150,7 @@ class DataLoader
         $data['countries'] = $countriesInfo;
         $data['categories'] = $categoriesInfo;
         $data['props'] = $propsInfo;
-        if (! empty($festivalInfo)) {
+        if (!empty($festivalInfo)) {
             $data['festivals'] = $festivalInfo;
         }
 
@@ -168,33 +173,50 @@ class DataLoader
         try {
             $apiUrl = app()->HashtagCms->getConfigApiSource();
 
-            $apiSecretAndContext = $this->getApiKeyAndContext($apiUrl);
+            $apiSecretList = config('hashtagcms.api_secrets');
+            $apiSecret = $apiSecretList[$context] ?? null;
 
-            if ($apiSecretAndContext['apiSecret'] == null) {
-                dd('Unable to find api secret key in config');
-            }
-
-            $apiSecret = $apiSecretAndContext['apiSecret'];
-            $context = $apiSecretAndContext['context'];
-
-            $apiUrl = $apiUrl."?site=$context&api_secret=$apiSecret";
-            $headers['Content-Type'] = 'application/json';
-            $headers['api_key'] = $apiSecret;
-
-            $http = Http::withHeaders($headers)->get($apiUrl);
-
-            if ($http->status() == 200) {
-                $data = $http->json();
-            } else {
-                $msg = $http->reason()." :from API: $apiUrl";
+            if (empty($apiSecret)) {
+                $msg = "Unable to find api secret key in config for context: $context";
                 logger()->error($msg);
-                throw new \Exception($msg, $http->status());
+                return $this->getErrorMessage($msg, Response::HTTP_FORBIDDEN);
             }
+
+            $queryParams = [
+                'site' => $context,
+                'api_secret' => $apiSecret
+            ];
+
+            if ($lang) {
+                $queryParams['lang'] = $lang;
+            }
+            if ($platform) {
+                $queryParams['platform'] = $platform;
+            }
+
+            // Cache Key
+            $cacheKey = "hashtagcms_external_config_{$context}_{$lang}_{$platform}";
+            $cacheTTL = config('hashtagcms.external_config_cache_ttl', 60); // Default 60 minutes
+
+            $data = Cache::remember($cacheKey, now()->addMinutes($cacheTTL), function () use ($apiUrl, $apiSecret, $queryParams) {
+                $response = Http::withHeaders([
+                    'Content-Type' => 'application/json',
+                    'x-api-secret' => $apiSecret
+                ])->get($apiUrl, $queryParams);
+
+                if ($response->successful()) {
+                    return $response->json();
+                } else {
+                    $msg = $response->reason() . " :from API: $apiUrl";
+                    logger()->error($msg);
+                    throw new \Exception($msg, $response->status());
+                }
+            });
 
         } catch (\Exception $exception) {
-            $msg = 'Error while loading config: '.$exception->getMessage();
+            $msg = 'Error while loading config: ' . $exception->getMessage();
             logger()->error($msg);
-            $data = ['status' => Response::HTTP_PRECONDITION_FAILED, 'message' => $msg];
+            $data = $this->getErrorMessage($msg, Response::HTTP_PRECONDITION_FAILED);
         }
 
         return $data;
@@ -209,7 +231,7 @@ class DataLoader
         try {
             DB::connection()->getPdo();
         } catch (\Exception $e) {
-            logger()->error('DataLoader->loadData: Database Error: '.$e->getMessage());
+            logger()->error('DataLoader->loadData: Database Error: ' . $e->getMessage());
 
             return $this->getErrorMessage($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -280,7 +302,7 @@ class DataLoader
         $platformData = Platform::where('link_rewrite', $platform)->first();
 
         //parse url and choose link_rewrite
-        $filterdCategory = $this->parseCategoryUrl($category);
+        $filterdCategory = $this->parseCategoryUrl($category, $siteData->id);
 
         //category
         $categoryData = $filterdCategory['categoryData'];
@@ -297,7 +319,7 @@ class DataLoader
         //Set Context Vars: Category Id
         $this->infoLoader->setContextVars('category_id', $categoryData->id);
 
-        if (! empty($categoryData->link_rewrite_pattern)) {
+        if (!empty($categoryData->link_rewrite_pattern)) {
             $linkRewriteKey = str_replace(['{', '?', '}'], ['', '', ''], $categoryData->link_rewrite_pattern);
             $this->infoLoader->setContextVars($linkRewriteKey, $filterdCategory['param']);
         }
@@ -328,7 +350,8 @@ class DataLoader
         }
 
         //props
-        $propsData = SiteProp::where([['site_id', '=', $siteData->id],
+        $propsData = SiteProp::where([
+            ['site_id', '=', $siteData->id],
             ['platform_id', '=', $platformData->id],
             ['is_public', '=', 1],
         ])->get();
@@ -393,8 +416,70 @@ class DataLoader
 
         logger("loading data completed for: $category ({$categoryData->id}), context: $context ({$siteData->id}), platform: $platform ({$platformData->id}) lang: $lang ({$langData->id})");
 
+        try {
+            //Dispatch Event
+            PageLoaded::dispatch($data);
+        } catch (\Exception $e) {
+            info('PageLoaded Event Dispatch Error: ' . $e->getMessage());
+        }
+
         return $data;
 
+    }
+
+    /**
+     * Get Latest Blogs
+     * @return array
+     */
+    public function blogLatests(string $context, ?string $lang = null, ?string $platform = null, ?string $category = null, int $limit = 10)
+    {
+        try {
+            DB::connection()->getPdo();
+        } catch (\Exception $e) {
+            logger()->error('DataLoader->blogLatests: Database Error: ' . $e->getMessage());
+            return $this->getErrorMessage($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+
+        if (empty($context)) {
+            return $this->getErrorMessage('Site context is missing', Response::HTTP_BAD_REQUEST);
+        }
+
+        $siteData = Site::where('context', '=', $context)->first();
+        if (empty($siteData)) {
+            return $this->getErrorMessage('Site not found', Response::HTTP_NOT_FOUND);
+        }
+
+        $langId = $siteData->lang_id;
+        if (!empty($lang)) {
+            $langData = Lang::where('iso_code', '=', $lang)->first();
+            if ($langData) {
+                $langId = $langData->id;
+            }
+        }
+
+        // Handle category scenarios: defaults or specific
+        // For external API, category name/slug is usually passed
+        $categoryName = $category ?? 'blog';
+
+        // Check config for more categories if not explicitly checking one
+        $moreCategories = config('hashtagcms.more_categories_on_blog_listing', []);
+        $useMore = false;
+        if (count($moreCategories) > 0 && $category === null) {
+            $useMore = true;
+            if (!in_array($categoryName, $moreCategories)) {
+                $moreCategories[] = $categoryName;
+            }
+        }
+
+        $requestCat = ($useMore) ? $moreCategories : $categoryName;
+
+        try {
+            $results = Page::getLatestBlog($siteData->id, $langId, $requestCat, $limit);
+            return PageResource::collection($results)->toArray(request());
+        } catch (\Exception $e) {
+            logger()->error('DataLoader->blogLatests: Query Error: ' . $e->getMessage());
+            return $this->getErrorMessage($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 
     /**
@@ -407,51 +492,56 @@ class DataLoader
         try {
             $apiUrl = app()->HashtagCms->getLoadDataApiSource();
 
-            $apiSecretAndContext = $this->getApiKeyAndContext($apiUrl);
+            $apiSecretList = config('hashtagcms.api_secrets');
+            $apiSecret = $apiSecretList[$context] ?? null;
 
-            if ($apiSecretAndContext['apiSecret'] == null) {
-                throw new \Exception('Unable to find api secret key in config', Response::HTTP_BAD_REQUEST);
+            if (empty($apiSecret)) {
+                throw new \Exception("Unable to find api secret key in config for context: $context", Response::HTTP_FORBIDDEN);
             }
 
-            $apiSecret = $apiSecretAndContext['apiSecret'];
-            $context = $apiSecretAndContext['context'];
+            $requestParams = request()->query();
+            // Sort to ensure cache consistency
+            ksort($requestParams);
 
-            $fullUrl = request()->fullUrl();
-            $queryParams = '';
+            $payload = array_merge($requestParams, [
+                'site' => $context,
+                'platform' => $platform,
+                'lang' => $lang,
+                'category' => $category,
+                'api_secret' => $apiSecret
+            ]);
 
-            if (strpos($fullUrl, '?') > 0) {
-                $queryParams = substr($fullUrl, strpos($fullUrl, '?') + 1, strlen($fullUrl));
-            }
+            // Cache Key
+            $paramHash = md5(json_encode($requestParams));
+            $cacheKey = "hashtagcms_external_data_{$context}_{$lang}_{$platform}_{$category}_{$microsite}_{$paramHash}";
+            $cacheTTL = config('hashtagcms.external_data_cache_ttl', 30); // Default 30 minutes
 
-            $apiUrl .= "?site={$context}&platform={$platform}&lang={$lang}&category={$category}&api_secret={$apiSecret}";
+            $data = Cache::remember($cacheKey, now()->addMinutes($cacheTTL), function () use ($apiUrl, $payload, $apiSecret) {
+                $response = Http::withHeaders([
+                    'Content-Type' => 'application/json',
+                    'x-api-secret' => $apiSecret
+                ])->get($apiUrl, $payload);
 
-            if ($queryParams != '') {
-                $apiUrl .= "&{$queryParams}";
-            }
+                if ($response->successful()) {
+                    $json = $response->json();
 
-            $headers['Content-Type'] = 'application/json';
-            $headers['api_key'] = $apiSecret;
-            $http = Http::withHeaders($headers)->get($apiUrl);
-
-            if ($http->status() == 200) {
-                $data = $http->json();
-
-                //Old Compatibility
-                if (! isset($data['meta']['page'])) {
-                    $data['meta']['page'] = ['id' => -1, 'linkRewrite' => '', 'activeKey' => '', 'name' => ''];
+                    //Old Compatibility and Normalization
+                    if (!isset($json['meta']['page'])) {
+                        $json['meta']['page'] = ['id' => -1, 'linkRewrite' => '', 'activeKey' => '', 'name' => ''];
+                    }
+                    if (!isset($json['isLoginRequired'])) {
+                        $json['isLoginRequired'] = false;
+                    }
+                    if (!isset($json['isContentFound'])) {
+                        $json['isContentFound'] = true;
+                    }
+                    return $json;
+                } else {
+                    $msg = $response->reason() . " :from API: $apiUrl";
+                    logger()->error($msg);
+                    throw new \Exception($msg, $response->status());
                 }
-                if (! isset($data['isLoginRequired'])) {
-                    $data['isLoginRequired'] = false;
-                }
-                if (! isset($data['isContentFound'])) {
-                    $data['isContentFound'] = true;
-                }
-
-            } else {
-                $msg = $http->reason()." :from API: $apiUrl";
-                logger()->error($msg);
-                throw new \Exception($msg, $http->status());
-            }
+            });
         } catch (\Exception $exception) {
             $data = ['status' => Response::HTTP_PRECONDITION_FAILED, 'message' => $exception->getMessage()];
         }
@@ -584,7 +674,7 @@ class DataLoader
         $categoryFooterContent = $this->parseStringForPath($categoryData->siteWise->footer_content, $theme_dir);
 
         //theme header/footer
-        $themeInfo['header_content'] = $neg.$this->parseStringForPath($themeData->header_content, $theme_dir);
+        $themeInfo['header_content'] = $neg . $this->parseStringForPath($themeData->header_content, $theme_dir);
         $themeInfo['footer_content'] = $this->parseStringForPath($themeData->footer_content, $theme_dir);
         $themeInfo['skeleton'] = $this->parseStringForPath($themeData->skeleton, $theme_dir);
 
@@ -615,8 +705,8 @@ class DataLoader
 
             //add seo module header/footer content
 
-            $categoryHeaderContent = $categoryHeaderContent.$this->parseStringForPath($seoContent['headerContent'] ?? '', $theme_dir);
-            $categoryFooterContent = $categoryFooterContent.$this->parseStringForPath($seoContent['footerContent'] ?? '', $theme_dir);
+            $categoryHeaderContent = $categoryHeaderContent . $this->parseStringForPath($seoContent['headerContent'] ?? '', $theme_dir);
+            $categoryFooterContent = $categoryFooterContent . $this->parseStringForPath($seoContent['footerContent'] ?? '', $theme_dir);
 
             //save it for later; might deprecate
             $pageInfo['id'] = ($seoContent['page_id'] == null) ? '' : $seoContent['page_id'];
@@ -641,7 +731,7 @@ class DataLoader
             $metaLinks[] = array("rel" => "canonical", "href" => $metaCanonical);
         }*/
         //fav icon
-        if (isset($siteData->favicon) && ! empty(trim($siteData->favicon))) {
+        if (isset($siteData->favicon) && !empty(trim($siteData->favicon))) {
             $metaLinks[] = ['rel' => 'shortcut icon', 'href' => htcms_get_media($siteData->favicon)]; //this helper is in admin
         } else {
             //add default icon
@@ -654,13 +744,13 @@ class DataLoader
             }
         }
         foreach ($headerMeta as $mKey => $hMeta) {
-            $metaContent .= '<meta name="'.$mKey.'" content="'.$hMeta.'" />';
+            $metaContent .= '<meta name="' . $mKey . '" content="' . $hMeta . '" />';
         }
         //Making header data
 
         $headTag = [];
         $headTag['headerContent'] = [
-            ['order' => 1, 'html' => $themeInfo['header_content'].$categoryHeaderContent],
+            ['order' => 1, 'html' => $themeInfo['header_content'] . $categoryHeaderContent],
         ];
         $headTag['title'] = $metaTitle;
         $headTag['meta'] = $headerMeta;
@@ -668,7 +758,7 @@ class DataLoader
 
         $bodyTag = [];
         $bodyTag['content'] = ['skeleton' => $themeInfo['skeleton']];
-        $bodyTag['footer']['footerContent'][] = ['order' => 1, 'html' => $themeInfo['footer_content'].$categoryFooterContent];
+        $bodyTag['footer']['footerContent'][] = ['order' => 1, 'html' => $themeInfo['footer_content'] . $categoryFooterContent];
 
         //Set html
         $data['html']['head'] = $headTag;
@@ -684,7 +774,7 @@ class DataLoader
      *
      * @return void
      */
-    private function parseCategoryUrl(string $path): array
+    private function parseCategoryUrl(string $path, int $site_id): array
     {
         // if path is "/" -> search for / category or get the default site category link_rewrite
         $pathArr = explode('/', $path);
@@ -697,9 +787,26 @@ class DataLoader
         }
         //dd("linkRewrite ".$linkRewrite);
         //get the priority for the full path first
-        $categoryData = Category::with(['lang'])->where([['link_rewrite', '=', $path], ['publish_status', '=', 1]])->get();
+        $now = now();
+        $categoryData = Category::with(['lang'])
+            ->where([['link_rewrite', '=', $path], ['publish_status', '=', 1], ['site_id', '=', $site_id]])
+            ->where(function ($q) use ($now) {
+                $q->whereNull('publish_at')->orWhere('publish_at', '<=', $now);
+            })
+            ->where(function ($q) use ($now) {
+                $q->whereNull('expire_at')->orWhere('expire_at', '>=', $now);
+            })
+            ->get();
         if ($categoryData->count() == 0) {
-            $categoryData = Category::with(['lang'])->where([['link_rewrite', '=', $linkRewrite], ['publish_status', '=', 1]])->get();
+            $categoryData = Category::with(['lang'])
+                ->where([['link_rewrite', '=', $linkRewrite], ['publish_status', '=', 1], ['site_id', '=', $site_id]])
+                ->where(function ($q) use ($now) {
+                    $q->whereNull('publish_at')->orWhere('publish_at', '<=', $now);
+                })
+                ->where(function ($q) use ($now) {
+                    $q->whereNull('expire_at')->orWhere('expire_at', '>=', $now);
+                })
+                ->get();
         }
         if ($categoryData->count() > 0) {
             foreach ($categoryData as $category) {
@@ -715,24 +822,7 @@ class DataLoader
         return ['linkRewrite' => $linkRewrite, 'param' => $param, 'fullPath' => $path, 'categoryData' => $selectedCategory, 'paramRequired' => $isParamRequired];
     }
 
-    /**
-     * Get api key
-     *
-     * @return mixed|null
-     */
-    private function getApiKeyAndContext(string $url)
-    {
-        $domain = parse_url($url)['host'];
-        $domainList = config('hashtagcms.domains');
-        $context = $domainList[$domain];
 
-        $apiSecretList = config('hashtagcms.api_secrets');
-        $apiSecret = $apiSecretList[$context] ?? null;
-        $data['apiSecret'] = $apiSecret;
-        $data['context'] = $context;
-
-        return $data;
-    }
 
     /**
      * Get error message
