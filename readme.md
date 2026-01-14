@@ -11,8 +11,19 @@ HashtagCMS is a powerful, headless-ready, and module-based Content Management Sy
 -   **Multi-Tenancy**: Manage multiple sites from one admin panel.
 -   **Headless Ready**: Robust API for consuming content on React/Vue/Mobile.
 -   **Everything is a Module**: drag-and-drop module placement for any part of the page.
--   **Smart Queries**: Fetch data from SQL or MongoDB using JSON configuration (no code needed).
--   **Premium Features**: MongoDB support, SSO, and Figma Integration.
+-   **Smart Queries**: Fetch data from SQL using JSON configuration (no code needed).
+-   **Premium Features**: MongoDB support, (SSO, and Figma Integration (@todo)).
+
+## Few more things to add and why you should move to 2x
+-   Site copier is event driven
+-   Removed laravel/ui dependency 
+-   Publish count is event driven
+-   Multiple refactoring and improvements are added. AdminCrud specially. 
+-   All JS component for cms is now published to npm under @hashtagcms project.
+-   Improved CmsPolicy
+-   All large tasks are que/event driven
+-   Truly headless and can work as Standalone too. 
+
 
 ## 📚 Documentation
 

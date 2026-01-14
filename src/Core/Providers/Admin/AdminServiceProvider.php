@@ -10,7 +10,7 @@ use HashtagCms\Core\Policies\CmsPolicy;
 use HashtagCms\Core\ViewComposers\Admin\CmsModuleComposer;
 use HashtagCms\Models\CmsPermission;
 use HashtagCms\Models\Permission;
-
+use Illuminate\Support\Facades\Schema;
 class AdminServiceProvider extends ServiceProvider
 {
     protected $policies = [
@@ -27,16 +27,8 @@ class AdminServiceProvider extends ServiceProvider
 
         $this->registerPolicies();
 
-        // Cache permissions for 1 hour to reduce database queries
-        // Fallback to direct call if cache fails
-        $allPermission = Cache::remember('cms_permissions_boot', 3600, function () {
-            return $this->getPermission();
-        });
-
-        // Fallback if cache returns null
-        if ($allPermission === null) {
-            $allPermission = $this->getPermission();
-        }
+        // Only load permissions if tables exist (prevents errors during migrations/fresh install)
+        $allPermission = $this->loadPermissions();
 
         if ($allPermission != null) {
 
@@ -53,6 +45,39 @@ class AdminServiceProvider extends ServiceProvider
         $theme = config('hashtagcmsadmin.cmsInfo.theme');
 
         View::composer($theme . '.common.*', CmsModuleComposer::class);
+    }
+
+    /**
+     * Load permissions with proper error handling
+     * 
+     * @return \Illuminate\Database\Eloquent\Collection|null
+     */
+    protected function loadPermissions()
+    {
+        try {
+            // Check if required tables exist before querying
+            // This prevents errors during fresh installation or migrations
+            if (!Schema::hasTable('permissions') || 
+                !Schema::hasTable('cache')) {
+                return null;
+            }
+
+            // Use array cache as fallback if database cache is not available
+            // This ensures the service provider works even if cache table doesn't exist
+            $cacheDriver = Schema::hasTable('cache') ? null : 'array';
+            
+            $cacheStore = $cacheDriver ? Cache::store($cacheDriver) : Cache::getFacadeRoot();
+
+            // Cache permissions for 1 hour to reduce database queries
+            return $cacheStore->remember('cms_permissions_boot', 3600, function () {
+                return $this->getPermission();
+            });
+
+        } catch (\Exception $e) {
+            // Log the error but don't break the application
+            logger('AdminServiceProvider: Failed to load permissions - ' . $e->getMessage());
+            return null;
+        }
     }
 
     /**
