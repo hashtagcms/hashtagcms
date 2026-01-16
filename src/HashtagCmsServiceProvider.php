@@ -14,6 +14,7 @@ use HashtagCms\Console\Commands\Cmsversion;
 use HashtagCms\Console\Commands\ImportDatabaseData;
 use HashtagCms\Console\Commands\ExportDatabaseData;
 use HashtagCms\Console\Commands\SetupStandalone;
+use HashtagCms\Console\Commands\CmsShowInstructions;
 use HashtagCms\Core\Middleware\Admin\BeMiddleware;
 use HashtagCms\Core\Middleware\Admin\CmsModuleInfo;
 use HashtagCms\Core\Middleware\API\Etag;
@@ -202,7 +203,8 @@ class HashtagCmsServiceProvider extends ServiceProvider
                 // Data management commands
             ImportDatabaseData::class,
             ExportDatabaseData::class,
-            SetupStandalone::class
+            SetupStandalone::class,
+            CmsShowInstructions::class
         ]);
     }
 

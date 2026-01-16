@@ -19,7 +19,7 @@ class SetupStandalone extends Command
      *
      * @var string
      */
-    protected $description = 'Setup a standalone frontend environment by publishing configuration, assets, views and configuring .env for API usage.';
+    protected $description = '[#CMS]: Setup a standalone frontend environment by publishing configuration, assets, views and configuring .env for API usage.';
 
     /**
      * Execute the console command.
