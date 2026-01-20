@@ -8,7 +8,7 @@
     <link rel='shortcut icon' href='{{htcms_admin_asset("img/favicon.png")}}'>
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>HashtagCMS</title>
+    <title>@yield('header_title', 'HashtagCMS') </title>
     @php
         $resource_dir = htcms_admin_config('resource_dir');
     @endphp
@@ -33,9 +33,9 @@
 
 <body>
 
-    <div id="app">
+    <div id="app" class="d-flex flex-column min-vh-100">
         @include(htcms_admin_get_view_path('common.topbar'))
-        <div class="container-fluid">
+        <div class="container-fluid flex-grow-1">
             <div class="row mb-5">
                 <div class="col col-lg-2 js_left_panel">
                     @include(htcms_admin_get_view_path('common.sidebar'))
@@ -45,6 +45,7 @@
                 </div>
             </div>
         </div>
+        @include(htcms_admin_get_view_path('common.footer'))
         @include(htcms_admin_get_view_path('common.components'))
     </div>
 

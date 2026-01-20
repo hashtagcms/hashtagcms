@@ -30,7 +30,10 @@ trait HasCrudHelpers
         $data['dataFields'] = $this->getDataFields();
         $data['dataWhere'] = $this->getDataWhere();
         $data['supportedLangs'] = $this->getSupportedSiteLang(htcms_get_siteId_for_admin());
-        $data['hasLangMethod'] = (method_exists($data['dataSource'], 'lang')) ? 'true' : 'false';
+        $data['hasLangMethod'] = 'false'; //string because used in javascript
+        if($this->getDataSource() != null){
+            $data['hasLangMethod'] = (method_exists($data['dataSource'], 'lang')) ? 'true' : 'false';
+        }
         $data['user_rights'] = $this->getUserRights();
         $data['extraData'] = $this->getExtraDataForListing();
         $data['moreActionBarItems'] = $this->getMoreActionBarItems();
@@ -240,4 +243,71 @@ trait HasCrudHelpers
     {
         return (request()->user()->isSuperAdmin() == 1) ? Arr::flatten(Permission::all('name')->toArray()) : request()->user()->rights();
     }
+
+    /**
+     * Get View Name
+     *
+     * @param mixed $moduleInfo
+     * @param mixed $type
+     * @return string|null
+     */
+    public function getViewNames($moduleInfo, $type='listing')
+    {
+
+        $defaults = array(
+                        'listing'=>array('default'=>'common.listing', 'custom'=>'listing'), 
+                        'add'=>array('default'=>'common.addedit', 'custom'=>'addedit'), 
+                        'edit'=>array('default'=>'common.addedit', 'custom'=>'addedit'),
+                        'show'=>array('default'=>'common.show', 'custom'=>'show'),
+                        'sorter'=>array('default'=>'common.sorter', 'custom'=>'sorter')
+                        );
+
+        //Default fallback  
+        $fallback = $defaults[$type]['default'] ?? null;
+
+        $controller_name = $moduleInfo->controller_name;
+        
+        $targetView = '';
+
+        // Default convention: controller_name.custom_suffix
+        $customSuffix = $defaults[$type]['custom'] ?? 'common.error';
+        $targetView = $controller_name . '.' . $customSuffix;
+
+        // Check for DB override (only supported for listing and edit)
+        if ($type === 'listing' || $type === 'edit') {
+            $viewKeyMap = [
+                'listing' => 'list_view_name',
+                'edit' => 'edit_view_name'
+            ];
+            $viewProp = $viewKeyMap[$type];
+            $controller_view = $moduleInfo->$viewProp ?? null;
+
+            if (!empty($controller_view)) {
+                $targetView = $controller_view;
+            }
+        }
+
+        $targetView = ltrim($targetView, '.');
+
+        // Handle Package Prefix
+        if($moduleInfo->package != null && !str_contains($targetView, '::')) {
+            $targetView = $moduleInfo->package.'::'.$targetView;
+        }
+
+        // Normalize path
+        // Ensure we don't have leading dots if it's just a path, unless expected by helper
+        // But previously we added leading dot for list_view_name? 
+        // AdminHelper::htcms_admin_get_view_path handles ltrim('.', $name).
+        // So we can be clean here.
+        
+        $targetView = str_replace('/', '.', $targetView);
+        
+        // If explicitly defined view starts with dot, preserve it? 
+        // Actually, cleaner to rely on AdminHelper to prepend Theme if no :: exists.
+        // example for below line 
+        // [0] => "hashtagcms-pro::admin.users.listing"
+        // [1] => "common.listing"
+        return [$targetView, $fallback];
+    }
+    
 }

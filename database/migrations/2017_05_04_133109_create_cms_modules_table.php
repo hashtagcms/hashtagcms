@@ -21,6 +21,7 @@ return new class extends Migration {
             $table->string('display_name')->nullable();
             $table->integer('parent_id')->nullable();
             $table->string('icon_css')->nullable();
+            $table->string('package', 50)->nullable()->comment('Package identifier (e.g., hashtagcms-pro)');
             $table->string('list_view_name')->nullable();
             $table->string('edit_view_name')->nullable();
             $table->integer('position')->nullable();

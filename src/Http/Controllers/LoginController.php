@@ -222,7 +222,7 @@ class LoginController extends FrontendBaseController
      */
     protected function authenticated(Request $request, $user)
     {
-        info('We can use some of hacks here');
+       info('We can use some of hooks here');
 
         /*if ($user->user_type == "Visitor") {
             return redirect("/");

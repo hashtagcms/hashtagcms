@@ -48,7 +48,7 @@ class HashtagCmsServiceProvider extends ServiceProvider
         });
 
         //Register Event Listener
-//Register Event Listener
+
         Event::listen(UserVisit::class, RecordUserVisit::class);
         Event::listen(CopyLangData::class, ProcessLangCopy::class);
 

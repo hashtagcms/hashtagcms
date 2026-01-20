@@ -4,7 +4,6 @@ return [
     'cmsInfo' => [
         'defaultPage' => 'dashboard',
         'site_label' => 'CMS - Admin',
-        'base_context' => 'admin',
         'base_path' => '/admin',
         'version' => env('BE_RESOURCE_VERSION', '191220251047'),
         'theme' => 'hashtagcms::be.neo',

@@ -34,7 +34,7 @@ if (! function_exists('htcms_admin_view')) {
         if ($isAjax) {
             return response()->json($data, 400);
         }
-
+        
         return view()->first($name, $data);
     }
 
@@ -64,9 +64,15 @@ if (! function_exists('htcms_admin_get_view_path')) {
      */
     function htcms_admin_get_view_path($name)
     {
+        //If it contains namespace '::' we should respect that.
+        //We also need to handle the leading dot added by traits if a namespace is present.
+        if (Str::contains($name, '::')) {
+            return ltrim($name, '.');
+        }
+
         $theme = htcms_admin_theme();
 
-        return $theme.'.'.$name;
+        return $theme.'.'.ltrim($name, '.');
     }
 
 }
@@ -151,9 +157,22 @@ if (! function_exists('htcms_is_view_exist')) {
      */
     function htcms_is_view_exist($name)
     {
-        $theme = config('hashtagcmsadmin.cmsInfo.theme');
 
-        return view()->exists($theme.'.'.$name);
+        //Handle leading dots
+        $cleanName = ltrim($name, '.');
+
+        if (Str::contains($name, '::')) {
+            return view()->exists($cleanName);
+        }
+
+        $theme = config('hashtagcmsadmin.cmsInfo.theme');
+        if (view()->exists($theme.'.'.$cleanName)) {
+            return true;
+        }
+        
+
+        
+        return false;
     }
 
 }

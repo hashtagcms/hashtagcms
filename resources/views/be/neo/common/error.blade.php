@@ -12,7 +12,7 @@
         {{$title ?? "Whoops!"}}
     </div>
     <div class="card-body">
-        <p class="card-title text-danger"> {{$message ?? "Don't know, but found some error."}} </p>
+        <p class="card-title text-danger"> {{$message ?? "There is some error. Please check the logs"}} </p>
     </div>
 </div>
 

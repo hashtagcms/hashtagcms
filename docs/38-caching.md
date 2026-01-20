@@ -49,19 +49,26 @@ The following public API endpoints are automatically cached:
 
 ## Cache Management API
 
-HashtagCMS provides specific endpoints to manage the cache programmatically. behavior is controlled via the `CacheController`.
+HashtagCMS provides specific endpoints to manage the cache programmatically via the `CacheController`.
+
+> **Note**: As of the latest version, all cache management endpoints are **protected** and require authentication using a valid Sanctum Bearer Token.
 
 ### Authentication
-All cache management endpoints require authentication using the Site Context and API Secret defined in your `config/hashtagcms.php` (`api_secrets` array).
+**1. Sanctum Token (Middleware Protection)**
+*   `Authorization: Bearer <your-access-token>`
 
-**Required Headers (or Query Params):**
-*   `x-site` (or `site` param)
-*   `x-api-secret` (or `api_secret` param)
+**2. Context Validation (Controller Logic)**
+*   `x-site` (or `site` param): The site context key (e.g., `web`).
+*   `x-api-secret` (or `api_secret` param): The API secret for the site context.
 
 ### 1. List Cache Keys
 Get a list of all keys currently in the Redis cache.
 
-*   **Endpoint:** `GET /api/hashtagcms/public/cache/v1/keys`
+*   **Endpoint:** `GET /api/hashtagcms/private/cache/v1/keys`
+*   **Headers:**
+    *   `Authorization`: Bearer `<token>`
+    *   `x-site`: `<site-context>`
+    *   `x-api-secret`: `<api-secret>`
 *   **Parameters:**
     *   `pattern` (optional): Redis key pattern (default: `*`)
 *   **Response:**
@@ -76,10 +83,21 @@ Get a list of all keys currently in the Redis cache.
     }
     ```
 
-### 2. Clear All Cache
+### 2. Clear Site Config
+*   **Endpoint:** `GET /api/hashtagcms/private/cache/v1/clear-site-config`
+*   **Headers:** `Authorization`, `x-site`, `x-api-secret`
+*   **Response:** `{"message": "Site config cache cleared"}`
+
+### 3. Clear Load Data
+*   **Endpoint:** `GET /api/hashtagcms/private/cache/v1/clear-load-data`
+*   **Headers:** `Authorization`, `x-site`, `x-api-secret`
+*   **Response:** `{"message": "Load data cache cleared"}`
+
+### 4. Clear All Cache
 Flush all cache entries. Use with caution.
 
-*   **Endpoint:** `GET /api/hashtagcms/public/cache/v1/clear-all`
+*   **Endpoint:** `GET /api/hashtagcms/private/cache/v1/clear-all`
+*   **Headers:** `Authorization`, `x-site`, `x-api-secret`
 *   **Response:**
     ```json
     {
@@ -88,10 +106,11 @@ Flush all cache entries. Use with caution.
     }
     ```
 
-### 3. Clear Specific Key
+### 5. Clear Specific Key
 Remove a single item from the cache.
 
-*   **Endpoint:** `GET /api/hashtagcms/public/cache/v1/clear-key`
+*   **Endpoint:** `GET /api/hashtagcms/private/cache/v1/clear-key`
+*   **Headers:** `Authorization`, `x-site`, `x-api-secret`
 *   **Parameters:**
     *   `key`: The exact cache key to remove
 *   **Response:**

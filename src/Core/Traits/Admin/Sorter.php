@@ -39,10 +39,8 @@ trait Sorter
 
         }
 
-        $controller_name = request()->module_info->controller_name;
-
         //check here if module has in own folder
-        $viewName = [$controller_name.'.sorter', 'common.sorter'];
+        $viewName = $this->getViewNames(request()->module_info, 'sorter');
 
         return $this->viewNow($viewName, $data, false);
 

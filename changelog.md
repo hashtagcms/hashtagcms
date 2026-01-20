@@ -1,9 +1,33 @@
 # Changelog
 
-#v1.5.2 Changes
-- General: When you edit a new site in the backend, the frontend breaks in the same browser due to a global scope issue. Fixed.
+#v2.0.4 Changes
+- **Admin View Resolution**: Implemented intelligent view resolution (`getViewNames`) supporting package namespaces (e.g., `hashtagcms-pro::`) and database overrides for listings and edits.
+- **Routing Fix**: Admin routes now correctly respect the `base_path` defined in `config/hashtagcmsadmin.php`.
+- **Configuration**: Removed unused `base_context`.
+- **Module Parsing**: Enhanced `CmsModule` to handle nested URL paths using longest-prefix matching.
 
-# Version 1.5.1
+#v2.0.3 Changes
+- General: Added configurable throttling (Rate Limiting) for critical endpoints:
+    - User Profile Update
+    - Analytics Publish
+    - Contact Form
+    - Subscription Form
+    - Cache Management
+- Documentation: Updated API documentation for cache management and rate limits.
+
+#v2.0.0 Changes
+- Few more things to add and why you should move to 2x
+- Site copier is event driven
+- Removed laravel/ui dependency
+- Publish count is event driven
+- Multiple refactoring and improvements are added. AdminCrud specially.
+- All JS component for cms is now published to npm under @hashtagcms project.
+- Improved CmsPolicy
+- All large tasks are que/event driven
+- Truly headless and can work as Standalone too.
+
+
+# Version 1.5.2
 - Backend: Sort module issue. Id can be string too.
 - General: Improved routing and logging
 - General: Added import export data command. Example added below.

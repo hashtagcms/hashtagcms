@@ -15,9 +15,10 @@ if (HashtagCms::isInstallationRoutesEnabled()) {
 // Get configuration values once outside the route to avoid calling on each request
 $namespace = config('hashtagcms.namespace');
 $appNamespace = app()->getNamespace();
-$defaultPage = config('admin.cmsInfo.defaultPage', 'dashboard');
+$defaultPage = config('hashtagcmsadmin.cmsInfo.defaultPage', 'dashboard');
+$adminBasePath = config('hashtagcmsadmin.cmsInfo.base_path', 'admin');
 //Register Admin
-Route::prefix('admin')->group(function () use ($namespace, $appNamespace, $defaultPage) {
+Route::prefix($adminBasePath)->group(function () use ($namespace, $appNamespace, $defaultPage) {
 
     Route::match(['get', 'post', 'delete'], '{controller?}/{method?}/{params?}', function (Request $request, $controller = '', $method = '', $params = null) use ($namespace, $appNamespace, $defaultPage) {
 

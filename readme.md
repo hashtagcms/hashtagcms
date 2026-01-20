@@ -12,7 +12,11 @@ HashtagCMS is a powerful, headless-ready, and module-based Content Management Sy
 -   **Headless Ready**: Robust API for consuming content on React/Vue/Mobile.
 -   **Everything is a Module**: drag-and-drop module placement for any part of the page.
 -   **Smart Queries**: Fetch data from SQL using JSON configuration (no code needed).
+-   **Extensible Admin**: Flexible view resolution supporting custom packages and theme overrides.
 -   **Premium Features**: MongoDB support, (SSO, and Figma Integration (coming soon)).
+
+### Modular Admin Architecture
+HashtagCMS supports a fully modular admin panel. You can easily integrate external packages (like HashtagCMS Pro) or override standard CRUD views directly from the database configuration, enabling seamless upgrades and customization.
 
 
 ## Documentation
@@ -98,7 +102,10 @@ php artisan test vendor/hashtagcms/hashtagcms
 
 ## Contributing
 
-Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for details.
+Contributions are welcome! Please see [contributing.md](contributing.md) for details.
+
+## Changelog 
+- [Changelog](changelog.md)
 
 ## License  
 

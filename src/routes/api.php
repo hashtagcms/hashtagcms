@@ -86,57 +86,68 @@ Route::middleware(['api'])->prefix('api/hashtagcms/public')->group(function () u
     /**
      * Analytics: Publish
      */
-    Route::post('kpi/v1/publish', function (Request $request) use ($callable) {
+    Route::middleware([config('hashtagcmsapi.throttle_analytics', 'throttle:60,1')])->post('kpi/v1/publish', function (Request $request) use ($callable) {
         return app()->call($callable . 'Kpi\AnalyticsController@publish');
     });
 
     /**
      * Contact: Submit
      */
-    Route::post('common/v1/contact', function (Request $request) use ($callable) {
+    Route::middleware([config('hashtagcmsapi.throttle_contact', 'throttle:5,1')])->post('common/v1/contact', function (Request $request) use ($callable) {
         return app()->call($callable . 'CommonController@contact');
     });
 
     /**
      * Subscribe: Submit
      */
-    Route::post('common/v1/subscribe', function (Request $request) use ($callable) {
+    Route::middleware([config('hashtagcmsapi.throttle_subscribe', 'throttle:10,1')])->post('common/v1/subscribe', function (Request $request) use ($callable) {
         return app()->call($callable . 'CommonController@subscribe');
-    });
+    }); 
 
-    /**
-     * Cache: List Keys
-     */
-    Route::get('cache/v1/keys', function (Request $request) use ($callable) {
-        return app()->call($callable . 'CacheController@index');
-    });
+});
 
-    /**
-     * Cache: Clear Site Config
-     */
-    Route::get('cache/v1/clear-site-config', function (Request $request) use ($callable) {
-        return app()->call($callable . 'CacheController@clearSiteConfig');
-    });
 
-    /**
-     * Cache: Clear Load Data
-     */
-    Route::get('cache/v1/clear-load-data', function (Request $request) use ($callable) {
-        return app()->call($callable . 'CacheController@clearLoadData');
-    });
+/**
+ * Private routes
+ * You should protect these url under VPN
+ */
+Route::middleware(['api', 'auth:sanctum'])->prefix('api/hashtagcms/private')->group(function () use ($callable) {
 
-    /**
-     * Cache: Clear All
-     */
-    Route::get('cache/v1/clear-all', function (Request $request) use ($callable) {
-        return app()->call($callable . 'CacheController@clearAll');
-    });
+    Route::middleware([config('hashtagcmsapi.throttle_admin', 'throttle:60,1')])->group(function () use ($callable) {
+        /**
+         * Cache: List Keys
+         */
+        Route::get('cache/v1/keys', function (Request $request) use ($callable) {
+            return app()->call($callable . 'CacheController@index');
+        });
 
-    /**
-     * Cache: Clear Key
-     */
-    Route::get('cache/v1/clear-key', function (Request $request) use ($callable) {
-        return app()->call($callable . 'CacheController@clearKey');
+        /**
+         * Cache: Clear Site Config
+         */
+        Route::get('cache/v1/clear-site-config', function (Request $request) use ($callable) {
+            return app()->call($callable . 'CacheController@clearSiteConfig');
+        });
+
+        /**
+         * Cache: Clear Load Data
+         */
+        Route::get('cache/v1/clear-load-data', function (Request $request) use ($callable) {
+            return app()->call($callable . 'CacheController@clearLoadData');
+        });
+
+        /**
+         * Cache: Clear All
+         */
+        Route::get('cache/v1/clear-all', function (Request $request) use ($callable) {
+            return app()->call($callable . 'CacheController@clearAll');
+        });
+
+        /**
+         * Cache: Clear Key
+         */
+        Route::get('cache/v1/clear-key', function (Request $request) use ($callable) {
+            return app()->call($callable . 'CacheController@clearKey');
+        });
     });
 
 });
@@ -150,7 +161,7 @@ Route::middleware(['api', 'auth:sanctum'])->prefix('api/hashtagcms/user')->group
 
     });
 
-    Route::post('v1/profile', function (Request $request) use ($callable) {
+    Route::middleware([config('hashtagcmsapi.throttle_profile', 'throttle:5,1')])->post('v1/profile', function (Request $request) use ($callable) {
         return app()->call($callable . 'AuthController@updateProfile');
     });
 

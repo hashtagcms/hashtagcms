@@ -542,6 +542,35 @@ function PageScreen({ route }) {
     );
 }
 ```
+### 10. Cache Management (Private)
+All cache management endpoints are now protected and require **Sanctum Authentication** AND **API Secret Validation**.
+
+**Base Path**: `/api/hashtagcms/private/cache/v1/`
+
+**Common Headers Required**:
+- `Authorization: Bearer <token>`
+- `x-site: <site-context>`
+- `x-api-secret: <api-secret>`
+
+#### 10.1 List Keys
+**Endpoint**: `GET /api/hashtagcms/private/cache/v1/keys`
+**Response**: List of active cache keys.
+
+#### 10.2 Clear Site Config
+**Endpoint**: `GET /api/hashtagcms/private/cache/v1/clear-site-config`
+**Response**: Clears only site configuration cache.
+
+#### 10.3 Clear Load Data
+**Endpoint**: `GET /api/hashtagcms/private/cache/v1/clear-load-data`
+**Response**: Clears content/page data cache.
+
+#### 10.4 Clear All
+**Endpoint**: `GET /api/hashtagcms/private/cache/v1/clear-all`
+**Response**: Flushes all application cache.
+
+#### 10.5 Clear Specific Key
+**Endpoint**: `GET /api/hashtagcms/private/cache/v1/clear-key?key=KEY_NAME`
+**Response**: Clears a specific cache key.
 
 ## Authentication Flow
 

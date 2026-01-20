@@ -27,11 +27,20 @@ class CmsModuleInfo
 
         $segments = request()->segments();
 
-        //check if /admin/ has no controller next to it.
-        $name = (count($segments) > 1) ? $segments[1] : config('hashtagcmsadmin.cmsInfo.defaultPage');
+        // Assume the first segment is the admin base path (e.g. 'admin') and remove it
+        if (count($segments) > 0) {
+            array_shift($segments);
+        }
 
-        //Set in request to fetch it later
-        $request->module_info = $this->adminModule::getInfoByName($name);
+        $path = implode('/', $segments);
+
+        if (empty($path)) {
+            $controllerName = config('hashtagcmsadmin.cmsInfo.defaultPage');
+            $request->module_info = $this->adminModule::getInfoByName($controllerName);
+        } else {
+            // Use robust longest-prefix matching
+            $request->module_info = $this->adminModule::getModuleFromUrl($path);
+        }
 
         $result = $next($request);
 

@@ -96,13 +96,15 @@ trait HasCrudOperations
         if ($extraData != null) {
             $data = array_merge($data, $extraData);
         }
-
+        /*        
         $controller_name = request()->module_info->controller_name;
         $controller_view = request()->module_info->edit_view_name;
         $editView = ($controller_view == null || empty($controller_view)) ? $controller_name . '.addedit' : '.' . $controller_view;
         $editView = str_replace('/', '.', $editView);
+        */
+        $viewName = $this->getViewNames(request()->module_info, 'edit');
 
-        return htcms_admin_view($editView, $data);
+        return htcms_admin_view($viewName, $data);
     }
 
     /**

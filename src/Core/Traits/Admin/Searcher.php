@@ -69,12 +69,7 @@ trait Searcher
 
         }
 
-        $controller_name = request()->module_info->controller_name;
-        $controller_view = request()->module_info->list_view_name;
-        $listingView = ($controller_view == null || empty($controller_view)) ? $controller_name.'.listing' : '.'.$controller_view;
-        $listingView = str_replace('/', '.', $listingView);
-        //check here if module has in own folder
-        $viewName = [$listingView, 'common.listing']; //use view or default
+        $viewName = $this->getViewNames(request()->module_info, 'listing');
 
         if (request()->get('asJson') == 'true') {
             return $data;

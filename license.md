@@ -1,6 +1,6 @@
 # MIT License
 
-Copyright (c) Marghoob Suleman <marghoobsuleman@gmail.com>
+Copyright (c) HashtagCMS <hashtagcms.org@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
