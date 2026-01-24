@@ -1,0 +1,39 @@
+$body-font-size: 0.8rem;
+$body-color: #636b6f;
+$highlight: #f5008b;
+$highlight-sub: darkpink;
+$spinnerDegree: 360;
+
+$pagination-font-size: $body-font-size;
+$pagination-color: $body-color;
+$pagination-focus-color: white;
+$pagination-focus-bg: $highlight;
+$pagination-hover-color: white;
+$pagination-hover-bg: $highlight;
+$pagination-active-color: white;
+$pagination-active-bg: $highlight;
+
+/** Left Nav **/
+$left-background: #313131;
+$left-background-sub: #52514f;
+$left-nav-a-active-color: white;
+$left-nav-a-active-bg: $highlight;
+$left-nav-sub-a-active-color: white;
+$left-nav-sub-a-active-bg: #d50179;
+
+
+
+$dropdown-link-color: #666;
+$dropdown-link-hover-bg: $highlight-sub;
+$dropdown-link-active-bg: #666;
+
+$input-placeholder-color: #c3c3c3;
+
+$badge-primary: #007bff;
+$badge-secondary: #6c757d;
+$badge-success: #28a745;
+$badge-danger: #dc3545;
+$badge-warning: #ffc107;
+$badge-info: #17a2b8;
+$badge-light: #f8f9fa;
+$badge-dark: #343a40;

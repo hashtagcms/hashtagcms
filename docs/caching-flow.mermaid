@@ -1,0 +1,76 @@
+# Caching Architecture: Internal vs External Flows
+
+```mermaid
+flowchart TD
+    %% ---------------------------------------------------------
+    %% ENTRY POINT
+    %% ---------------------------------------------------------
+    IncomingReq([Incoming Request]) --> RouteType{Route Type?}
+
+    %% ---------------------------------------------------------
+    %% 1. INTERNAL LARAVEL APP FLOW (Monolithic)
+    %% ---------------------------------------------------------
+    RouteType -- "Web/Admin Route" --> InternalStart
+    
+    subgraph InternalApp [Internal Application Flow]
+        direction TB
+        InternalStart(Start Resolution) --> InternalToggle{Config: enable_cache?}
+        
+        InternalToggle -- False --> InternalFetchDB[Fetch from Local DB]
+        InternalToggle -- True --> InternalKeyGen[Gen Key: internal_...]
+        
+        InternalKeyGen --> InternalCheck{Exists in Cache?}
+        InternalCheck -- Yes --> InternalServe[Serve from memory/redis]
+        InternalCheck -- No --> InternalDetermineSource{Is External Mode?}
+        
+        %% This handles the "Hybrid" mode where Internal App consumes External Data
+        InternalDetermineSource -- Yes --> InternalFetchAPI[Fetch from Remote API]
+        InternalDetermineSource -- No --> InternalFetchDB
+        
+        InternalFetchDB --> InternalStore[Store in Cache]
+        InternalFetchAPI --> InternalStore
+    end
+
+    %% ---------------------------------------------------------
+    %% 2. EXTERNAL API FLOW (Headless Consumer)
+    %% ---------------------------------------------------------
+    RouteType -- "API Route (/api/...)" --> APIStart
+    
+    subgraph ExternalAPI [External API Service Flow]
+        direction TB
+        APIStart(Recieve API Request) --> APIToggle{Config: api_cache_enabled?}
+        
+        APIToggle -- False --> APILoadLogic[Execute ServiceLoader]
+        APIToggle -- True --> APIKeyGen[Gen Key: api_...]
+        
+        APIKeyGen --> APICheck{Exists in Redis?}
+        APICheck -- Yes --> APIServe[Return JSON Response]
+        APICheck -- No --> APILoadLogic
+        
+        APILoadLogic --> APIFetchDB[Query Database models]
+        APIFetchDB --> APIBuild[Build JSON Payload]
+        APIBuild --> APIStore[Store in Redis]
+    end
+
+    %% ---------------------------------------------------------
+    %% DATA STORES
+    %% ---------------------------------------------------------
+    InternalStore --> Redis[(Redis Cache)]
+    APIStore --> Redis
+    
+    InternalServe --> PageRender([Render Blade View])
+    APIServe --> JSONOut([Return JSON])
+    APIBuild --> JSONOut
+    InternalStore --> PageRender
+
+    %% ---------------------------------------------------------
+    %% KEY DIFFERENCES
+    %% ---------------------------------------------------------
+    classDef internal fill:#e1f5fe,stroke:#01579b,stroke-width:2px;
+    classDef external fill:#fff3e0,stroke:#e65100,stroke-width:2px;
+    classDef store fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,shape:cylinder;
+
+    class InternalApp,InternalStart,InternalToggle,InternalKeyGen,InternalCheck,InternalServe,InternalDetermineSource,InternalFetchDB,InternalFetchAPI,InternalStore internal;
+    class ExternalAPI,APIStart,APIToggle,APIKeyGen,APICheck,APIServe,APILoadLogic,APIFetchDB,APIBuild,APIStore external;
+    class Redis store;
+```

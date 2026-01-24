@@ -1,0 +1,130 @@
+<?php
+
+namespace HashtagCms\Core\Policies;
+
+use HashtagCms\Models\CmsPermission;
+use HashtagCms\Models\User;
+
+/**
+ * Class CustomModulePolicy
+ *
+ * Example policy for a custom module with additional permission checks.
+ *
+ * This demonstrates how to extend BaseCmsPolicy for custom modules
+ * while adding module-specific logic.
+ *
+ * @package HashtagCms\Core\Policies
+ */
+class CustomModulePolicy extends BaseCmsPolicy
+{
+    /**
+     * Determine whether the user can view the module.
+     *
+     * @param  \HashtagCms\Models\User|null  $user
+     * @param  \HashtagCms\Models\CmsPermission|null  $permission
+     * @return bool
+     */
+    public function view(?User $user, ?CmsPermission $permission): bool
+    {
+        return $this->canPerform($user, $permission, 'read');
+    }
+
+    /**
+     * Determine whether the user can create in the module.
+     *
+     * @param  \HashtagCms\Models\User|null  $user
+     * @param  \HashtagCms\Models\CmsPermission|null  $permission
+     * @return bool
+     */
+    public function create(?User $user, ?CmsPermission $permission): bool
+    {
+        return $this->canPerform($user, $permission, 'edit');
+    }
+
+    /**
+     * Determine whether the user can update in the module.
+     *
+     * @param  \HashtagCms\Models\User|null  $user
+     * @param  \HashtagCms\Models\CmsPermission|null  $permission
+     * @return bool
+     */
+    public function update(?User $user, ?CmsPermission $permission): bool
+    {
+        return $this->canPerform($user, $permission, 'edit');
+    }
+
+    /**
+     * Determine whether the user can delete in the module.
+     *
+     * @param  \HashtagCms\Models\User|null  $user
+     * @param  \HashtagCms\Models\CmsPermission|null  $permission
+     * @return bool
+     */
+    public function delete(?User $user, ?CmsPermission $permission): bool
+    {
+        return $this->canPerform($user, $permission, 'delete');
+    }
+
+    /**
+     * Example: Custom permission check with additional logic.
+     *
+     * This demonstrates how to add module-specific permission logic
+     * while still leveraging the base class functionality.
+     *
+     * @param  \HashtagCms\Models\User|null  $user
+     * @param  \HashtagCms\Models\CmsPermission|null  $permission
+     * @param  mixed  $resource
+     * @return bool
+     */
+    public function export(?User $user, ?CmsPermission $permission, $resource = null): bool
+    {
+        // First check basic permissions
+        if (!$this->canPerform($user, $permission, 'read')) {
+            return false;
+        }
+
+        // Add custom logic for export
+        // For example: check if user has export permission
+        if (!$this->hasPermissionTo('export')) {
+            return false;
+        }
+
+        // Additional custom checks
+        // For example: check if resource is exportable
+        if ($resource && method_exists($resource, 'isExportable')) {
+            return $resource->isExportable();
+        }
+
+        return true;
+    }
+
+    /**
+     * Example: Override canPerform for module-specific logic.
+     *
+     * You can override any base method to customize behavior for your module.
+     *
+     * @param  \HashtagCms\Models\User|null  $user
+     * @param  \HashtagCms\Models\CmsPermission|null  $permission
+     * @param  string  $action
+     * @return bool
+     */
+    protected function canPerform(?User $user, ?CmsPermission $permission, string $action): bool
+    {
+        // Call parent implementation first
+        $canPerform = parent::canPerform($user, $permission, $action);
+
+        if (!$canPerform) {
+            return false;
+        }
+
+        // Add module-specific checks here
+        // For example: check time-based restrictions
+        $currentHour = (int) date('H');
+        if ($action === 'delete' && ($currentHour < 9 || $currentHour > 17)) {
+            $this->logPermissionDenial($user, $permission, $action, 'outside_business_hours');
+            return false;
+        }
+
+        return true;
+    }
+}

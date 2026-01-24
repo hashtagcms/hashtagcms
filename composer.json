@@ -1,0 +1,48 @@
+{
+    "name": "hashtagcms/hashtagcms",
+    "description": "Hashtag CMS, Use it as Headless CMS or Bundled, API enabled, Admin Panel, Multisite, Multi-platform, Multilingual.\nThe Most powerful, fast and user-friendly platform. Made with PHP Laravel Framework.",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Marghoob Suleman",
+            "email": "marghoobsuleman@gmail.com",
+            "homepage": "https://www.marghoobsuleman.com"
+        }
+    ],
+    "homepage": "https://github.com/hashtagcms/hashtagcms",
+    "keywords": ["Laravel", "HashtagCms", "Marghoob Suleman", "Headless CMS", "CMS", "Mobile Api Supported CMS", "Hashtag Cms"],
+    "require": {
+        "guzzlehttp/guzzle": "^7.9",
+        "laravel/sanctum": "^4.0",
+        "usmanhalalit/laracsv": "^2.1"
+    },
+    "php": "^8.2",
+    "require-dev": {
+        "phpunit/phpunit": "^10.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "HashtagCms\\": "src/"
+        },
+        "files": [
+            "src/Core/Helpers/AdminHelper.php",
+            "src/Core/Helpers/FormHelper.php",
+            "src/Core/Helpers/FrontendHelper.php"
+        ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "HashtagCms\\Tests\\": "tests"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "HashtagCms\\HashtagCmsServiceProvider"
+            ],
+            "aliases": {
+                "HashtagCms": "HashtagCms\\Facades\\HashtagCms"
+            }
+        }
+    }
+}
