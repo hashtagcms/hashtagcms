@@ -83,7 +83,10 @@ class HashtagCmsServiceProvider extends ServiceProvider
         if ($this->app->runningInConsole()) {
             $this->bootForConsole();
         }
-        $this->bootForControllerToo();
+
+
+        // Register all package commands in one place
+        $this->registerPackageCommands();
 
     }
 
@@ -132,6 +135,7 @@ class HashtagCmsServiceProvider extends ServiceProvider
         $this->publishes([
             __DIR__ . '/../config/hashtagcms.php' => config_path('hashtagcms.php'),
             __DIR__ . '/../config/hashtagcmsadmin.php' => config_path('hashtagcmsadmin.php'),
+            __DIR__ . '/../config/hashtagcmsapi.php' => config_path('hashtagcmsapi.php'),
         ], $this->groupName . '.config');
 
         // Publishing the views.
@@ -145,7 +149,6 @@ class HashtagCmsServiceProvider extends ServiceProvider
         // php artisan vendor:publish --tag=hashtagcms.views.admin
         $this->publishes([
             __DIR__ . '/../resources/views/be' => resource_path('views/vendor/hashtagcms/be'),
-            __DIR__ . '/../resources/assets/be' => resource_path('assets/hashtagcms/be'),
         ], $this->groupName . '.views.admin');
 
         //Publishing the views for admin common
@@ -174,9 +177,6 @@ class HashtagCmsServiceProvider extends ServiceProvider
             __DIR__ . '/../resources/assets/js' => resource_path('assets/hashtagcms/js'),
             __DIR__ . '/../resources/support' => resource_path('assets/hashtagcms/support'),
         ], $this->groupName . '.assets');
-
-        // Register all package commands in one place
-        $this->registerPackageCommands();
 
     }
 
@@ -208,14 +208,7 @@ class HashtagCmsServiceProvider extends ServiceProvider
         ]);
     }
 
-    /**
-     * @deprecated This method is kept for backward compatibility
-     */
-    protected function bootForControllerToo()
-    {
-        // This method is now empty as all commands are registered in registerPackageCommands()
-        // It's kept for backward compatibility
-    }
+
 
     /**
      * Load routes

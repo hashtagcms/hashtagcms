@@ -90,7 +90,7 @@ return [
 
     /** Internal Cache */
     'enable_cache' => env('HASHTAGCMS_ENABLE_CACHE', true),
-    'internal_cache_prefix' => env('HASHTAGCMS_INTERNAL_CACHE_PREFIX', 'internal_'),
+    'internal_cache_prefix' => env('HASHTAGCMS_INTERNAL_CACHE_PREFIX', 'cms_'),
     'database_cache_prefix' => env('HASHTAGCMS_DATABASE_CACHE_PREFIX', 'db_'),
     'external_source_cache_prefix' => env('HASHTAGCMS_EXTERNAL_SOURCE_CACHE_PREFIX', 'ex_'),
     'cache_site_config_ttl' => env('HASHTAGCMS_CACHE_SITE_CONFIG_TTL', 30), // In minutes. Determines how often site config is loaded from DB/API. Use ?clear_cache=true to purge. 

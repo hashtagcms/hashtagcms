@@ -19,7 +19,8 @@ HashtagCMS is a powerful, headless-ready, and module-based Content Management Sy
 HashtagCMS supports a fully modular admin panel. You can easily integrate external packages (like HashtagCMS Pro) or override standard CRUD views directly from the database configuration, enabling seamless upgrades and customization.
 
 ### HashtagCMS ecosystem
-HashtagCMS is a part of HashtagCMS ecosystem. It is a collection of packages that can be used to build a website, app, or any other type of application.
+HashtagCMS is a part of HashtagCMS ecosystem. How we have structured the ecosystem is shown below.
+
 ![HashtagCMS Ecosystem](./docs/img/hashtagcms-ecosystem.png)
 
 
