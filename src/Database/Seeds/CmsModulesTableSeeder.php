@@ -65,7 +65,8 @@ class CmsModulesTableSeeder extends Seeder
             array('id' => '5000', 'name' => 'Module Properties', 'controller_name' => 'moduleproperty', 'display_name' => NULL, 'parent_id' => '13', 'sub_title' => 'Manage module properties', 'icon_css' => 'fa fa-cog', 'list_view_name' => NULL, 'edit_view_name' => NULL, 'position' => '30', 'created_at' => $date, 'updated_at' => $date, 'deleted_at' => NULL)
         );
 
-        if (DB::table($table_name)->get()->count() === 0) {
+        //fetch the record not the count. it fails when pro is already seeded
+        if (sizeof(DB::select("select 1 from $table_name where id=1")) === 0) {
             DB::table($table_name)->insert($cms_modules);
         } else {
             echo "SeedingError: `$table_name` table is not empty\n";

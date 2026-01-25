@@ -270,6 +270,10 @@ if (! function_exists('htcms_get_module_name')) {
      */
     function htcms_get_module_name($module_info)
     {
+        if ($module_info == null) {
+            return '';
+        }
+
         return Str::singular($module_info->name);
     }
 

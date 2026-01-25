@@ -51,7 +51,7 @@ class InfoLoader
     {
         $siteProp = SiteProp::where('name', '=', 'site_installed')->first();
 
-        return $siteProp['value'] == 1;
+        return $siteProp ? $siteProp['value'] == 1 : false;
     }
 
     /**
