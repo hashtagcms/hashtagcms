@@ -1,6 +1,6 @@
 # Console Commands Reference
 
-HashtagCMS provides several artisan commands to help you manage your CMS installation.
+HashtagCms provides several artisan commands to help you manage your CMS installation.
 
 ## Available Commands
 
@@ -8,7 +8,7 @@ HashtagCMS provides several artisan commands to help you manage your CMS install
 
 #### cms:install
 
-Install HashtagCMS with database migrations and seeders.
+Install HashtagCms with database migrations and seeders.
 
 **Usage**:
 ```bash
@@ -31,7 +31,7 @@ php artisan cms:install
 
 #### cms:version
 
-Display the current HashtagCMS version.
+Display the current HashtagCms version.
 
 **Usage**:
 ```bash
@@ -40,7 +40,7 @@ php artisan cms:version
 
 **Output**:
 ```
-HashtagCMS Version: 1.6.0
+HashtagCms Version: 1.6.0
 ```
 
 ---
@@ -169,7 +169,7 @@ php artisan cms:setup-standalone {--force}
 
 **What it does**:
 - Publishes configuration, assets, and views
-- Asks for HashtagCMS API URL, Token, and Secret
+- Asks for HashtagCms API URL, Token, and Secret
 - Updates `.env` file with provided credentials
 - Sets `HASHTAGCMS_LOAD_MODULE_FROM_DB=false`
 
@@ -347,7 +347,7 @@ Publishes everything at once.
 ### Fresh Installation
 
 ```bash
-# 1. Install HashtagCMS
+# 1. Install HashtagCms
 php artisan cms:install
 
 # 2. Publish assets

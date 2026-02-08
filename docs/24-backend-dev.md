@@ -1,6 +1,6 @@
 # Backend Development
 
-HashtagCMS Admin Panel is built on Laravel and VueJs or Blade (standard).
+HashtagCms Admin Panel is built on Laravel and VueJs or Blade (standard).
 
 ## Extensibility
 You can add new menus and features to the Admin Panel without hacking the core.

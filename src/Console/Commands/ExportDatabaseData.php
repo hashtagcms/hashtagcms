@@ -423,7 +423,7 @@ class ExportDatabaseData extends Command
         $content .= "namespace Database\\Seeders;\n\n";
         $content .= "use HashtagCms\\Database\\Seeds\\BaseSeeder as PackageBaseSeeder;\n\n";
         $content .= "/**\n";
-        $content .= " * Base seeder class extending the HashtagCMS package BaseSeeder\n";
+        $content .= " * Base seeder class extending the HashtagCms package BaseSeeder\n";
         $content .= " */\n";
         $content .= "abstract class BaseSeeder extends PackageBaseSeeder\n";
         $content .= "{\n";

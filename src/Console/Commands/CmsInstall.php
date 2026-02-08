@@ -108,7 +108,7 @@ class CmsInstall extends Command
 
     private function installNow($installation)
     {
-        $this->alert('Installing HashtagCMS. Please wait...');
+        $this->alert('Installing HashtagCms. Please wait...');
 
         $this->info('> Creating Tables...');
 

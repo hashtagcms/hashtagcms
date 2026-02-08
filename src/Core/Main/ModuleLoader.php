@@ -168,6 +168,7 @@ class ModuleLoader
     public function getCustomModule(mixed $module): ?array
     {
         $handler = $module->data_handler;
+        info("ModuleLoader: handler: ".$handler. " module_name: ".$module->name.' check: '.(strpos($handler, '@') !== false));
         $data = [];
         try {
             if (strpos($handler, '@') !== false) {
@@ -192,7 +193,7 @@ class ModuleLoader
                     info("ModuleLoader: Class $class not found");
                 }
             } else {
-                info("ModuleLoader: Invalid handler format. Expected Class@method");
+                //info("ModuleLoader: Invalid handler format. Expected Class@method");
             }
         } catch (\Exception $e) {
             info("ModuleLoader: Error executing custom module: " . $e->getMessage());

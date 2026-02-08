@@ -1,7 +1,7 @@
 # Middleware & Security
 
 ## Core Middleware
-HashtagCMS ships with critical middleware in `src/Http/Middleware`.
+HashtagCms ships with critical middleware in `src/Http/Middleware`.
 
 ### `Interceptor`
 The most important one. It:

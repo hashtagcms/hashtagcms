@@ -1,10 +1,10 @@
-# HashtagCMS
+# HashtagCms
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/hashtagcms/hashtagcms.svg?style=flat-square)](https://packagist.org/packages/hashtagcms/hashtagcms)
 [![Total Downloads](https://img.shields.io/packagist/dt/hashtagcms/hashtagcms.svg?style=flat-square)](https://packagist.org/packages/hashtagcms/hashtagcms)
 [![License](https://img.shields.io/packagist/l/hashtagcms/hashtagcms.svg?style=flat-square)](https://packagist.org/packages/hashtagcms/hashtagcms)
 
-HashtagCMS is a powerful, headless-ready, and module-based Content Management System built on Laravel. It separates the "Frontend/Headless" logic from the "Backend/Admin" logic, allowing you to manage multiple sites, platforms (Web, Mobile), and languages from a single installation.
+HashtagCms is a powerful, headless-ready, and module-based Content Management System built on Laravel. It separates the "Frontend/Headless" logic from the "Backend/Admin" logic, allowing you to manage multiple sites, platforms (Web, Mobile), and languages from a single installation.
 
 ## Key Features
 
@@ -13,15 +13,15 @@ HashtagCMS is a powerful, headless-ready, and module-based Content Management Sy
 -   **Everything is a Module**: drag-and-drop module placement for any part of the page.
 -   **Smart Queries**: Fetch data from SQL using JSON configuration (no code needed).
 -   **Extensible Admin**: Flexible view resolution supporting custom packages and theme overrides.
--   **Premium Features**: MongoDB support, (SSO, and Figma Integration (coming soon)).
+-   **Advanced Features**: MongoDB support, (SSO, and Figma Integration (coming soon)).
 
 ### Modular Admin Architecture
-HashtagCMS supports a fully modular admin panel. You can easily integrate external packages (like HashtagCMS Pro) or override standard CRUD views directly from the database configuration, enabling seamless upgrades and customization.
+HashtagCms supports a fully modular admin panel. You can easily integrate external packages (like HashtagCms Extended) or override standard CRUD views directly from the database configuration, enabling seamless upgrades and customization.
 
-### HashtagCMS ecosystem
-HashtagCMS is a part of HashtagCMS ecosystem. How we have structured the ecosystem is shown below.
+### HashtagCms ecosystem
+HashtagCms is a part of HashtagCms ecosystem. How we have structured the ecosystem is shown below.
 
-![HashtagCMS Ecosystem](./docs/img/hashtagcms-ecosystem.png)
+![HashtagCms Ecosystem](./docs/img/hashtagcms-ecosystem.png)
 
 
 
@@ -56,7 +56,7 @@ composer require hashtagcms/hashtagcms
 php artisan cms:install
 ```
 
-## Hashtag CMS installation guidelines
+## HashtagCms installation guidelines
 
 - Open `.env` file and update `APP_URL`, and make sure database information is correct.
 
@@ -115,5 +115,5 @@ Contributions are welcome! Please see [contributing.md](contributing.md) for det
 
 ## License  
 
-The core of HashtagCMS is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
-Premium features (MongoDB, SSO) require a commercial license. See [Licensing](docs/18-licensing.md).
+The core of HashtagCms is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Advanced features (MongoDB, SSO) are part of the Extended version. See [Feature Guide](docs/18-feature-guide.md).

@@ -1,6 +1,6 @@
-# SSO Integration (Pro+) @todo: Coming soon
+# SSO Integration (Extended+) @todo: Coming soon
 
-Enable Enterprise Single Sign-On (SSO) for your Admin Panel.
+Enable Advanced Single Sign-On (SSO) for your Admin Panel.
 
 ## supported Providers
 -   Google Workspace (OAuth)
@@ -23,7 +23,7 @@ In `config/hashtagcms.php` (or published config):
 ## How It Works
 1.  Admin Login page shows "Login with SSO" button.
 2.  User is redirected to IdP.
-3.  On return, HashtagCMS checks if the email exists in `users` table.
+3.  On return, HashtagCms checks if the email exists in `users` table.
 4.  If yes, logs them in.
 5.  If configured, auto-provisions the user with a default "Editor" role.
 

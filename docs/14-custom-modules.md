@@ -1,6 +1,6 @@
 # Custom Modules (Advanced)
 
-HashtagCMS supports two powerful ways to create custom modules with PHP logic:
+HashtagCms supports two powerful ways to create custom modules with PHP logic:
 1.  **Class-Based Modules** (Type: `Custom` or `Service`)
 2.  **Dynamic Modules** (Custom Data Types)
 

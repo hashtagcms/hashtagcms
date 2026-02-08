@@ -1,6 +1,6 @@
 # API Reference
 
-HashtagCMS provides a robust REST API for Headless implementations (React, Vue, Mobile Apps).
+HashtagCms provides a robust REST API for Headless implementations (React, Vue, Mobile Apps).
 
 ## Overview
 -   **Base URL**: `https://your-domain.com`

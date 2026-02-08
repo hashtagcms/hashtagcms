@@ -1,6 +1,6 @@
 # Module Types Deep Dive
 
-HashtagCMS offers powerful module types that determine **how** data is fetched. This guide explains how to configure each type in the Admin Panel.
+HashtagCms offers powerful module types that determine **how** data is fetched. This guide explains how to configure each type in the Admin Panel.
 
 ## 1. Static Module
 Displays static content managed via the CMS editor.

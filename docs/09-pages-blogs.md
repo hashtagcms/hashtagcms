@@ -1,6 +1,6 @@
 # Pages & Blog Posts
 
-In HashtagCMS, "Pages" differ from "Categories".
+In HashtagCms, "Pages" differ from "Categories".
 -   **Category**: A structural URL (e.g., `/blog`). It typically displays a **List of items** (via a Module).
 -   **Page**: An individual content item (e.g., `/blog/my-first-post`). It hangs **under** a Category.
 

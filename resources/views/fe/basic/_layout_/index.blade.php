@@ -60,10 +60,8 @@
     </script>
 @endif
 <script>
-    try {
-        HashtagCms.Analytics.init(_siteProps_);
-        HashtagCms.AppConfig.setConfigData(window.Laravel.configData);
-        //HashtagCms.Analytics.trackPageView(_siteProps_.categoryName + ""+_siteProps_.pageName)
+    try {        
+        HashtagCms.Analytics.trackCmsPage({categoryId: _siteProps_.categoryId, pageId: _siteProps_.pageId})
     } catch (e) {
         console.error(e.message, "@", e.fileName);
     }

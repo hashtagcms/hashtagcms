@@ -1,10 +1,10 @@
 # Hooks & Events
 
-HashtagCMS allows you to tap into its lifecycle without modifying the core using its Hook system (Zones) and standard Laravel Events.
+HashtagCms allows you to tap into its lifecycle without modifying the core using its Hook system (Zones) and standard Laravel Events.
 
 ## CMS Hooks (Zones)
 
-In HashtagCMS terminology, a "Hook" is primarily a **Zone** or **Position** within a theme where modules can be placed.
+In HashtagCms terminology, a "Hook" is primarily a **Zone** or **Position** within a theme where modules can be placed.
 Examples: `Header`, `Footer`, `LeftSidebar`, `HomePageTop`.
 
 -   **Management**: Go to **Admin > Hooks** to create or manage hooks.
@@ -15,7 +15,7 @@ Examples: `Header`, `Footer`, `LeftSidebar`, `HomePageTop`.
 
 ## System Events (Laravel Events)
 
-HashtagCMS fires standard Laravel events during its execution lifecycle. You can define listeners in your `EventServiceProvider` to execute custom logic (e.g., logging, analytics, data modification).
+HashtagCms fires standard Laravel events during its execution lifecycle. You can define listeners in your `EventServiceProvider` to execute custom logic (e.g., logging, analytics, data modification).
 
 ### Available Events
 

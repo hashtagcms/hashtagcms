@@ -1,8 +1,8 @@
-# Introduction to HashtagCMS
+# Introduction to HashtagCms
 
-## What is HashtagCMS?
+## What is HashtagCms?
 
-HashtagCMS is a powerful, flexible, and modern Content Management System built on the Laravel framework. Far from being "just another CMS", it is a **Headless-First**, **Module-Based** platform designed for scalability and multi-tenancy.
+HashtagCms is a powerful, flexible, and modern Content Management System built on the Laravel framework. Far from being "just another CMS", it is a **Headless-First**, **Module-Based** platform designed for scalability and multi-tenancy.
 
 It decouples content management (Admin) from presentation (Frontend), enabling you to work both as a traditional CMS using standard Laravel Blade or as a headless CMS powering mobile applications and modern JavaScript frameworks (React, Vue, etc.) via its robust API. This makes it perfect for complex, multi-platform projects that demand flexibility.
 
@@ -99,34 +99,34 @@ It decouples content management (Admin) from presentation (Frontend), enabling y
 - **CMS Logs**: Audit trail for all operations
 - **Analytics**: Built-in analytics support
 - **Comments**: Comment system for content
-- **Subscribers**: Newsletter subscription management
+- **Subscribers**: Newsletter updates management
 - **Contacts**: Contact form management
 - **Galleries**: Image gallery management with tags
 
-## Premium Features
+## Advanced Features
 
-HashtagCMS offers premium features through a flexible licensing system:
+HashtagCms offers advanced features through a tier-based system:
 
-### 🎯 License Tiers
+### 🎯 Feature Tiers
 
 | Tier | Features | Max Users |
 |------|----------|-----------|
 | **Free** | Core CMS functionality | 5 |
-| **Starter** | + MongoDB Support | 100 |
-| **Enterprise** | + SSO Login, Figma Integration | Unlimited |
+| **Extended** | + MongoDB Support | 100 |
+| **Advanced** | + SSO Login, Figma Integration | Unlimited |
 
-### Premium Capabilities
+### Advanced Capabilities
 
-1. **MongoDB Support** (Starter+)
+1. **MongoDB Support** (Extended+)
    - Use MongoDB as your database backend
    - NoSQL flexibility for content storage
    - Better performance for large datasets
 
-2. **SSO Login** (Enterprise)
+2. **SSO Login** (Advanced)
    - Single Sign-On with SAML
    - OAuth integration
-   - Enterprise authentication
-3. **Figma Integration** (Enterprise)
+   - System-wide authentication
+3. **Figma Integration** (Advanced)
    - Import designs directly from Figma
    - Design-to-CMS workflow
    - Automated component generation
@@ -165,9 +165,9 @@ HashtagCMS offers premium features through a flexible licensing system:
 - IoT devices and digital signage
 
 ### Multi-Site Platform
-- Agency managing multiple client sites
+- Agency managing multiple project sites
 - Multi-brand corporate websites
-- SaaS platforms with customer sites
+- SaaS platforms with tenant sites
 - Educational institutions with department sites
 
 ### Multi-Platform Content
@@ -180,13 +180,13 @@ HashtagCMS offers premium features through a flexible licensing system:
 
 - **Framework**: Laravel 10+
 - **PHP**: 8.2+
-- **Database**: MySQL/MariaDB (MongoDB with premium license)
+- **Database**: MySQL/MariaDB (MongoDB with Extended tier)
 - **Authentication**: Laravel Sanctum
 - **Frontend**: Blade templates, Vue.js support
 - **API**: RESTful JSON API
 - **Assets**: Webpack for compilation
 
-## What Makes HashtagCMS Different?
+## What Makes HashtagCms Different?
 
 1. **True Multi-Tenancy**: Not just multi-site, but true isolation with shared infrastructure
 2. **Platform Agnostic**: Built for web, mobile, and any platform from day one
@@ -198,7 +198,7 @@ HashtagCMS offers premium features through a flexible licensing system:
 
 ## Next Steps
 
-- [Installation Guide](02-installation.md) - Install HashtagCMS
+- [Installation Guide](02-installation.md) - Install HashtagCms
 - [Quick Start](03-quick-start.md) - Get started quickly
 - [Architecture Overview](04-architecture.md) - Understand the system
 
@@ -213,6 +213,6 @@ HashtagCMS offers premium features through a flexible licensing system:
 
 - **GitHub**: https://github.com/hashtagcms/hashtagcms
 - **Packagist**: https://packagist.org/packages/hashtagcms/hashtagcms
-- **Author**: Marghoob Suleman
-- **Email**: marghoobsuleman@gmail.com
-- **Website**: https://www.marghoobsuleman.com
+- **Author**: HashtagCms Team
+- **Email**: hashtagcms.org@gmail.com
+- **Website**: https://hashtagcms.org

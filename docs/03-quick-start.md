@@ -1,6 +1,6 @@
 # Quick Start Guide
 
-This guide will help you get started with HashtagCMS quickly by walking through common tasks.
+This guide will help you get started with HashtagCms quickly by walking through common tasks.
 
 ## First Login
 

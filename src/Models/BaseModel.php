@@ -17,9 +17,9 @@ if (false) {
 }
 
 // Dynamic Parent Resolution
-// Check if the Pro package is installed and has a FeatureLoader
-if (class_exists('HashtagCmsPro\FeatureLoader')) {
-    \HashtagCmsPro\FeatureLoader::boot();
+// Check if the Extended package is installed and has a FeatureLoader
+if (class_exists('HashtagCmsExtended\FeatureLoader')) {
+    \HashtagCmsExtended\FeatureLoader::boot();
 }
 
 // Default Fallback: Use standard Eloquent Model if the alias hasn't been created yet

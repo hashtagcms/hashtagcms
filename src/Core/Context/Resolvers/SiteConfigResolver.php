@@ -76,6 +76,10 @@ class SiteConfigResolver implements ContextResolver
 
             }
 
+            if(empty($siteContext)) {
+                $siteContext = config('hashtagcms.context');
+            }
+
             $siteDataInfo = $this->infoLoader->geSiteInfoByContextAndDomain($siteContext, $domain, $fullDomain);
             
             if ($siteDataInfo == null) {

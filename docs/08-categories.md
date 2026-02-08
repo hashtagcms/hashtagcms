@@ -1,6 +1,6 @@
 # Category Management
 
-Categories are the backbone of your site's structure in HashtagCMS. Unlike simple "blog tags", Categories here represent the **Site Map** and **Page Hierarchy**.
+Categories are the backbone of your site's structure in HashtagCms. Unlike simple "blog tags", Categories here represent the **Site Map** and **Page Hierarchy**.
 
 ## Concept
 A Category acts as a container for:

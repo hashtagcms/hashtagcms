@@ -50,7 +50,7 @@ if (! function_exists('htcms_admin_asset')) {
     {
         $preFix = Str::contains($url, '?') ? '&' : '?';
         $path = htcms_admin_config('theme_assets');
-        $appUrl = env('APP_URL');
+        $appUrl = htcms_admin_config('app_url');
 
         return $appUrl.'/'.$path.'/'.$url.$preFix.'verions='.htcms_admin_config('version');
     }

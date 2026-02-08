@@ -18,7 +18,7 @@
     - User Profile Update
     - Analytics Publish
     - Contact Form
-    - Subscription Form
+    - Configuration Form
     - Cache Management
 - Documentation: Updated API documentation for cache management and rate limits.
 

@@ -8,7 +8,7 @@
     <link rel='shortcut icon' href='{{htcms_admin_asset("img/favicon.png")}}'>
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('header_title', 'HashtagCMS') </title>
+    <title>@yield('header_title', 'HashtagCms') </title>
     @php
         $resource_dir = htcms_admin_config('resource_dir');
     @endphp
@@ -16,17 +16,36 @@
     <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"
         type="text/css">
     <link rel="stylesheet" type="text/css" href="{{ htcms_admin_asset('css/app.css') }}" />
+    
     <script>
-        window.Laravel = {!! json_encode([
-    'csrfToken' => csrf_token()
-]) !!};
-    </script>
+        (function() {
+            const htcmsAdminConfig = (() => {
+                try {
+                    const config = {!! htcms_admin_config() ?: '{}' !!};
+                    const parsed = typeof config === 'object' ? config : JSON.parse(config);
+                    return (parsed && typeof parsed === 'object') ? parsed : {};
+                } catch (e) {
+                    console.error("HashtagCms: Failed to parse adminConfig", e);
+                    return {};
+                }
+            })();
 
-    <script>
-        window.Laravel.htcmsAdminConfig = function (key) {
-            return window.Laravel.adminConfig[key];
-        };
-        window.Laravel.adminConfig = @php echo htmlspecialchars_decode(htcms_admin_config(), ENT_QUOTES) @endphp
+            window.HashtagCms = {
+                ...(window.HashtagCms || {}),
+                csrfToken: "{{ csrf_token() }}",
+                adminConfig: htcmsAdminConfig
+            };            
+
+            /** deprecated */
+            window.Laravel = {
+                ...(window.Laravel || {}),
+                csrfToken: "{{ csrf_token() }}",
+                adminConfig: htcmsAdminConfig,
+                htcmsAdminConfig: function (key) {
+                    return (window.Laravel.adminConfig && window.Laravel.adminConfig[key]) ? window.Laravel.adminConfig[key] : null;
+                }
+            };
+        })();
     </script>
     @stack('links')
 </head>

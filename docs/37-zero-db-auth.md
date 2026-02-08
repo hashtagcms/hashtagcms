@@ -1,6 +1,6 @@
 # Zero-Database (Stateless) Authentication
 
-HashtagCMS supports a "Zero Dependencies" mode for Frontend (Headless) applications. This allows you to run a frontend instance (e.g., in a Docker container) without needing a local database (like SQLite or MySQL) to handle user sessions.
+HashtagCms supports a "Zero Dependencies" mode for Frontend (Headless) applications. This allows you to run a frontend instance (e.g., in a Docker container) without needing a local database (like SQLite or MySQL) to handle user sessions.
 
 Instead of writing users to a local database, the system validates the session against the External API and stores the user identity in memory for the request duration.
 

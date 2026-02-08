@@ -1,6 +1,6 @@
 # MongoDB Support (Starter+)
 
-HashtagCMS Pro allows you to store your content in MongoDB instead of MySQL. This is ideal for high-volume content sites where schema flexibility is key.
+HashtagCms Extended allows you to store your content in MongoDB instead of MySQL. This is ideal for high-volume content sites where schema flexibility is key.
 
 ## Requirements
 -   Starter License or higher.

@@ -418,15 +418,16 @@ if (!function_exists('htcms_get_site_props')) {
 if (!function_exists('htcms_trans')) {
     /**
      * Translate by key
-     * Priority: HashtagCMS module -> Lang file -> substring after last dot
+     * Priority: HashtagCms module -> Lang file -> substring after last dot
      *
      * @param string $key
+     * @param string|null $default
      */
-    function htcms_trans(string $key): string
+    function htcms_trans(string $key, ?string $default = null): string
     {
         // Try precise match first
         // e.g., "hashtagcms::file.key" or "auth.failed"
-        $str = __($key); 
+        $str = __($key);
 
         // If not found (returns key), and it is a namespaced key
         $isHashtag = str_contains($key, 'hashtagcms::');
@@ -437,17 +438,22 @@ if (!function_exists('htcms_trans')) {
             $keyWithoutNamespace = str_replace('hashtagcms::', '', $key);
             $str = __($keyWithoutNamespace);
         }
-        
+
         // If still not found (returns original key or modified key)
-        if ($str === $key || $str === str_replace('hashtagcms::', '', $key) ) {
-             // Fallback: If it has dot, return the part after the last dot
-             // "messages.welcome" -> "welcome"
-             // "title" -> "title"
-             if (str_contains($key, '.')) {
-                 $str = substr($key, strrpos($key, '.') + 1);
-             } else {
-                 $str = $key;
-             }
+        if ($str === $key || (isset($keyWithoutNamespace) && $str === $keyWithoutNamespace)) {
+            // Return default if provided
+            if ($default !== null) {
+                return $default;
+            }
+
+            // Fallback: If it has dot, return the part after the last dot
+            // "messages.welcome" -> "welcome"
+            // "title" -> "title"
+            if (str_contains($key, '.')) {
+                $str = substr($key, strrpos($key, '.') + 1);
+            } else {
+                $str = $key;
+            }
         }
 
         return $str;

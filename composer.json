@@ -4,13 +4,13 @@
     "license": "MIT",
     "authors": [
         {
-            "name": "Marghoob Suleman",
-            "email": "marghoobsuleman@gmail.com",
-            "homepage": "https://www.marghoobsuleman.com"
+            "name": "HashtagCms",
+            "email": "hashtagcms.org@gmail.com",
+            "homepage": "https://hashtagcms.org"
         }
     ],
     "homepage": "https://github.com/hashtagcms/hashtagcms",
-    "keywords": ["Laravel", "HashtagCms", "Marghoob Suleman", "Headless CMS", "CMS", "Mobile Api Supported CMS", "Hashtag Cms"],
+    "keywords": ["Laravel", "HashtagCms", "Headless CMS", "CMS", "Mobile Api Supported CMS", "Hashtag Cms"],
     "require": {
         "guzzlehttp/guzzle": "^7.9",
         "laravel/sanctum": "^4.0",

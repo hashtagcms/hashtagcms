@@ -9,11 +9,20 @@ abstract class TestCase extends \Tests\TestCase
     // use CreatesApplication; // Not needed as we run in host app context usually or use Testbench
     use \Illuminate\Foundation\Testing\RefreshDatabase;
 
+    /**
+     * Whether to auto-seed the database in setUp.
+     * Set to false by default - tests should explicitly call seed() or installSite() when needed.
+     */
+    protected bool $autoSeed = false;
+
     protected function setUp(): void
     {
         parent::setUp();
-        // We must seed because the system expects Site(1), User(1) etc to exist for installation
-        $this->seed(\HashtagCms\Database\Seeds\HashtagCmsDatabaseSeeder::class);
+        
+        // Only seed if autoSeed is enabled (opt-in, not default)
+        if ($this->autoSeed) {
+            $this->seed(\HashtagCms\Database\Seeds\HashtagCmsDatabaseSeeder::class);
+        }
         
         $host = parse_url(env('APP_URL'), PHP_URL_HOST);
         // Map current host to 'web' context for testing
@@ -21,6 +30,47 @@ abstract class TestCase extends \Tests\TestCase
         $domains = config('hashtagcms.domains');
         $domains[$host] = 'web';
         config(['hashtagcms.domains' => $domains]);
+    }
+
+    /**
+     * Check if the site is already installed.
+     * 
+     * @return bool
+     */
+    protected function isSiteInstalled(): bool
+    {
+        try {
+            if (!\Illuminate\Support\Facades\Schema::hasTable('site_props')) {
+                return false;
+            }
+            $prop = \HashtagCms\Models\SiteProp::where('name', 'site_installed')->first();
+            return $prop && $prop->value == 1;
+        } catch (\Exception $e) {
+            return false;
+        }
+    }
+
+    /**
+     * Ensure the site is NOT installed before running tests that require fresh installation.
+     * Skips the test if already installed.
+     */
+    protected function ensureSiteNotInstalled(): void
+    {
+        if ($this->isSiteInstalled()) {
+            $this->markTestSkipped('Site is already installed. This test requires a fresh database.');
+        }
+    }
+
+    /**
+     * Ensure the site IS installed before running tests that require installation.
+     * Seeds and installs if not already installed.
+     */
+    protected function ensureSiteInstalled(): void
+    {
+        if (!$this->isSiteInstalled()) {
+            $this->seed(\HashtagCms\Database\Seeds\HashtagCmsDatabaseSeeder::class);
+            $this->installSite();
+        }
     }
 
     /**
@@ -75,11 +125,11 @@ abstract class TestCase extends \Tests\TestCase
     {
         $now = now();
         
-        // 1. Create Site
+        // 1. Create Site (note: sites table uses lang_id, not lang)
         $siteId = \Illuminate\Support\Facades\DB::table('sites')->insertGetId([
             'name' => 'Test Site',
             'context' => $context,
-            'lang' => $lang,
+            'lang_id' => 1,
             'category_id' => 1,
             'theme_id' => 1,
             'domain' => 'localhost',

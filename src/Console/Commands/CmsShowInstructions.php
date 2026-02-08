@@ -48,7 +48,7 @@ class CmsShowInstructions extends Command
                                   |___/                     
 ");
         $this->line("");
-        $this->comment("Welcome to HashtagCMS Starter Kit!");
+        $this->comment("Welcome to HashtagCms Starter Kit!");
         $this->line("");
         $this->info("To complete the installation, please follow these steps:");
         $this->line("");

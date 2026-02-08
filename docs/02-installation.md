@@ -1,10 +1,10 @@
 # Installation Guide
 
-This guide will walk you through installing HashtagCMS step by step.
+This guide will walk you through installing HashtagCms step by step.
 
 ## Prerequisites
 
-Before installing HashtagCMS, ensure your system meets these requirements:
+Before installing HashtagCms, ensure your system meets these requirements:
 
 ### System Requirements
 
@@ -36,7 +36,7 @@ composer create-project laravel/laravel mysite
 cd mysite
 ```
 
-### Step 2: Install HashtagCMS Package
+### Step 2: Install HashtagCms Package
 
 ```bash
 composer require hashtagcms/hashtagcms
@@ -47,7 +47,7 @@ composer require hashtagcms/hashtagcms
 Open the `.env` file and configure your application:
 
 ```env
-APP_NAME="My HashtagCMS Site"
+APP_NAME="My HashtagCms Site"
 APP_ENV=local
 APP_KEY=
 APP_DEBUG=true
@@ -280,11 +280,11 @@ For production:
 npm run build
 ```
 
-## Premium Features Setup
+## Extended Features Setup
 
 ### MongoDB Support (Starter Tier+)
 
-If you have a Pro license or higher and want to use MongoDB:
+If you have a Extended license or higher and want to use MongoDB:
 
 1. Install MongoDB driver:
 ```bash
@@ -411,4 +411,4 @@ If you encounter issues during installation:
 1. Check [Troubleshooting](29-troubleshooting.md)
 2. Review [FAQ](33-faq.md)
 3. Check GitHub issues: https://github.com/hashtagcms/hashtagcms/issues
-4. Contact support: marghoobsuleman@gmail.com
+4. Contact support: hashtagcms.org@gmail.com

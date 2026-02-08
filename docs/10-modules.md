@@ -1,6 +1,6 @@
 # Modules - Complete Guide
 
-Modules are the heart of HashtagCMS's content delivery system. They define how data is fetched, processed, and displayed.
+Modules are the heart of HashtagCms's content delivery system. They define how data is fetched, processed, and displayed.
 
 ## What are Modules?
 
@@ -13,7 +13,7 @@ Modules are reusable components that:
 
 ## Module Types
 
-HashtagCMS supports six different module types, each designed for specific use cases.
+HashtagCms supports six different module types, each designed for specific use cases.
 
 ### 1. Static Module
 

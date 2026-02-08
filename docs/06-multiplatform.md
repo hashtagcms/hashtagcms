@@ -1,6 +1,6 @@
 # Multi-Platform Support
 
-In today's world, content needs to be everywhere: Desktop, Mobile, Smart Watch, or Kiosk. HashtagCMS handles this via **Platforms**.
+In today's world, content needs to be everywhere: Desktop, Mobile, Smart Watch, or Kiosk. HashtagCms handles this via **Platforms**.
 
 ## What is a Platform?
 A "Platform" is a delivery target. Default platforms included are:
@@ -14,7 +14,7 @@ You might want your "Home Page" to look completely different on a Mobile App ver
 - **Website**: Uses a robust "Mega Menu" module.
 - **Mobile App**: Uses a lightweight "Hamburger API" module.
 
-In HashtagCMS, you assign modules to a **(Site, Category, Platform)** tuple.
+In HashtagCms, you assign modules to a **(Site, Category, Platform)** tuple.
 This means for the **Same Category** (e.g., "Home"), you can have:
 - **Web Platform**: Assigned Modules A, B, C.
 - **iOS Platform**: Assigned Modules X, Y, Z.

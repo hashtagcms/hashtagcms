@@ -224,7 +224,7 @@ class HashtagCmsServiceProvider extends ServiceProvider
             $route = $event->route;
             $middleware = $route->middleware();
 
-            // If this route uses the 'interceptor' middleware (HashtagCMS frontend routes)
+            // If this route uses the 'interceptor' middleware (HashtagCms frontend routes)
             if (in_array('interceptor', $middleware)) {
                 // Get additional middleware from config
                 $additionalMiddleware = config('hashtagcms.additional_middleware', []);
@@ -240,7 +240,7 @@ class HashtagCmsServiceProvider extends ServiceProvider
                 }
 
                 // Log the final middleware stack for debugging
-                //info('HashtagCMS route middleware: ' . implode(', ', $route->middleware()));
+                //info('HashtagCms route middleware: ' . implode(', ', $route->middleware()));
             }
         });
 

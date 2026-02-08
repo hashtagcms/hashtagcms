@@ -1,6 +1,6 @@
-# Caching in HashtagCMS
+# Caching in HashtagCms
 
-HashtagCMS includes a robust caching layer powered by Redis to ensure high performance and low latency for API responses. This document outlines how caching works, how to configure it, and how to manage the cache via API.
+HashtagCms includes a robust caching layer powered by Redis to ensure high performance and low latency for API responses. This document outlines how caching works, how to configure it, and how to manage the cache via API.
 
 ## Overview
 
@@ -49,7 +49,7 @@ The following public API endpoints are automatically cached:
 
 ## Cache Management API
 
-HashtagCMS provides specific endpoints to manage the cache programmatically via the `CacheController`.
+HashtagCms provides specific endpoints to manage the cache programmatically via the `CacheController`.
 
 > **Note**: As of the latest version, all cache management endpoints are **protected** and require authentication using a valid Sanctum Bearer Token.
 

@@ -1,7 +1,7 @@
 # Performance Optimization
 
 ## 1. Module Caching (Critical)
-HashtagCMS allows you to cache individual modules to drastically reduce database queries.
+HashtagCms allows you to cache individual modules to drastically reduce database queries.
 
 **Where is it?**
 Go to **Admin > Site > Site Settings (Module Assignment)**. When you assign a module to a Category/Hook, you will see a field for **Cache Group** (or Cache).

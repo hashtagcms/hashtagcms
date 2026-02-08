@@ -1,6 +1,6 @@
 # Theme Development
 
-A Theme in HashtagCMS controls the visual presentation. 
+A Theme in HashtagCms controls the visual presentation. 
 - **Theme Assets**: `hashtagcms-git/resources/assets/fe/{theme_name}` (JS, CSS, Images, etc.)
 - **Theme Views**: `hashtagcms-git/resources/views/fe/{theme_name}` (Blade templates)
 

@@ -98,10 +98,26 @@ Route::middleware(['api'])->prefix('api/hashtagcms/public')->group(function () u
     });
 
     /**
-     * Subscribe: Submit
+     * Newsletter: Submit
      */
-    Route::middleware([config('hashtagcmsapi.throttle_subscribe', 'throttle:10,1')])->post('common/v1/subscribe', function (Request $request) use ($callable) {
-        return app()->call($callable . 'CommonController@subscribe');
+    Route::middleware([config('hashtagcmsapi.throttle_newsletter', 'throttle:10,1')])->post('common/v1/newsletter', function (Request $request) use ($callable) {
+        return app()->call($callable . 'CommonController@newsletter');
+    });
+
+    /**
+     * Legacy Callback for Newsletter
+     * @deprecated Use /common/v1/newsletter
+     */
+    Route::middleware([config('hashtagcmsapi.throttle_newsletter', 'throttle:10,1')])->post('common/v1/configure', function (Request $request) use ($callable) {
+        return app()->call($callable . 'CommonController@newsletter');
+    }); 
+
+    /**
+     * Legacy Callback for Subscribe
+     * @deprecated Use /common/v1/newsletter
+     */
+    Route::middleware([config('hashtagcmsapi.throttle_newsletter', 'throttle:10,1')])->post('common/v1/subscribe', function (Request $request) use ($callable) {
+        return app()->call($callable . 'CommonController@newsletter');
     }); 
 
 });

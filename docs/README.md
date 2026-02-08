@@ -1,11 +1,11 @@
-# HashtagCMS Core Documentation
+# HashtagCms Core Documentation
 
-Welcome to the official documentation for **HashtagCMS Core**, a powerful, headless-ready, and module-based Content Management System built on Laravel.
+Welcome to the official documentation for **HashtagCms Core**, a powerful, headless-ready, and module-based Content Management System built on Laravel.
 
 ## Table of Contents
 
 1. [Introduction & Core Concepts](01_INTRODUCTION.md)
-   - What is HashtagCMS?
+   - What is HashtagCms?
    - The "Micro-Frontend" Philosophy
    - Core Concepts: Sites, Platforms, Zones, Modules.
    

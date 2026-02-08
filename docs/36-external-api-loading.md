@@ -1,6 +1,6 @@
 # External API Loading Functionality
 
-HashtagCMS supports loading configuration and data from an External API source, enabling Headless and Microservice architectures. This functionality allows a frontend application (or an instance of HashtagCMS) to fetch its entire site structure, content, and settings from a central HashtagCMS server.
+HashtagCms supports loading configuration and data from an External API source, enabling Headless and Microservice architectures. This functionality allows a frontend application (or an instance of HashtagCms) to fetch its entire site structure, content, and settings from a central HashtagCms server.
 
 ## Overview
 
@@ -18,7 +18,7 @@ To enable and configure External API loading, you must update your `config/hasht
 To enable External API loading, you need to configure the connection on the **Client** application (the one fetching the data).
 
 ### 1. Enable External API
-Update your `.env` file to point to the remote HashtagCMS API:
+Update your `.env` file to point to the remote HashtagCms API:
 
 ```env
 HASHTAGCMS_ENABLE_EXTERNAL_API=true

@@ -2,13 +2,13 @@
 
 ## General Questions
 
-### What is HashtagCMS?
+### What is HashtagCms?
 
-HashtagCMS is a powerful, flexible Content Management System built on Laravel that can function as both a traditional CMS and a headless CMS. It supports multi-site, multi-platform, and multi-language architectures out of the box.
+HashtagCms is a powerful, flexible Content Management System built on Laravel that can function as both a traditional CMS and a headless CMS. It supports multi-site, multi-platform, and multi-language architectures out of the box.
 
-### Is HashtagCMS free?
+### Is HashtagCms free?
 
-Yes, the core HashtagCMS is free and open-source under the MIT license. Premium features like MongoDB support, SSO login, and Figma integration require a paid license.
+Yes, the core HashtagCms is free and open-source under the MIT license. Extended features like MongoDB support, SSO login, and Figma integration require a paid license.
 
 ### What are the system requirements?
 
@@ -18,15 +18,15 @@ Yes, the core HashtagCMS is free and open-source under the MIT license. Premium 
 - Laravel 10+
 - Node.js 16+ (for asset compilation)
 
-### Can I use HashtagCMS for commercial projects?
+### Can I use HashtagCms for commercial projects?
 
-Yes, HashtagCMS is released under the MIT license, which allows commercial use.
+Yes, HashtagCms is released under the MIT license, which allows commercial use.
 
 ---
 
 ## Installation & Setup
 
-### How do I install HashtagCMS?
+### How do I install HashtagCms?
 
 ```bash
 composer create-project laravel/laravel mysite
@@ -69,7 +69,7 @@ $user->password = bcrypt('new_password');
 $user->save();
 ```
 
-### Can I install HashtagCMS on shared hosting?
+### Can I install HashtagCms on shared hosting?
 
 Yes, but ensure your hosting meets the system requirements. You may need to configure the web server to point to the `public` directory.
 
@@ -119,9 +119,9 @@ See [Multi-Site Guide](05-multisite.md).
 
 ## API & Headless CMS
 
-### Can I use HashtagCMS as a headless CMS?
+### Can I use HashtagCms as a headless CMS?
 
-Yes! HashtagCMS has a complete RESTful API. See [API & Headless CMS Guide](13-api-headless.md).
+Yes! HashtagCms has a complete RESTful API. See [API & Headless CMS Guide](13-api-headless.md).
 
 ### How do I get an API secret?
 
@@ -137,7 +137,7 @@ API secrets are configured in `config/hashtagcms.php`:
 
 Laravel Sanctum for token-based authentication.
 
-### Can I use HashtagCMS with React/Vue/Angular?
+### Can I use HashtagCms with React/Vue/Angular?
 
 Yes! The API is framework-agnostic. See examples in the [API Guide](13-api-headless.md).
 
@@ -289,23 +289,23 @@ This acts as a wrapper for `db:seed` to populate your database from the generate
 
 ### Can I use MongoDB?
 
-Yes, with a **Pro** license or higher. See [MongoDB Support](19-mongodb.md).
+Yes, with the **Extended** version. See [MongoDB Support](19-mongodb.md).
 
 ---
 
-## Premium Features
+## Advanced Features
 
-### How do I get a license?
+### How do I activate advanced features?
 
-Contact sales at the official HashtagCMS website or email marghoobsuleman@gmail.com.
+Check the official HashtagCms website or reach out via email.
 
 ### What's included in each tier?
 
 | Tier | Features | Max Users |
 |------|----------|-----------|
 | Free | Core CMS | 5 |
-| Pro | + MongoDB Support, Analytics, Logging | 100 |
-| Enterprise | + Figma Integration, Priority Support | Unlimited |
+| Extended | + MongoDB Support, Analytics, Logging | 100 |
+| Advanced | + Figma Integration, Community Support | Unlimited |
 
 ### How do I activate my license?
 
@@ -392,9 +392,9 @@ Yes, create controllers in `app/Http/Controllers/Admin/` and they'll be automati
 
 Add routes to `routes/web.php` or `routes/api.php` as usual in Laravel.
 
-### Can I use HashtagCMS with Livewire?
+### Can I use HashtagCms with Livewire?
 
-Yes, HashtagCMS is compatible with Livewire.
+Yes, HashtagCms is compatible with Livewire.
 
 ---
 
@@ -420,15 +420,15 @@ See [Deployment Guide](27-deployment.md).
 - Enable OPcache
 - Use PHP-FPM for better performance
 
-### Can I use HashtagCMS with Docker?
+### Can I use HashtagCms with Docker?
 
-Yes, you can containerize HashtagCMS. Create a Dockerfile based on Laravel requirements.
+Yes, you can containerize HashtagCms. Create a Dockerfile based on Laravel requirements.
 
 ---
 
 ## Migration & Updates
 
-### How do I update HashtagCMS?
+### How do I update HashtagCms?
 
 ```bash
 # Backup data first
@@ -461,9 +461,9 @@ Create custom import scripts using the `cms:importdata` command as a reference.
 
 ## Security
 
-### Is HashtagCMS secure?
+### Is HashtagCms secure?
 
-HashtagCMS follows Laravel security best practices including:
+HashtagCms follows Laravel security best practices including:
 - CSRF protection
 - XSS prevention
 - SQL injection protection
@@ -480,7 +480,7 @@ HashtagCMS follows Laravel security best practices including:
 
 ### How do I report security vulnerabilities?
 
-Email security issues to marghoobsuleman@gmail.com instead of using the issue tracker.
+Email security issues to hashtagcms.org@gmail.com instead of using the issue tracker.
 
 ---
 
@@ -491,21 +491,21 @@ Email security issues to marghoobsuleman@gmail.com instead of using the issue tr
 1. Check this FAQ
 2. Review [Troubleshooting Guide](29-troubleshooting.md)
 3. Check GitHub issues
-4. Contact support: marghoobsuleman@gmail.com
+4. Contact support: hashtagcms.org@gmail.com
 
 ### Is there a community forum?
 
 Check the GitHub repository for discussions and community support.
 
-### Do you offer commercial support?
+### Do you offer advanced support?
 
-Yes, contact marghoobsuleman@gmail.com for commercial support options.
+Yes, reach out via email for advanced support options.
 
 ---
 
 ## Contributing
 
-### Can I contribute to HashtagCMS?
+### Can I contribute to HashtagCms?
 
 Yes! Contributions are welcome. See [contributing.md](../../contributing.md) for guidelines.
 
@@ -515,7 +515,7 @@ Open an issue on GitHub: https://github.com/hashtagcms/hashtagcms/issues
 
 ### How do I suggest new features?
 
-Open a feature request on GitHub or email marghoobsuleman@gmail.com.
+Open a feature request on GitHub or email hashtagcms.org@gmail.com.
 
 ---
 

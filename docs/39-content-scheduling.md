@@ -1,6 +1,6 @@
 # Content Scheduling
 
-HashtagCMS allows you to schedule the publication and expiration of Pages and Categories. This ensures content is only visible to users within a specific time window.
+HashtagCms allows you to schedule the publication and expiration of Pages and Categories. This ensures content is only visible to users within a specific time window.
 
 ---
 

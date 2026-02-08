@@ -1,6 +1,6 @@
 # Multi-Language & Localization
 
-HashtagCMS treats language as a first-class citizen. Almost every primary database table (Categories, Pages, Sites) has a corresponding `_langs` table (e.g., `category_langs`).
+HashtagCms treats language as a first-class citizen. Almost every primary database table (Categories, Pages, Sites) has a corresponding `_langs` table (e.g., `category_langs`).
 
 ## Supported Features
 - **URL Prefixes**: `/en/about`, `/es/about-us`.

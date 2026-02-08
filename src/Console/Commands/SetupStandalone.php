@@ -56,9 +56,9 @@ class SetupStandalone extends Command
     {
         $this->info('Configuring Environment Variables...');
 
-        $apiUrl = $this->ask('Enter HashtagCMS API URL (e.g. https://admin.example.com)', 'https://admin.hashtagcms.org');
-        $apiToken = $this->ask('Enter HashtagCMS API Token', '');
-        $apiSecret = $this->ask('Enter HashtagCMS API Secret', '');
+        $apiUrl = $this->ask('Enter HashtagCms API URL (e.g. https://admin.example.com)', 'https://admin.hashtagcms.org');
+        $apiToken = $this->ask('Enter HashtagCms API Token', '');
+        $apiSecret = $this->ask('Enter HashtagCms API Secret', '');
 
         $this->updateEnv([
             'HASHTAGCMS_API_HOST' => $apiUrl,

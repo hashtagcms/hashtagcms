@@ -1,6 +1,6 @@
 # Festivals Feature
 
-The **Festivals** feature in HashtagCMS allows standard, seasonal, or event-based overlays and styles to be automatically applied to your site based on date ranges. This is perfect for celebrating holidays (Christmas, Diwali, New Year) or special events without deploying code changes.
+The **Festivals** feature in HashtagCms allows standard, seasonal, or event-based overlays and styles to be automatically applied to your site based on date ranges. This is perfect for celebrating holidays (Christmas, Diwali, New Year) or special events without deploying code changes.
 
 ## Overview
 
@@ -73,7 +73,7 @@ In the `/load-data` endpoint, the `festivals` key provides the array of active f
 
 ### Frontend Usage (Blade)
 
-HashtagCMS `LayoutManager` provides helpers to use this data in Blade templates.
+HashtagCms `LayoutManager` provides helpers to use this data in Blade templates.
 
 ```php
 @php

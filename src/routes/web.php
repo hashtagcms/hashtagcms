@@ -139,7 +139,7 @@ if (HashtagCms::isRoutesEnabled()) {
                 abort(500, $exception->getMessage());
             } else {
                 return [
-                    'code' => $exception->getStatusCode() ?? ' unknown',
+                    'code' => method_exists($exception, 'getStatusCode') ? $exception->getStatusCode() : 500,
                     'message' => $exception->getMessage(),
                     'controller' => "$callable",
                 ];

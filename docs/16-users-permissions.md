@@ -1,6 +1,6 @@
 # User Management & Permissions
 
-HashtagCMS comes with a robust RBAC (Role-Based Access Control) system.
+HashtagCms comes with a robust RBAC (Role-Based Access Control) system.
 
 ## Roles
 -   **Super Admin**: Has access to everything.
@@ -21,7 +21,7 @@ A user can be assigned to **Site A** but blocked from **Site B**.
 This is controlled in the `site_user` pivot table.
 
 ## Frontend Members vs Backend Authors
-HashtagCMS distinguishes between:
+HashtagCms distinguishes between:
 1.  **Authors/Admins**: People who login to `/admin`.
 2.  **Staff/Customers**: People who register on the frontend website.
     -   They use the same `users` table.

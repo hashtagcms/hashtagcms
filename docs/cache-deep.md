@@ -1,16 +1,16 @@
-# Deep Dive: Caching Architecture in HashtagCMS
+# Deep Dive: Caching Architecture in HashtagCms
 
-This document provides a comprehensive technical overview of the caching mechanisms implemented in HashtagCMS. It is intended for developers who need to debug, extend, or optimize the caching layer.
+This document provides a comprehensive technical overview of the caching mechanisms implemented in HashtagCms. It is intended for developers who need to debug, extend, or optimize the caching layer.
 
 ## Overview
 
-HashtagCMS utilizes a **hybrid caching strategy**:
+HashtagCms utilizes a **hybrid caching strategy**:
 1.  **API Response Caching**: Used heavily by the `ServiceController` to cache entire JSON payloads for headers-based requests (React/Mobile apps). This uses a custom `RedisCacheManager`.
 2.  **Internal Object Caching**: Standard Laravel caching used for site resolution, permissions, and background job tracking.
 
 ## Configuration
 
-To enable Redis caching, you must configure both the standard Laravel environment and the HashtagCMS specific configuration.
+To enable Redis caching, you must configure both the standard Laravel environment and the HashtagCms specific configuration.
 
 ### 1. Environment (.env)
 Ensure your cache driver is set to Redis.
@@ -21,7 +21,7 @@ REDIS_PASSWORD=null
 REDIS_PORT=6379
 ```
 
-### 2. HashtagCMS API Config
+### 2. HashtagCms API Config
 File: `config/hashtagcmsapi.php`
 This file controls the behavioral toggles and TTLs (Time To Live) for the API layer.
 
@@ -56,7 +56,7 @@ some internal caching TTLs are defined here.
 
 ## Cache Keys & Storage Structure
 
-HashtagCMS constructs composite keys to ensure data isolation between different sites, languages, and platforms running on the same instance.
+HashtagCms constructs composite keys to ensure data isolation between different sites, languages, and platforms running on the same instance.
 
 | Logic / Use Case | Cache Key Pattern | TTL (Default) | Source Location |
 | :--- | :--- | :--- | :--- |
@@ -92,7 +92,7 @@ This middleware/resolver runs early in the request lifecycle. It caches the mapp
 
 ## Debugging & Management API
 
-HashtagCMS provides a dedicated `CacheController` to manage keys via API. This is useful for building admin dashboards or clearing cache during deployments.
+HashtagCms provides a dedicated `CacheController` to manage keys via API. This is useful for building admin dashboards or clearing cache during deployments.
 
 **Controller**: `src/Http/Controllers/Api/CacheController.php`
 

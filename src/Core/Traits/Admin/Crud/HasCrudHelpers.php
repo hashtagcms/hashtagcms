@@ -305,7 +305,7 @@ trait HasCrudHelpers
         // If explicitly defined view starts with dot, preserve it? 
         // Actually, cleaner to rely on AdminHelper to prepend Theme if no :: exists.
         // example for below line 
-        // [0] => "hashtagcms-pro::admin.users.listing"
+        // [0] => "hashtagcms-extended::admin.users.listing"
         // [1] => "common.listing"
         return [$targetView, $fallback];
     }

@@ -1,6 +1,6 @@
-# HashtagCMS Complete Feature List
+# HashtagCms Complete Feature List
 
-This document provides a comprehensive list of all features available in HashtagCMS, organized by category.
+This document provides a comprehensive list of all features available in HashtagCms, organized by category.
 
 ## 📋 Table of Contents
 
@@ -15,7 +15,7 @@ This document provides a comprehensive list of all features available in Hashtag
 9. [Database & Models](#database--models)
 10. [Security Features](#security-features)
 11. [Developer Tools](#developer-tools)
-12. [Premium Features](#premium-features)
+12. [Extended Features](#premium-features)
 
 ---
 
@@ -391,7 +391,7 @@ This document provides a comprehensive list of all features available in Hashtag
 ## Developer Tools
 
 ### Console Commands
-- ✅ `cms:install` - Install HashtagCMS
+- ✅ `cms:install` - Install HashtagCms
 - ✅ `cms:version` - Show version
 - ✅ `cms:module-controller` - Generate controller
 - ✅ `cms:module-model` - Generate model
@@ -424,32 +424,32 @@ This document provides a comprehensive list of all features available in Hashtag
 
 ---
 
-## Premium Features
+## Advanced Features
 
-### Licensing System
-- ✅ JWT-based licensing
+### Feature Management
+- ✅ JWT-based feature validation
 - ✅ Offline validation
-- ✅ License tiers (Free, Pro, Enterprise)
+- ✅ Feature tiers (Free, Extended, Advanced)
 - ✅ Feature checking
-- ✅ License caching
+- ✅ Feature caching
 - ✅ Expiration handling
 - ✅ Domain restriction
 - ✅ User limit enforcement
 
-### MongoDB Support (Pro+)
+### MongoDB Support (Extended+)
 - ✅ MongoDB database driver
 - ✅ NoSQL support
 - ✅ MongoDB models
 - ✅ Dynamic model aliasing
-- ✅ License-based activation
+- ✅ Feature-based activation
 
-### SSO Login (Pro+)
+### SSO Login (Extended+)
 - ✅ Single Sign-On support
 - ✅ SAML integration
 - ✅ OAuth integration
-- ✅ Enterprise authentication
+- ✅ Advanced authentication
 
-### Figma Integration (Enterprise)
+### Figma Integration (Advanced)
 - ✅ Figma API integration
 - ✅ Design import
 - ✅ Component generation
@@ -478,8 +478,8 @@ This document provides a comprehensive list of all features available in Hashtag
 - ✅ Nested comments
 - ✅ Comment approval
 
-### Subscribers
-- ✅ Newsletter subscription
+### Updates (Subscribers)
+- ✅ Newsletter updates
 - ✅ Subscriber management
 - ✅ Email collection
 
@@ -508,7 +508,7 @@ This document provides a comprehensive list of all features available in Hashtag
 - ✅ Config caching
 - ✅ Route caching
 - ✅ View caching
-- ✅ License caching
+- ✅ Advanced feature caching
 - ✅ Query result caching
 
 ### Optimization
@@ -596,7 +596,7 @@ This document provides a comprehensive list of all features available in Hashtag
 ## Total Feature Count
 
 **Core Features**: 200+  
-**Premium Features**: 15+  
+**Advanced Features**: 15+  
 **Helper Functions**: 100+  
 **Console Commands**: 10+  
 **API Endpoints**: 10+  
@@ -609,7 +609,7 @@ This document provides a comprehensive list of all features available in Hashtag
 
 **Current Version**: 1.6.0  
 **Release Date**: November 2025  
-**License**: MIT (Core), Commercial (Premium Features)
+**License**: MIT (Core), Advanced Tiers (Extended/Advanced)
 
 ---
 
@@ -622,4 +622,4 @@ This document provides a comprehensive list of all features available in Hashtag
 
 ---
 
-**Note**: This feature list is based on HashtagCMS version 1.6.0. Features may be added or modified in future versions.
+**Note**: This feature list is based on HashtagCms version 1.6.0. Features may be added or modified in future versions.

@@ -1,4 +1,4 @@
-# HashtagCMS Quick Reference Card
+# HashtagCms Quick Reference Card
 
 Quick reference for the most commonly used features, commands, and functions.
 
@@ -108,11 +108,11 @@ htcms_slug($text)
 htcms_excerpt($text, $length)
 ```
 
-### License Helpers
+### Feature Helpers
 ```php
 htcms_has_feature($feature)
-htcms_license_tier()
-htcms_license_info()
+htcms_feature_tier()
+htcms_feature_info()
 ```
 
 ## 🌐 API Endpoints
@@ -205,8 +205,8 @@ DB_DATABASE=your_database
 DB_USERNAME=your_username
 DB_PASSWORD=your_password
 
-# License (Premium)
-HASHTAGCMS_LICENSE_KEY=your_license_key
+# Feature Activation (Advanced)
+HASHTAGCMS_FEATURE_TOKEN=your_token
 
 ```
 
@@ -321,14 +321,14 @@ fetch('http://api.example.com/api/hashtagcms/public/user/v1/login', {
     .then(data => localStorage.setItem('token', data.token));
 ```
 
-## 🎓 License Tiers
+## 🎓 Feature Tiers
 
-| Tier | Features | Max Users | Price |
+| Tier | Features | Max Users | Support |
 |------|----------|-----------|-------|
-| Free | Core CMS | 5 | Free |
-| Starter | + MongoDB | 25 | Paid |
-| Pro | + SSO | 100 | Paid |
-| Enterprise | + Figma | Unlimited | Paid |
+| Free | Core CMS | 5 | Community |
+| Extended | + MongoDB | 25 | Community |
+| Advanced | + SSO | 100 | Community |
+| Scale | + Figma | Unlimited | Community |
 
 ## 📚 Documentation Links
 - **Full Docs**: `00-index.md`
@@ -343,7 +343,7 @@ fetch('http://api.example.com/api/hashtagcms/public/user/v1/login', {
 
 ## 🆘 Getting Help
 
-- **Email**: marghoobsuleman@gmail.com
+- **Email**: hashtagcms.org@gmail.com
 - **GitHub**: https://github.com/hashtagcms/hashtagcms
 - **Docs**: `public/help/`
 
