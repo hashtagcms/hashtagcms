@@ -32,8 +32,10 @@
         "build:be": "cross-env MODE=be webpack --mode production"
     },
     "dependencies": {
-        "@hashtagcms/admin-ui-kit": "^1.0.6",
-        "@hashtagcms/web-ui-kit": "^1.0.5",
+        "@hashtagcms/admin-sdk": "^1.0.3",
+        "@hashtagcms/admin-ui-kit": "^1.0.8",
+        "@hashtagcms/web-sdk": "^1.0.4",
+        "@hashtagcms/web-ui-kit": "^1.0.8",
         "axios": "^1.8.4",
         "bootstrap": "^5.3.3",
         "font-awesome": "^4.7.0",
