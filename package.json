@@ -40,7 +40,7 @@
     "@hashtagcms/admin-ui-kit": "^1.0.8",
     "@hashtagcms/web-sdk": "^1.0.4",
     "@hashtagcms/web-ui-kit": "^1.0.8",
-    "axios": "^1.8.4",
+    "axios": "^1.13.5",
     "bootstrap": "^5.3.3",
     "font-awesome": "^4.7.0",
     "mitt": "^3.0.1",
