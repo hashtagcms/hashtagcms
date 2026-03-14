@@ -1,0 +1,5 @@
+@import "@hashtagcms/admin-ui-kit/themes/modern/styles/app.scss";
+
+/* Integration-level scanning for Tailwind v4 */
+@source "../../../**/*.js";
+@source "../../../../views/be/modern/**/*.blade.php";

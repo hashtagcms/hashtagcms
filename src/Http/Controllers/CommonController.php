@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Http;
 use HashtagCms\Http\Traits\CommonLogic;
 use HashtagCms\Models\Contact;
 use HashtagCms\Models\Subscriber;
+use HashtagCms\Core\Utils\CacheKeys;
 
 class CommonController extends FrontendBaseController
 {
@@ -50,7 +51,7 @@ class CommonController extends FrontendBaseController
     {
         // For external API backwards compatibility
         $type = 'newsletter';
-        if (config('hashtagcms.enable_external_api')) {
+        if (config('hashtagcms.externals.enable_external_api')) {
             if (!config('hashtagcms.newsletter_api') && config('hashtagcms.configure_api')) {
                 $type = 'configure';
             }
@@ -94,10 +95,10 @@ class CommonController extends FrontendBaseController
         $apiSecret = config('hashtagcms.api_secrets.' . $context);
 
         // Fetch specific API URL from config based on type (contact or newsletter)
-        $apiUrl = config("hashtagcms.{$type}_api");
+        $apiUrl = config("hashtagcms.externals.{$type}_api");
 
         // Fallback if specific config is missing but base URL is available
-        if (empty($apiUrl) && $baseUrl = config('hashtagcms.external_api_base_url')) {
+        if (empty($apiUrl) && $baseUrl = config('hashtagcms.externals.external_api_base_url')) {
             $apiUrl = $baseUrl . '/api/hashtagcms/public/common/v1/' . $type;
         }
 
@@ -147,7 +148,7 @@ class CommonController extends FrontendBaseController
     {
         try {
             // Handle External API
-            if (config('hashtagcms.enable_external_api')) {
+            if (config('hashtagcms.externals.enable_external_api')) {
                 $feResponse = $this->postToExternalApi($type);
                 return $this->actionResponse($request, $feResponse);
             }
@@ -207,11 +208,11 @@ class CommonController extends FrontendBaseController
     {
         $isError = request()->get('error');
         $message = request()->get('message');
-        //return redirect("/")->with('__hashtagcms_message__', array('message'=>'This is coming from common/test', 'type'=>'success'));
+        //return redirect("/")->with(CacheKeys::CMS_MESSAGE, array('message'=>'This is coming from common/test', 'type'=>'success'));
         if ($isError) {
-            return redirect('/')->with('__hashtagcms_message_error__', $message ?? "This is error message coming from common/test");
+            return redirect('/')->with(CacheKeys::CMS_MESSAGE_ERROR, $message ?? "This is error message coming from common/test");
         }
 
-        return redirect('/')->with('__hashtagcms_message__', $message ?? "This is success message coming from common/test");
+        return redirect('/')->with(CacheKeys::CMS_MESSAGE, $message ?? "This is success message coming from common/test");
     }
 }

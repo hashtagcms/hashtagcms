@@ -2,7 +2,9 @@
 
 namespace HashtagCms\Core\Traits\Admin\Crud;
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 use HashtagCms\Core\Helpers\Message;
 use HashtagCms\Models\QueryLogger;
@@ -78,6 +80,27 @@ trait HasDataPersistence
     }
 
     /**
+     * Save Data with Lang, Site and Platform
+     *
+     * @param array $saveData
+     * @param array $langData
+     * @param array $siteData
+     * @param array $platformData
+     * @param mixed $where
+     * @param bool $updateInAllLangs
+     * @return mixed
+     */
+    protected function saveDataWithLangAndSiteAndPlatform($saveData = [], $langData = [], $siteData = [], $platformData = [], $where = null, $updateInAllLangs = false)
+    {
+        $data['saveData'] = $saveData;
+        $data['langData'] = $langData;
+        $data['siteData'] = $siteData;
+        $data['platformData'] = $platformData;
+
+        return $this->saveAllData($data, $where, $updateInAllLangs);
+    }
+
+    /**
      * Save Data
      *
      * @param array $saveData
@@ -105,8 +128,11 @@ trait HasDataPersistence
      */
     private function saveAllData($data, $where = null, $updateInAllLangs = false)
     {
+        $savedDataModel = $data['saveData']['model'];
+        $resource = ($where != null && $where > 0) ? $savedDataModel::find($where) : null;
+
         //Better to be safe
-        if (!$this->checkPolicy('edit')) {
+        if (!$this->checkPolicy('edit', $resource)) {
             return Message::getWriteError();
         }
 
@@ -115,7 +141,6 @@ trait HasDataPersistence
         //need to log query
         QueryLogger::enableQueryLog();
 
-        $savedDataModel = $data['saveData']['model'];
         $savedData = $data['saveData']['data'];
 
         $langData = null;
@@ -150,7 +175,7 @@ trait HasDataPersistence
         //Logging
         try {
             $queryLog = QueryLogger::getQueryLog();
-            QueryLogger::log($actionLog, $queryLog, $data, $rData['id'] ?? 0);
+            QueryLogger::log($actionLog, $queryLog, $data, (int)$rData['id'] ?? 0);
         } catch (\Exception $exception) {
             info($exception->getMessage());
         }
@@ -179,6 +204,14 @@ trait HasDataPersistence
             $fieldKeyVal[$key] = $val;
         }
 
+        // Automatically set ownership if columns exist
+        $tableName = (new $savedDataModel)->getTable();
+        if (Schema::hasColumn($tableName, 'insert_by') && !isset($fieldKeyVal['insert_by'])) {
+            $fieldKeyVal['insert_by'] = Auth::id();
+        } else if (Schema::hasColumn($tableName, 'user_id') && !isset($fieldKeyVal['user_id'])) {
+            $fieldKeyVal['user_id'] = Auth::id();
+        }
+
         //Save main model using create() which returns the model instance
         $mainModel = $savedDataModel::create($fieldKeyVal);
         $rData['isSaved'] = true;
@@ -200,39 +233,47 @@ trait HasDataPersistence
             $rData['isSavedLang'] = $mainModel->lang()->createMany($langDatas);
         }
 
-        //Site Data
-        try {
-            if (isset($data['siteData'])) {
-                if (!method_exists($mainModel, 'site')) {
-                    DB::rollBack();
-                    throw new \Exception("'site' relation method is needed in source class.");
+        // Pivot Data Persistence (Site/Platform)
+        $siteInput = $data['siteData'] ?? null;
+        $platformInput = $data['platformData'] ?? null;
+
+        if ($siteInput || $platformInput) {
+            $relMethod = method_exists($mainModel, 'site') ? 'site' : (method_exists($mainModel, 'platform') ? 'platform' : null);
+
+            if ($relMethod) {
+                $pivotData = array_merge($siteInput['data'] ?? [], $platformInput['data'] ?? []);
+                $pivotTable = $mainModel->$relMethod()->getTable();
+                $modelIdKey = Str::singular($mainModel->getTable()) . '_id';
+
+                $insertRecord = $pivotData;
+                $insertRecord[$modelIdKey] = $mainModel->getKey();
+
+                // Assign site_id if missing but table has it
+                if (Schema::hasColumn($pivotTable, 'site_id') && !isset($insertRecord['site_id'])) {
+                    $insertRecord['site_id'] = $siteInput['site_id'] ?? ($siteInput['data']['site_id'] ?? htcms_get_siteId_for_admin());
                 }
 
-                //Model must have belongsToMany relation with 'site'
-                $siteData = $data['siteData']['data'];
-                $siteInfo = Site::find($siteData['site_id']);
-                unset($siteData['site_id']);
-                $mainModel->site()->attach($siteInfo, $siteData);
-            }
-        } catch (\Exception $e) {
-            DB::rollBack();
-            throw new \Exception('rollback: ' . $e->getMessage());
-        }
+                // Handle platform_id column
+                if (Schema::hasColumn($pivotTable, 'platform_id')) {
+                    $targetPlatformId = $platformInput['platform_id'] ?? ($platformInput['data']['platform_id'] ?? ($siteInput['data']['platform_id'] ?? null));
 
-        //Platform Data
-        if (isset($data['platformData'])) {
-            if (!method_exists($mainModel, 'platform')) {
-                DB::rollBack();
-                throw new \Exception("'platform' relation method is needed in source class.");
-            }
-            //Model must have belongsToMany relation with 'platform'
-            $platformData = $data['platformData']['data'];
-            $supportedSitePlatform = $this->getSupportedSitePlatform($platformData['site_id']); //platform data must have a site_id
-
-            //add in supported platform
-            foreach ($supportedSitePlatform as $key => $platform) {
-                $platformData['platform_id'] = $platform['id'];
-                $mainModel->platform()->attach($platform, $platformData);
+                    if ($targetPlatformId) {
+                        $insertRecord['platform_id'] = $targetPlatformId;
+                        DB::table($pivotTable)->insert($insertRecord);
+                    } else {
+                        // Insert for all supported platforms of the site
+                        $targetSiteId = $insertRecord['site_id'] ?? htcms_get_siteId_for_admin();
+                        $supportedPlatforms = $this->getSupportedSitePlatform($targetSiteId);
+                        foreach ($supportedPlatforms as $platform) {
+                            $record = $insertRecord;
+                            $record['platform_id'] = $platform['id'];
+                            DB::table($pivotTable)->insert($record);
+                        }
+                    }
+                } else {
+                    // Simple site-only pivot (no platform_id column)
+                    DB::table($pivotTable)->insert($insertRecord);
+                }
             }
         }
 
@@ -298,32 +339,74 @@ trait HasDataPersistence
                     $rData['isSavedLang'] = $this->rawUpdate($langTable, $newLangData, $arrWhere, false);
                 }
             } else {
-                //in one lang
-                $rData['isSavedLang'] = $mainModel->lang()->update($langData);
+                // Strip lang_id from the UPDATE payload — it is part of the composite primary key
+                // (country_id, lang_id) and must only appear in the WHERE clause (handled by the
+                // Eloquent relation scope), NOT in the SET clause. Including it causes a duplicate
+                // key violation when Eloquent fires: UPDATE ... SET lang_id = 2 WHERE country_id = X
+                $updateLangData = array_diff_key($langData, ['lang_id' => null]);
+                $rData['isSavedLang'] = $mainModel->lang()->update($updateLangData);
             }
         }
 
-        if (isset($data['siteData'])) {
-            if (!method_exists($mainModel, 'site')) {
-                DB::rollBack();
-                throw new \Exception("Update Error:  'site' relation method is needed in source class.");
-            }
+        // Handle Pivot Data Persistence (Site/Platform)
+        $siteInput = $data['siteData'] ?? null;
+        $platformInput = $data['platformData'] ?? null;
 
-            //Model must have belongsToMany relation with 'site'
-            $siteData = $data['siteData']['data'];
-            $mainModel->site()->updateExistingPivot($siteData['site_id'], $siteData);
-        }
+        if ($siteInput || $platformInput) {
+            $relMethod = method_exists($mainModel, 'site') ? 'site' : (method_exists($mainModel, 'platform') ? 'platform' : null);
 
-        if (isset($data['platformData'])) {
-            if (!method_exists($mainModel, 'platform')) {
-                DB::rollBack();
-                throw new \Exception("Update Error: 'platform' relation method is needed in source class.");
+            if ($relMethod) {
+                $rel = $mainModel->$relMethod();
+                $pivotTable = $rel->getTable();
+                $pivotData = array_merge($siteInput['data'] ?? [], $platformInput['data'] ?? []);
+                $modelIdKey = Str::singular($mainModel->getTable()) . '_id';
+
+                $whereClause = [[$modelIdKey, '=', $where]];
+
+                // Site constraint
+                if (Schema::hasColumn($pivotTable, 'site_id')) {
+                    $targetSiteId = $siteInput['site_id'] ?? ($siteInput['data']['site_id'] ?? ($platformInput['data']['site_id'] ?? null));
+                    if ($targetSiteId) {
+                        $whereClause[] = ['site_id', '=', $targetSiteId];
+                    }
+                }
+
+                // Platform constraint
+                if (Schema::hasColumn($pivotTable, 'platform_id')) {
+                    $targetPlatformId = $platformInput['platform_id'] ?? ($platformInput['data']['platform_id'] ?? ($siteInput['data']['platform_id'] ?? null));
+                    if ($targetPlatformId) {
+                        $whereClause[] = ['platform_id', '=', $targetPlatformId];
+                    }
+                }
+
+                // Ensure the pivot record exists before updating
+                $exists = DB::table($pivotTable)->where($whereClause)->exists();
+                if ($exists) {
+                    DB::table($pivotTable)->where($whereClause)->update($pivotData);
+                } else {
+                    // If it doesn't exist (e.g., adding to a new platform during Edit), insert it
+                    $insertRecord = array_merge($this->whereClauseToData($whereClause), $pivotData);
+                    DB::table($pivotTable)->insert($insertRecord);
+                }
             }
-            //Model must have belongsToMany relation with 'platform'
-            $platformData = $data['platformData']['data'];
-            $mainModel->platform()->updateExistingPivot($platformData['platform_id'], $platformData);
         }
 
         return $rData;
+    }
+
+    /**
+     * Convert where clause array [col, op, val] to [col => val]
+     * @param $where
+     * @return array
+     */
+    private function whereClauseToData($where)
+    {
+        $data = [];
+        foreach ($where as $w) {
+            if (is_array($w) && count($w) == 3) {
+                $data[$w[0]] = $w[2];
+            }
+        }
+        return $data;
     }
 }

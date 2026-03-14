@@ -4,9 +4,13 @@ namespace HashtagCms\Tests\Feature;
 
 use HashtagCms\Testing\TestCase;
 use HashtagCms\Models\SiteProp;
+use HashtagCms\Database\Seeds\HashtagCmsDatabaseSeeder;
+
+use Illuminate\Foundation\Testing\DatabaseMigrations;
 
 class InstallationTest extends TestCase
 {
+    use DatabaseMigrations;
     /**
      * Set up the test - explicitly seed for installation tests.
      */
@@ -14,7 +18,7 @@ class InstallationTest extends TestCase
     {
         parent::setUp();
         // Installation tests need the database seeded
-        $this->seed(\HashtagCms\Database\Seeds\HashtagCmsDatabaseSeeder::class);
+        $this->seed(HashtagCmsDatabaseSeeder::class);
     }
 
     /**

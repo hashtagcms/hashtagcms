@@ -9,11 +9,13 @@ class Message
      *
      * @return mixed
      */
-    public static function getReadError()
+    public static function getReadError($data = [])
     {
         $errorData['status'] = 401;
         $errorData['title'] = 'Access Denied';
         $errorData['message'] = "Sorry! You don't have permission to view this page.";
+
+        $errorData = array_merge($data, $errorData);
 
         return $errorData;
     }
@@ -23,11 +25,13 @@ class Message
      *
      * @return mixed
      */
-    public static function getWriteError()
+    public static function getWriteError($data = [])
     {
         $errorData['status'] = 401;
         $errorData['title'] = 'Access Denied';
         $errorData['message'] = "Sorry! You don't have permission to write.";
+        //merge data with errorData
+        $errorData = array_merge($data, $errorData);
 
         return $errorData;
     }
@@ -37,12 +41,12 @@ class Message
      *
      * @return mixed
      */
-    public static function getDeleteError()
+    public static function getDeleteError($data = [])
     {
         $errorData['status'] = 401;
         $errorData['title'] = 'Access Denied';
         $errorData['message'] = "Sorry! You don't have permission to delete.";
 
-        return $errorData;
+        return array_merge($data, $errorData);
     }
 }

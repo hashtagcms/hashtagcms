@@ -1,6 +1,6 @@
 # Frontend Development
 
-While API/Headless is popular, HashtagCms excels at traditional Server-Side Rendering (SSR) with Blade.
+While API/Headless is popular, HashtagCMS excels at traditional Server-Side Rendering (SSR) with Blade.
 
 ## The Frontend Controller
 The `FrontendController` is unique. It doesn't have hardcoded methods like `about()` or `contact()`. Instead, it uses a generic `index(Request $request)` method that:
@@ -10,12 +10,12 @@ The `FrontendController` is unique. It doesn't have hardcoded methods like `abou
 4.  Delegates content rendering to the **LayoutManager**.
 
 ## Custom Routes
-If you need a specific route logic (e.g., a checkout flow that isn't content-driven), simply define it in `routes/web.php` **before** the HashtagCms catch-all route.
+If you need a specific route logic (e.g., a checkout flow that isn't content-driven), simply define it in `routes/web.php` **before** the HashtagCMS catch-all route.
 
 ```php
 // routes/web.php
 Route::get('/checkout', [CheckoutController::class, 'index']);
-// ... HashtagCms routes load last
+// ... HashtagCMS routes load last
 ```
 
 ## Asset Management

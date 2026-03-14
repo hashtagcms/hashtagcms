@@ -1,11 +1,17 @@
 # User Management & Permissions
 
-HashtagCms comes with a robust RBAC (Role-Based Access Control) system.
+HashtagCMS comes with a robust RBAC (Role-Based Access Control) system.
 
 ## Roles
--   **Super Admin**: Has access to everything.
--   **Site Admin**: Can manage 1 specific site.
--   **Editor**: Can edit content but not change configuration.
+
+HashtagCMS uses a predefined set of roles to manage administrative access:
+
+- **Super-admin**: Has absolute access to every part of the system, including all sites, global configurations, and license management.
+- **Admin**: Has full access (Read, Edit, Delete, Approve, Publish) to all enabled cms modules within their assigned sites.
+- **Editor**: Can manage content (Read, Edit, Delete, Approve, Publish) created by **any user** within their assigned sites and cms modules.
+- **Contributor**: Can manage content (Read, Edit, Delete, Approve, Publish) but **only their own content**.
+- **Approver**: Focused on the publication workflow; has Read, Approve, and Publish permissions.
+- **ReadOnly**: Has view-only (Read) access to the cms modules they are authorized to see.
 
 ## Permissions (`roles_rights`)
 You can define granular permissions.
@@ -21,7 +27,7 @@ A user can be assigned to **Site A** but blocked from **Site B**.
 This is controlled in the `site_user` pivot table.
 
 ## Frontend Members vs Backend Authors
-HashtagCms distinguishes between:
+HashtagCMS distinguishes between:
 1.  **Authors/Admins**: People who login to `/admin`.
 2.  **Staff/Customers**: People who register on the frontend website.
     -   They use the same `users` table.

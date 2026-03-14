@@ -1,6 +1,6 @@
 # Quick Start Guide
 
-This guide will help you get started with HashtagCms quickly by walking through common tasks.
+This guide will help you get started with HashtagCMS quickly by walking through common tasks.
 
 ## First Login
 
@@ -283,37 +283,37 @@ php artisan cms:module-model ModelName
 ### Get Header Menu
 
 ```blade
-{!! HashtagCms::getHeaderMenuHTML(10, 'nav-class') !!}
+{!! HashtagCMS::getHeaderMenuHTML(10, 'nav-class') !!}
 ```
 
 ### Get Body Content
 
 ```blade
-{!! HashtagCms::getBodyContent() !!}
+{!! HashtagCMS::getBodyContent() !!}
 ```
 
 ### Get Header Content
 
 ```blade
-{!! HashtagCms::getHeaderContent() !!}
+{!! HashtagCMS::getHeaderContent() !!}
 ```
 
 ### Get Footer Content
 
 ```blade
-{!! HashtagCms::getFooterContent() !!}
+{!! HashtagCMS::getFooterContent() !!}
 ```
 
 ### Get Meta Tags
 
 ```blade
-{!! HashtagCms::getAllMetaTags() !!}
+{!! HashtagCMS::getAllMetaTags() !!}
 ```
 
 ### Get Page Title
 
 ```blade
-<title>{{ HashtagCms::getHeaderTitle() }}</title>
+<title>{{ HashtagCMS::getHeaderTitle() }}</title>
 ```
 
 ## Layout Manager in Views
@@ -321,7 +321,7 @@ php artisan cms:module-model ModelName
 ### Render a Stack
 
 ```blade
-{!! app()->HashtagCms->layoutManager()->renderStack('scripts') !!}
+{!! app()->HashtagCMS->layoutManager()->renderStack('scripts') !!}
 ```
 
 ### Push to Stack
@@ -336,7 +336,7 @@ php artisan cms:module-model ModelName
 
 ```blade
 @php
-    $layoutManager = app()->HashtagCms->layoutManager();
+    $layoutManager = app()->HashtagCMS->layoutManager();
     $data = $layoutManager->getDataForView('module-name');
 @endphp
 ```

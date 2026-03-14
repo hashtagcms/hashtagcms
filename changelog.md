@@ -1,5 +1,27 @@
 # Changelog
 
+#v3.0.0 Changes
+- **Design & Frontend**:
+    - Migrated entire frontend to **Tailwind CSS**.
+    - New default theme based on Tailwind.
+    - Fixed multiple frontend bugs.
+- **Admin Panel (admin-ui-kit)**:
+    - Rewritten using **Vue 3 Composition API**.
+    - Re-engineered **Module Creator** for better modularity and speed.
+    - Added **Module Type** CMS module for dynamic type management.
+- **Core & Services**:
+    - New **SiteClonerService** for robust site and language cloning.
+    - Implemented a pipeline-based **Resolver** system (Site, Lang, Platform, Route).
+    - Optimized **Middleware** and **ViewComposer**.
+    - All long-running tasks are now **Queue-driven** (Laravel Jobs).
+- **Custom Modules**:
+    - Improved Custom Module Loader with advanced **Service Discovery**.
+- **Security & Logging**:
+    - Enhanced **CMS Policies** (RBAC) and site-wise permissions.
+    - Improved system and audit logging infrastructure.
+- **Documentation**:
+    - Exhaustive technical audit and update of all 44 documentation files (00-43).
+
 #v2.0.5 Changes
 - **Core Helpers**:
     - **FormHelper**: Modernized with strict types, XSS prevention, and support for dynamic HTML elements via `FormHelper::element()`.
@@ -8,7 +30,7 @@
     - **Resource Handling**: Enhanced `htcms_get_resource` for robust URL construction and trailing slash handling.
 
 #v2.0.4 Changes
-- **Admin View Resolution**: Implemented intelligent view resolution (`getViewNames`) supporting package namespaces (e.g., `hashtagcms-pro::`) and database overrides for listings and edits.
+- **Admin View Resolution**: Implemented intelligent view resolution (`getViewNames`) supporting package namespaces (e.g., `hashtagcms-extended::`) and database overrides for listings and edits.
 - **Routing Fix**: Admin routes now correctly respect the `base_path` defined in `config/hashtagcmsadmin.php`.
 - **Configuration**: Removed unused `base_context`.
 - **Module Parsing**: Enhanced `CmsModule` to handle nested URL paths using longest-prefix matching.

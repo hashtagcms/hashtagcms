@@ -16,7 +16,7 @@ class AnalyticsController extends Controller
     public function publish()
     {
         // 1. Check if External API is enabled
-        if (config('hashtagcms.enable_external_api')) {
+        if (config('hashtagcms.externals.enable_external_api')) {
             return $this->publishViaExternalApi();
         }
 
@@ -40,7 +40,7 @@ class AnalyticsController extends Controller
     {
         $context = config('hashtagcms.context');
         $apiSecret = config('hashtagcms.api_secrets.' . $context);
-        $apiUrl = config('hashtagcms.publish_api');
+        $apiUrl = config('hashtagcms.externals.publish_api');
 
         if (empty($apiUrl) || empty($apiSecret)) {
             logger()->error("Analytics: Missing External API URL or Secret for context: $context");

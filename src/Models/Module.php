@@ -4,6 +4,7 @@ namespace HashtagCms\Models;
 
 use Illuminate\Support\Facades\DB;
 use HashtagCms\Core\Scopes\SiteScope;
+use HashtagCms\Core\Utils\RedisCacheManager;
 
 class Module extends AdminBaseModel
 {
@@ -21,6 +22,20 @@ class Module extends AdminBaseModel
     }
 
     /**
+     * @override
+     * booted
+     */
+    protected static function booted()
+    {
+        static::saved(function () {
+            RedisCacheManager::flush();
+        });
+        static::deleted(function () {
+            RedisCacheManager::flush();
+        });
+    }
+
+    /**
      * Get Method Types
      *
      * @return array
@@ -34,41 +49,6 @@ class Module extends AdminBaseModel
         return $method_type;
     }
 
-    /**
-     * Get Data Types
-     *
-     * @return array
-     */
-    public static function getDataTypes()
-    {
-        $data_type = htcms_admin_config('module_types');
-        //safe side
-        if (empty($data_type)) {
-            $data_type = ['Static', 'Query', 'Service', 'Custom', 'QueryService', 'UrlService'];
-        }
-
-        return $data_type;
-    }
-
-    /**
-     * Get Data Types Info
-     *
-     * @return array
-     */
-    public static function getDataTypesInfo()
-    {
-
-        $data_type_info = [
-            'Static' => "Fetch data from CMS table (static_module_contents) ie. Content Module. <span class='text-danger'>View name is not required.</span>",
-            'Query' => 'Execute query from any table and database. (if database is different you need to add jdbc name in desc field.)',
-            'Service' => "Fetch data from any URL. Return type will be json or text/html (if you need text/html; append 'resultType=html' in your service url)",
-            'Custom' => "Don't do any special things. Just load the module.",
-            'QueryService' => 'It executes a query and pass those data to service URL. You can also get the data from the both.',
-            'UrlService' => 'You can invoke any service along with HTTP request dynamic parameters',
-        ];
-
-        return $data_type_info;
-    }
 
     /**
      * Copy Data from one category to another

@@ -64,6 +64,9 @@ class SiteClonerService
             $this->copyModulesStep->execute($sourceSiteId, $targetSiteId)
         );
 
+        // Clear cache
+        Site::clearConfigCache($targetSiteId);
+
         return $this->results;
     }
 

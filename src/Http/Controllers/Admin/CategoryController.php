@@ -90,48 +90,11 @@ class CategoryController extends BaseAdminController
                 'max:255',
                 'string',
                 Rule::unique('categories')->where(function ($query) use ($request) {
-                    $query->where('site_id', $request->input('site_id'))
-                        ->where('link_rewrite', $request->input('link_rewrite'));
-                }),
+                    $query->where('site_id', $request->input('site_id'));
+                })->ignore($request->input('id', 0), 'id'),
             ],
-            'link_rewrite_pattern' => 'nullable|max:255|string',
-            'link_navigation' => 'nullable|max:255|string',
-            'exclude_in_listing' => 'nullable|integer',
-            'cache_category' => 'nullable|max:100|string',
-            'has_some_special_module' => 'nullable|integer',
-            'special_module_alias' => 'nullable|max:255|string',
-            'controller_name' => 'nullable|max:255|string',
-            'insert_by' => 'required|numeric',
-            'update_by' => 'required|numeric',
-            'publish_status' => 'nullable|numeric',
-            'lang_name' => 'required|max:128|string',
-            'lang_title' => 'required|max:128|string',
-            'lang_excerpt' => 'nullable|max:255|string',
-            'lang_active_key' => 'nullable|max:128|string',
-            'lang_third_party_mapping_key' => 'nullable|max:255|string',
-            'lang_b2b_mapping' => 'nullable|max:255|string',
-            'lang_is_external' => 'nullable|integer',
-            'lang_meta_title' => 'nullable|max:160|string',
-            'lang_meta_keywords' => 'nullable|max:255|string',
-            'lang_meta_description' => 'nullable|max:255|string',
-            'lang_meta_robots' => 'nullable|max:255|string',
-            'lang_meta_canonical' => 'nullable|max:255|string',
-            'publish_at' => 'nullable|date',
-            'expire_at' => 'nullable|date',
+            'controller_name' => 'nullable|max:255',
         ];
-
-        if ($request->input('id') > 0) {
-            $rules['link_rewrite'] = [
-                'required',
-                'max:255',
-                'string',
-                Rule::unique('categories')->where(function ($query) use ($request) {
-                    $query->where('site_id', $request->input('site_id'))
-                        ->where('link_rewrite', $request->input('link_rewrite'))
-                        ->where('id', '!=', $request->input('id'));
-                }),
-            ];
-        }
 
         $validator = Validator::make($request->all(), $rules);
 
@@ -144,16 +107,17 @@ class CategoryController extends BaseAdminController
 
         //
         $data = $request->all();
-
+        //dd($data);
         $saveData['parent_id'] = $data['parent_id'];
         $saveData['site_id'] = $data['site_id'];
         $saveData['is_site_default'] = $data['is_site_default'] ?? 0;
 
         $saveData['is_root_category'] = $data['is_root_category'] ?? 0;
 
-        //Disable all root category if current is 1
         if ($saveData['is_root_category'] == 1 && $data['actionPerformed'] == 'edit') {
-            Category::where('id', '!=', $data['id'])->update(['is_root_category' => 0]);
+            Category::where('id', '!=', $data['id'])
+                ->where('site_id', $data['site_id'])
+                ->update(['is_root_category' => 0]);
         }
 
         $saveData['is_new'] = $data['is_new'] ?? 0;
@@ -200,16 +164,17 @@ class CategoryController extends BaseAdminController
         //update Image
         $icon = $this->upload($module_name, request()->file('icon'));
 
+         //it will have some value if user has clicked on delete
+        if ($data['icon_deleted'] != '0') {
+            $siteData['icon'] = '';
+        }
+
         if ($icon != null) {
 
             $siteData['icon'] = $icon;
         }
 
-        //it will have some value if user has clicked on delete
-        if ($data['icon_deleted'] != '0') {
-            $siteData['icon'] = '';
-        }
-
+       
         $siteData['icon_css'] = $data['icon_css'];
         $siteData['header_content'] = $data['header_content'];
         $siteData['footer_content'] = $data['footer_content'];
@@ -235,29 +200,31 @@ class CategoryController extends BaseAdminController
         $siteData['cache_category'] = $data['cache_category'];
 
         $arrSaveData = ['model' => $this->dataSource,  'data' => $saveData];
-
         $arrLangData = ['data' => $langData];
         $arrSiteData = ['data' => $siteData, 'site_id' => $siteData['site_id']];
 
-        //dd($arrLangData);
         if ($data['actionPerformed'] == 'edit') {
 
             $where = $data['id'];
             $saveData['update_by'] = Auth::user()->id;
 
-            //dd($arrSaveData, $arrLangData, $arrSiteData);
-            //This is in base controller
-            $savedData = $this->saveDataWithLangAndPlatform($arrSaveData, $arrLangData, $arrSiteData, $where);
+            // On edit: target the specific platform that was selected
+            $arrPlatformData = ['data' => $siteData, 'platform_id' => $siteData['platform_id']];
+
+            $savedData = $this->saveDataWithLangAndSiteAndPlatform($arrSaveData, $arrLangData, $arrSiteData, $arrPlatformData, $where);
 
         } else {
 
-            //This is in base controller
-            $savedData = $this->saveDataWithLangAndPlatform($arrSaveData, $arrLangData, $arrSiteData);
+            // On insert: omit platform_id so performInsert() inserts a row
+            // for ALL supported platforms of the site automatically
+            $arrPlatformData = ['data' => $siteData];
+
+            $savedData = $this->saveDataWithLangAndSiteAndPlatform($arrSaveData, $arrLangData, $arrSiteData, $arrPlatformData);
 
         }
-
-        //First or creating/updating with default category
-        if ($this->dataSource::count() == 1 || $saveData['is_root_category'] == 1) {
+        
+        $siteCount = $this->dataSource::where('site_id', $data['site_id'])->count();
+        if ($siteCount == 1 || $saveData['is_root_category'] == 1) {
             Site::where('id', '=', $data['site_id'])->update(['category_id' => $savedData['id']]);
         }
 
@@ -291,7 +258,7 @@ class CategoryController extends BaseAdminController
             'theme:site_id,id,name',
             'category:site_id,category_id,name'])->find($site_id)->toArray();
 
-        $categories = CategorySite::with('lang')->where([['site_id', '=', $site_id], ['platform_id', '=', $platform_id]])->get();
+        $categories = CategorySite::with('lang')->where([['site_id', '=', $site_id], ['platform_id', '=', $platform_id]])->orderBy('position', 'asc')->get();
 
         $viewData['microsite_id'] = $microsite_id;
         $viewData['platform_id'] = $platform_id;
@@ -394,27 +361,27 @@ class CategoryController extends BaseAdminController
         if (! $this->checkPolicy('edit')) {
             return htcms_admin_view('common.error', Message::getWriteError(), \request()->ajax());
         }
-        $request = request()->all();
-        $datas = $request['data'];
-        $updated = [];
-        DB::beginTransaction();
-        try {
-            foreach ($datas as $key => $value) {
-                $where = $value['where'];
-                $where['site_id'] = htcms_get_siteId_for_admin();
-                $data = $value['data'];
-                $updated[] = $this->rawUpdate('category_site', $data, $where);
-            }
-        } catch (Exception $exception) {
-            DB::rollBack();
 
+        $request = request()->all();
+        $datas   = $request['data'];
+        $siteId  = htcms_get_siteId_for_admin();
+
+        // Build normalised items: each has a composite WHERE (category_id + site_id) and data
+        $items = array_map(function ($value) use ($siteId) {
+            return [
+                'where' => array_merge($value['where'], ['site_id' => $siteId]),
+                'data'  => $value['data'],
+            ];
+        }, $datas);
+
+        try {
+            $affected = $this->bulkRawUpdate('category_site', $items);
+            Site::clearConfigCache($siteId);
+        } catch (\Exception $exception) {
             return ['error' => true, 'message' => $exception->getMessage()];
         }
 
-        DB::commit();
-        $rData['isSaved'] = $updated;
-
-        return $rData;
+        return ['isSaved' => $affected];
     }
 
     /**

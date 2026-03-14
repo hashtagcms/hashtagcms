@@ -10,7 +10,7 @@ class HashtagCms
 
     private $installtionRoutes = true;
 
-    private $ignoredPath = '(?!assets/)|(?!fonts/)|(?!build/)|(?!resources/)|(?!public/)';
+    private $ignoredPath = '(?!assets/)(?!fonts/)(?!build/)(?!resources/)(?!public/)';
 
     /**
      * Get Header Menu as an array
@@ -133,7 +133,7 @@ class HashtagCms
      */
     public function getIgnoredPath(): string
     {
-        return '^('.$this->ignoredPath.'.)*?';
+        return '^' . $this->ignoredPath . '.*$';
     }
 
     /**
@@ -143,17 +143,7 @@ class HashtagCms
      */
     public function setDirectoryToIgnoredPath(string $path)
     {
-        $this->ignoredPath = $this->ignoredPath."|(?!$path/)";
+        $this->ignoredPath = $this->ignoredPath."(?!" . preg_quote($path, '/') . "/)";
     }
-
-    /*    public function putExistingRouteToIgnoreList() {
-            $routes = Route::getRoutes();
-
-            foreach ($routes as $route) {
-                $this->setDirectoryToIgnoredPath($route->uri());
-                info($route->uri() . " " . implode(", ", $route->methods()));
-                //echo $route->uri() . " " . implode(", ", $route->methods()) . "\n";
-            }
-        }*/
 
 }

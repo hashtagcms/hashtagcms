@@ -15,11 +15,8 @@ class CityController extends BaseAdminController
         'id',
         'name',
         'country.name',
-        'zone.name as Zone',
-        'airport_name',
-        'airport_code',
-        'latitude',
-        'longitude',
+        'zone.name as Zone',        
+        'airport_code'        
     ];
 
     protected $dataSource = City::class;

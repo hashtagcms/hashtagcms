@@ -37,16 +37,8 @@ class PlatformController extends BaseAdminController
                 'max:100',
                 'string',
                 "regex:/^\w{1,}$/",
-                'unique:platforms,link_rewrite'],
+                'unique:platforms,link_rewrite,'.$request->input('id', 0).',id'],
         ];
-
-        if ($request->input('id') > 0) {
-            $rules['link_rewrite'] = ['required',
-                'max:100',
-                'string',
-                "regex:/^\w{1,}$/",
-                'unique:platforms,link_rewrite,'.$request->input('id')];
-        }
 
         $validator = Validator::make($request->all(), $rules);
 

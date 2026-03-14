@@ -1,10 +1,10 @@
 # Installation Guide
 
-This guide will walk you through installing HashtagCms step by step.
+This guide will walk you through installing HashtagCMS step by step.
 
 ## Prerequisites
 
-Before installing HashtagCms, ensure your system meets these requirements:
+Before installing HashtagCMS, ensure your system meets these requirements:
 
 ### System Requirements
 
@@ -14,6 +14,7 @@ Before installing HashtagCms, ensure your system meets these requirements:
 - **Composer**: Latest version
 - **Node.js**: 16+ (for asset compilation - optional)
 - **NPM**: 8+ (for asset compilation - optional)
+- **MongoDB Driver**: (Optional) `mongodb/laravel-mongodb` if using MongoDB features.
 
 ### PHP Extensions Required
 
@@ -26,6 +27,7 @@ Before installing HashtagCms, ensure your system meets these requirements:
 - JSON
 - BCMath
 - Fileinfo
+- MongoDB (Optional)
 
 ## Installation Steps
 
@@ -36,7 +38,7 @@ composer create-project laravel/laravel mysite
 cd mysite
 ```
 
-### Step 2: Install HashtagCms Package
+### Step 2: Install HashtagCMS Package
 
 ```bash
 composer require hashtagcms/hashtagcms
@@ -47,7 +49,7 @@ composer require hashtagcms/hashtagcms
 Open the `.env` file and configure your application:
 
 ```env
-APP_NAME="My HashtagCms Site"
+APP_NAME="My HashtagCMS Site"
 APP_ENV=local
 APP_KEY=
 APP_DEBUG=true
@@ -79,7 +81,7 @@ Open `app/Models/User.php` and make the following changes:
 
 **Add:**
 ```php
-use HashtagCms\User as Authenticatable;
+use HashtagCMS\User as Authenticatable;
 ```
 
 Your User model should look like this:
@@ -90,7 +92,7 @@ Your User model should look like this:
 namespace App\Models;
 
 // use Illuminate\Foundation\Auth\User as Authenticatable;
-use HashtagCms\User as Authenticatable;
+use HashtagCMS\User as Authenticatable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Notifications\Notifiable;
 
@@ -330,7 +332,7 @@ php artisan tinker
 Then run:
 ```php
 DB::connection()->getPdo();
-\HashtagCms\Models\Site::first();
+\HashtagCMS\Models\Site::first();
 ```
 
 ### Check Version
@@ -389,7 +391,7 @@ sudo chmod -R 775 storage bootstrap/cache
 ```bash
 # Fresh installation (WARNING: This will delete all data)
 php artisan migrate:fresh
-php artisan db:seed --class=HashtagCms\\Database\\Seeds\\HashtagCmsDatabaseSeeder
+php artisan db:seed --class=HashtagCMS\\Database\\Seeds\\HashtagCMSDatabaseSeeder
 ```
 
 ## Next Steps

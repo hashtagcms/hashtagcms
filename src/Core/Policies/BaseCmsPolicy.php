@@ -5,7 +5,7 @@ namespace HashtagCms\Core\Policies;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Auth\Access\HandlesAuthorization;
 use HashtagCms\Models\CmsPermission;
-use HashtagCms\Models\User;
+use HashtagCms\User;
 
 /**
  * Abstract Class BaseCmsPolicy
@@ -15,14 +15,12 @@ use HashtagCms\Models\User;
  * Provides common functionality for:
  * - SuperAdmin bypass checks
  * - Permission verification (module access + role permissions)
- * - Permission caching
- * - Debug logging (automatically enabled/disabled based on APP_ENV)
- * - Null safety
- *
- * Debug Logging:
- * - Automatically ENABLED in: local, development, dev, staging
- * - Automatically DISABLED in: production, prod
- * - Can be manually controlled via enableDebugLogging() / disableDebugLogging()
+ * This class provides:
+ * - Dynamic Action Support: Using __call() to handle any permission added to the DB.
+ * - SuperAdmin bypass checks (SuperAdmins can do anything).
+ * - Permission verification (module access + role permissions).
+ * - Resource Ownership: Contributors can only touch their own data.
+ * - Permission caching: Multi-layered caching (Boot, Session, and request-level).
  *
  * This class can be extended by specific policies to inherit common behavior
  * while allowing customization for specific modules.
@@ -81,7 +79,7 @@ abstract class BaseCmsPolicy
      *
      * SuperAdmins bypass all permission checks.
      *
-     * @param  \HashtagCms\Models\User|null  $user
+     * @param  User|null  $user
      * @return bool|null
      */
     public function before(?User $user): ?bool
@@ -90,7 +88,7 @@ abstract class BaseCmsPolicy
             return false;
         }
 
-        if ($user->isSuperAdmin()) {
+        if ($user->isSuperAdmin() || $user->hasRole('admin')) {
             return true;
         }
 
@@ -105,12 +103,12 @@ abstract class BaseCmsPolicy
      * 2. The permission record belongs to this user
      * 3. User's role has the required permission
      *
-     * @param  \HashtagCms\Models\User|null  $user
-     * @param  \HashtagCms\Models\CmsPermission|null  $permission
+     * @param  User|null  $user
+     * @param  CmsPermission|null  $permission
      * @param  string  $action
      * @return bool
      */
-    protected function canPerform(?User $user, ?CmsPermission $permission, string $action): bool
+    protected function canPerform(?User $user, ?CmsPermission $permission, string $action, $resource = null): bool
     {
         // Null safety check
         if (!$user || !$permission) {
@@ -118,28 +116,64 @@ abstract class BaseCmsPolicy
             return false;
         }
 
-        // Check if this permission belongs to the user
+        // Check if this permission record belongs to the user
         $isOwnPermission = $this->isOwnPermission($user, $permission);
 
         // Check if user's role has the required permission
-        $hasPermission = $this->hasPermissionTo($action);
+        $hasPermission = $this->hasPermissionTo($user, $action);
+
+        // Handle Contributor "own content" restriction
+        $isOwner = true;
+        if ($resource !== null && $user->isContributor()) {
+            $isOwner = $this->isOwner($user, $resource);
+        }
 
         // Log if permission is denied
-        if (!$isOwnPermission || !$hasPermission) {
+        if (!$isOwnPermission || !$hasPermission || !$isOwner) {
             $this->logPermissionDenial($user, $permission, $action, [
                 'is_own_permission' => $isOwnPermission,
                 'has_permission' => $hasPermission,
+                'is_owner' => $isOwner,
             ]);
         }
 
-        return $isOwnPermission && $hasPermission;
+        return $isOwnPermission && $hasPermission && $isOwner;
+    }
+
+    /**
+     * Check if the user is the owner of the resource.
+     *
+     * @param  User  $user
+     * @param  mixed  $resource
+     * @return bool
+     */
+    protected function isOwner(User $user, $resource): bool
+    {
+        if ($resource === null) {
+            return true;
+        }
+
+        // In case resource is an array (sometimes toArray() is used)
+        if (is_array($resource)) {
+            // If it's an empty array, it's likely a 'create' action where no data exists yet
+            if (empty($resource)) {
+                return true;
+            }
+            $ownerId = $resource['insert_by'] ?? $resource['user_id'] ?? null;
+            return $ownerId !== null && (int)$ownerId === (int)$user->id;
+        }
+
+        // Standard Eloquent model check
+        $ownerId = $resource->insert_by ?? $resource->user_id ?? null;
+        
+        return $ownerId !== null && (int)$ownerId === (int)$user->id;
     }
 
     /**
      * Check if the permission record belongs to the user.
      *
-     * @param  \HashtagCms\Models\User  $user
-     * @param  \HashtagCms\Models\CmsPermission  $permission
+     * @param  User  $user
+     * @param  CmsPermission  $permission
      * @return bool
      */
     protected function isOwnPermission(User $user, CmsPermission $permission): bool
@@ -152,24 +186,27 @@ abstract class BaseCmsPolicy
      *
      * Uses caching to reduce database queries within the same request.
      *
+     * @param  User  $user
      * @param  string  $permission
      * @return bool
      */
-    protected function hasPermissionTo(string $permission): bool
+    protected function hasPermissionTo(User $user, string $permission): bool
     {
+        $cacheKey = $user->id . '_' . $permission;
+
         // Check cache first
-        if (!isset($this->permissionCache[$permission])) {
-            $this->permissionCache[$permission] = Gate::allows($permission);
+        if (!isset($this->permissionCache[$cacheKey])) {
+            $this->permissionCache[$cacheKey] = Gate::forUser($user)->allows($permission);
         }
 
-        return $this->permissionCache[$permission];
+        return $this->permissionCache[$cacheKey];
     }
 
     /**
      * Log permission denial for debugging and auditing.
      *
-     * @param  \HashtagCms\Models\User|null  $user
-     * @param  \HashtagCms\Models\CmsPermission|null  $permission
+     * @param  User|null  $user
+     * @param  CmsPermission|null  $permission
      * @param  string  $action
      * @param  mixed  $reason
      * @return void
@@ -220,6 +257,29 @@ abstract class BaseCmsPolicy
     public function enableDebugLogging(): void
     {
         $this->enableDebugLogging = true;
+    }
+
+    /**
+     * Handle dynamic permission methods.
+     *
+     * This allows the policy to handle any action defined in the database
+     * (e.g., 'export', 'duplicate', 'assign') without needing explicit methods
+     * for each action in the policy class.
+     *
+     * @param string $name The action name being checked
+     * @param array $arguments [0 => User $user, 1 => CmsPermission $permission, 2 => mixed $resource]
+     * @return bool
+     */
+    public function __call($name, $arguments)
+    {
+        // Laravel passes the User as the first argument, followed by what was passed to the Gate call.
+        // In this project, Viewer::checkPolicy passes [$permission, $resource].
+        return $this->canPerform(
+            $arguments[0] ?? null, // User
+            $arguments[1] ?? null, // CmsPermission Model
+            $name,                 // The dynamic action name
+            $arguments[2] ?? null  // The specific resource/model
+        );
     }
 
     /**

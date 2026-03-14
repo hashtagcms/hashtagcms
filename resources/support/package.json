@@ -11,7 +11,7 @@
         "url": "git+https://github.com/hashtagcms/hashtagcms.git"
     },
     "keywords": [
-        "HashtagCms",
+        "HashtagCMS",
         "Headless Cms",
         "CMS",
         "Mobile Api Supported"
@@ -32,19 +32,19 @@
         "build:be": "cross-env MODE=be webpack --mode production"
     },
     "dependencies": {
-        "@hashtagcms/admin-sdk": "^1.0.3",
-        "@hashtagcms/admin-ui-kit": "^1.0.8",
-        "@hashtagcms/web-sdk": "^1.0.4",
-        "@hashtagcms/web-ui-kit": "^1.0.8",
+        "@hashtagcms/admin-sdk": "^2.0.0",
+        "@hashtagcms/admin-ui-kit": "^2.0.0",
+        "@hashtagcms/web-sdk": "^2.0.0",
+        "@hashtagcms/web-ui-kit": "^2.0.0",
         "axios": "^1.8.4",
         "bootstrap": "^5.3.3",
         "font-awesome": "^4.7.0",
         "mitt": "^3.0.1",
-        "motion": "^12.6.2",
+        "motion": "^12.36.0",
         "pluralize": "^8.0.0",
         "secure-ls": "^2.0.0",
-        "sortablejs": "^1.15.6",
-        "vue": "^3.5.13"
+        "sortablejs": "^1.15.7",
+        "vue": "^3.5.30"
     },
     "devDependencies": {
         "@babel/core": "^7.26.10",
@@ -57,13 +57,13 @@
         "cross-env": "^7.0.3",
         "css-loader": "^7.1.2",
         "cssnano": "^7.0.6",
-        "mini-css-extract-plugin": "^2.9.2",
-        "postcss-loader": "^8.1.1",
-        "sass": "^1.86.0",
+        "mini-css-extract-plugin": "^2.10.1",
+        "postcss-loader": "^8.2.1",
+        "sass": "^1.98.0",
         "sass-loader": "^16.0.5",
         "vue-loader": "^17.4.2",
         "vue-style-loader": "^4.1.3",
-        "webpack": "^5.98.0",
+        "webpack": "^5.105.4",
         "webpack-cli": "^6.0.1",
         "webpack-dev-server": "^5.2.1",
         "webpack-merge": "^6.0.1"

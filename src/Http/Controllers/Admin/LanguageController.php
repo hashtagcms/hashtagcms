@@ -15,9 +15,7 @@ class LanguageController extends BaseAdminController
 {
     protected $dataFields = ['id', 'name', 'iso_code', 'language_code', 'created_at', 'updated_at'];
 
-    protected $dataSource = Lang::class;
-
-    protected $dataWith = '';
+    protected $dataSource = Lang::class;    
 
     protected $minResults = 1;
 
@@ -42,7 +40,7 @@ class LanguageController extends BaseAdminController
     {
 
         if (!$this->checkPolicy('edit')) {
-            return htcms_admin_view('common.error', Message::getWriteError());
+            return htcms_admin_view('common.error', Message::getWriteError(['backUrl' => $this->getBackURL()]));
         }
 
         $rules = [
@@ -130,9 +128,13 @@ class LanguageController extends BaseAdminController
      */
     public function translator($id = 0)
     {
-        $viewDatap['sites'] = Site::all();
+         if (!$this->checkPolicy('edit')) {
+            return htcms_admin_view('common.error', Message::getWriteError(['backUrl' => $this->getBackURL()]));
+        }
+
+        $viewData['sites'] = Site::all();
         $viewData['languages'] = Lang::all();
-        $viewData['backURL'] = $this->getBackURL();
+        $viewData['backUrl'] = $this->getBackURL();
         $viewData['langTables'] = Lang::getAllLangTables();
         $viewData['actionPerformed'] = 'translation';
         $viewData['id'] = $id;

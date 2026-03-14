@@ -6,8 +6,14 @@ use HashtagCms\Testing\TestCase;
 use Illuminate\Support\Facades\DB;
 use HashtagCms\Models\Site;
 
+use Illuminate\Foundation\Testing\DatabaseMigrations;
+use HashtagCms\Database\Seeds\HashtagCmsDatabaseSeeder;
+use HashtagCms\User;
+use HashtagCms\Models\SiteProp;
+
 class ExtensiveTest extends TestCase
 {
+    use DatabaseMigrations;
     /**
      * Set up the test - explicitly seed for extensive tests.
      */
@@ -15,7 +21,7 @@ class ExtensiveTest extends TestCase
     {
         parent::setUp();
         // Extensive tests need the database seeded
-        $this->seed(\HashtagCms\Database\Seeds\HashtagCmsDatabaseSeeder::class);
+        $this->seed(HashtagCmsDatabaseSeeder::class);
     }
 
     /**
@@ -39,10 +45,10 @@ class ExtensiveTest extends TestCase
         $this->assertEquals('My Awesome Site', $site->name);
         $this->assertEquals('my-site.com', $site->domain);
         
-        $user = \HashtagCms\User::find(1);
+        $user = User::find(1);
         $this->assertEquals('dev@hashtagcms.org', $user->email);
         
-        $siteInstalled = \HashtagCms\Models\SiteProp::where('name', 'site_installed')->first();
+        $siteInstalled = SiteProp::where('name', 'site_installed')->first();
         $this->assertEquals(1, $siteInstalled->value);
     }
 

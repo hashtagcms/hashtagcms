@@ -23,4 +23,5 @@ class CmslogController extends BaseAdminController
             'action_append_field' => 'id',
         ],
     ];
+
 }

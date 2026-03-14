@@ -33,12 +33,8 @@ class HookController extends BaseAdminController
 
         $rules = [
             'name' => 'required|max:64|string',
-            'alias' => 'required|max:64|string|unique:hooks,alias',
+            'alias' => 'required|max:64|string|unique:hooks,alias,'.$request->input('id', 0).',id',
         ];
-
-        if ($request->input('id') > 0) {
-            $rules['alias'] = 'required|max:64|string|unique:hooks,alias,'.$request->input('id');
-        }
 
         $validator = Validator::make($request->all(), $rules);
 

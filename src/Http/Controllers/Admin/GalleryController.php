@@ -12,7 +12,7 @@ class GalleryController extends BaseAdminController
 {
     protected $dataFields = [
         'id',
-        ['label' => 'image', 'key' => 'path', 'isImage' => true],
+        ['label' => 'image', 'key' => 'path', 'isImage' => true, 'width'=>'50'],
         'media_type',
         'group_name',
         ['label' => 'Tags', 'key' => 'tag.name', 'showAllScopes' => true],
@@ -54,17 +54,16 @@ class GalleryController extends BaseAdminController
 
         //edit
         if (isset($data['id']) && $data['id'] > 0) {
-            //$rules["image"] = "max:255|string";
-            $filesRequired = false;
+            $filesAreMissing = false; 
         } else {
             $rules['image'] = 'required';
-            $filesRequired = count(request()->allFiles()) === 0;
+            $filesAreMissing = count(request()->allFiles()) === 0;
         }
 
         $validator = Validator::make($data, $rules);
 
-        if ($validator->fails() || $filesRequired) {
-            if ($filesRequired === true) {
+        if ($validator->fails() || $filesAreMissing) {
+            if ($filesAreMissing === true) {
                 $validator->errors()->add('image[]', 'Please choose at least one file.');
             }
 
@@ -219,21 +218,63 @@ class GalleryController extends BaseAdminController
      */
     public function updateIndex()
     {
+        if (! $this->checkPolicy('edit')) {
+            return htcms_admin_view('common.error', Message::getWriteError(), \request()->ajax());
+        }
 
-        $a = [];
-        $data = request()->all();
-        foreach ($data as $key => $posData) {
-            if ($posData != null) {
-                $where = $posData['where']['id'];
-                $saveData['position'] = $posData['position'];
-                $arrSaveData = ['model' => $this->dataSource,  'data' => $saveData];
-                QueryLogger::setLogginStatus(false);
-                $savedData = $this->saveData($arrSaveData, $where);
-                array_push($a, $posData);
-                QueryLogger::setLogginStatus(true);
+        $payload = request()->all();
+        $datas   = $payload['data'] ?? $payload;
+
+        if (!is_array($datas)) {
+            return ['isSaved' => 0, 'indexUpdated' => 0, 'error' => 'Invalid data format'];
+        }
+
+        $rows = [];
+        foreach ($datas as $posData) {
+            if (is_array($posData)) {
+                $id = $posData['id'] ?? ($posData['where']['id'] ?? null);
+                if ($id !== null) {
+                    $rows[] = [
+                        'id'       => (int) $id,
+                        'position' => (int) ($posData['position'] ?? 0),
+                    ];
+                }
             }
         }
 
-        return ['indexUpdated' => $a];
+        $table    = (new $this->dataSource)->getTable();
+        try {
+            $affected = $this->bulkUpdateIndex($table, $rows);
+            Site::clearConfigCache();
+        } catch (\Exception $exception) {
+            return ['isSaved' => false, 'error' => true, 'message' => $exception->getMessage()];
+        }
+
+        return ['isSaved' => true, 'indexUpdated' => $affected, 'affected' => $affected];
+    }
+    /**
+     * Get Gallery Group for auto-suggest
+     */
+    public function getGalleryGroup(Request $request)
+    {
+        $term = $request->input('q') ?? $request->input('term');
+        $siteId = $request->input('site_id') ?? htcms_get_siteId_for_admin();
+
+        $groups = Gallery::searchGalleryGroup($siteId, $term);
+
+        return response()->json($groups);
+    }
+
+    /**
+     * Get Gallery Type for auto-suggest
+     */
+    public function getGalleryType(Request $request)
+    {
+        $term = $request->input('q') ?? $request->input('term');
+        $siteId = $request->input('site_id') ?? htcms_get_siteId_for_admin();
+
+        $types = Gallery::searchGalleryType($siteId, $term);
+
+        return response()->json($types);
     }
 }

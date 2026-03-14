@@ -18,7 +18,9 @@ abstract class BaseSeeder extends Seeder
      */
     protected function shouldCheckExisting(): bool
     {
-        return getenv('SEED_CHECK_EXISTING') === 'true';
+        // Default to true for safety, can be overridden by env variable
+        $env = getenv('SEED_CHECK_EXISTING');
+        return $env === false ? true : $env === 'true';
     }
 
     /**
@@ -98,5 +100,32 @@ abstract class BaseSeeder extends Seeder
                 DB::table($table)->insert([$record]);
             }
         }
+    }
+
+    /**
+     * Get selected languages for installation
+     *
+     * @return array
+     */
+    protected function getSelectedLanguages(): array
+    {
+        $langs = config('hashtagcms.install_languages', 'en');
+        return is_array($langs) ? $langs : explode(',', $langs);
+    }
+
+    /**
+     * Load translation file for a given language
+     *
+     * @param string $fileName
+     * @param string $isoCode
+     * @return array
+     */
+    protected function loadTranslations(string $fileName, string $isoCode): array
+    {
+        $path = __DIR__ . "/Translations/{$isoCode}/{$fileName}.php";
+        if (file_exists($path)) {
+            return require $path;
+        }
+        return [];
     }
 }

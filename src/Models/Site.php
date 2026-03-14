@@ -4,11 +4,35 @@ namespace HashtagCms\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
+use HashtagCms\User;
 use HashtagCms\Core\Scopes\SiteScope;
+use HashtagCms\Core\Utils\RedisCacheManager;
+use HashtagCms\Core\Utils\CacheKeys;
+use Illuminate\Support\Facades\Cache;
 
 class Site extends AdminBaseModel
 {
     protected $guarded = [];
+
+    /**
+     * Clear site config cache
+     * @param null $siteId
+     */
+    public static function clearConfigCache($siteId = null)
+    {
+        $id = $siteId ?? htcms_get_siteId_for_admin();
+        $site = self::find($id);
+        if ($site && !empty($site->context)) {
+            $dbPrefix = RedisCacheManager::getDatabasePrefix();
+            $exPrefix = RedisCacheManager::getExternalSourcePrefix();
+            $cacheKeySuffix = CacheKeys::SITE_CONFIG . "_{$site->context}";
+
+            Cache::forget($dbPrefix . $cacheKeySuffix);
+            Cache::forget($exPrefix . $cacheKeySuffix);
+
+            info("Cleared site config cache for context: {$site->context}");
+        }
+    }
 
     protected $additionalColumns = ['site_id', 'microsite_id', 'platform_id', 'category_id',
         'hook_id', 'module_id', 'position', 'publish_status'];

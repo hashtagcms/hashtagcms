@@ -60,7 +60,7 @@ class ServiceModuleLoader extends Results implements ModuleLoaderServiceImp
 
         try {
 
-            $timeout = config('hashtagcms.external_service_timeout', 60);
+            $timeout = config('hashtagcms.externals.external_service_timeout', 60);
 
             switch (strtolower($method_type)) {
                 case 'get':

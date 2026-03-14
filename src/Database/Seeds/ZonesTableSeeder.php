@@ -27,10 +27,6 @@ class ZonesTableSeeder extends Seeder
 
         if(DB::table('zones')->get()->count() == 0) {
             DB::table('zones')->insert($zones);
-
-        } else {
-            echo "SeedingError: `zones` table is not empty\n";
-        }
-
+        } 
     }
 }

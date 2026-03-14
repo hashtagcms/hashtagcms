@@ -5,6 +5,8 @@ namespace HashtagCms\Listeners\SiteCloner;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use HashtagCms\Events\SiteCloner\SiteCloningStarted;
+use HashtagCms\Core\Utils\CacheKeys;
+use HashtagCms\Core\Utils\RedisCacheManager;
 
 /**
  * Listener for site cloning started event
@@ -16,9 +18,9 @@ class HandleSiteCloningStarted
      */
     public function handle(SiteCloningStarted $event): void
     {
-        $prefix = \HashtagCms\Core\Utils\RedisCacheManager::getInternalPrefix();
+        $prefix = RedisCacheManager::getInternalPrefix();
         Cache::put(
-            "{$prefix}".\HashtagCms\Core\Utils\CacheKeys::CLONE_JOB."_{$event->jobId}",
+            "{$prefix}".CacheKeys::CLONE_JOB."_{$event->jobId}",
             [
                 'job_id' => $event->jobId,
                 'source_site_id' => $event->sourceSiteId,

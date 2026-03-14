@@ -4,6 +4,7 @@ namespace HashtagCms\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 use HashtagCms\Core\Helpers\Message;
 use HashtagCms\Models\Module;
 use HashtagCms\Models\ModuleProp;
@@ -27,81 +28,134 @@ class ModulepropertyController extends BaseAdminController
 
     public function store(Request $request)
     {
-
-        //$module_name = $request->module_info->controller_name;
-
         if (! $this->checkPolicy('edit')) {
             return htcms_admin_view('common.error', Message::getWriteError());
         }
-        $rules = ['module_id' => 'required',
-            'site_id' => 'required',
-            'platform_id' => 'required',
-            'name' => 'required|max:100|string',
-            'group' => 'nullable|max:100|string',
-            'value' => 'required|max:500|string',
-        ];
 
-        $validator = Validator::make($request->all(), $rules);
+        $data      = $request->all();
+        $isEdit    = $data['actionPerformed'] === 'edit';
+        $siteId    = $data['site_id'];
+        $editId    = $data['id'] ?? null;
+        $group     = $data['group'] ?? '';  // coerce null → '' for uniqueness index
 
-        if ($validator->fails()) {
+        // --- Basic required-field validation ---
+        $basicValidator = Validator::make($data, [
+            'module_id'   => ['required'],
+            'platform_id' => ['required'],
+            'name'        => ['required', 'string', 'max:100'],
+            'value'       => ['required', 'string', 'max:500'],
+            'group'       => ['nullable', 'string', 'max:100'],
+        ], [
+            'name.required'  => 'The property key (name) cannot be blank.',
+            'value.required' => 'The property value cannot be blank.',
+        ]);
 
+        if ($basicValidator->fails()) {
             return redirect()->back()
-                ->withErrors($validator)
+                ->withErrors($basicValidator)
                 ->withInput();
         }
 
-        $data = $request->all();
+        // --- camelCase conversion ---
+        if (! empty($data['convert_camelcase'])) {
+            $data['name'] = $this->toCamelCase($data['name']);
+        }
+        $name = $data['name'];  // local alias — may be camelCased at this point
 
-        $saveData['group'] = $data['group'];
-        $saveData['name'] = $data['name'];
-        $saveData['site_id'] = $data['site_id'];
-        $saveData['updated_at'] = htcms_get_current_date();
+        // --- Uniqueness validation across every module × platform combination ---
+        $allModules   = is_array($data['module_id'])   ? $data['module_id']   : [$data['module_id']];
+        $allPlatforms = is_array($data['platform_id']) ? $data['platform_id'] : [$data['platform_id']];
 
-        $updateInAllLanguages = (isset($data['update_in_all_language']) && (string) $data['update_in_all_language'] === '1') ? true : false;
+        foreach ($allModules as $moduleId) {
+            foreach ($allPlatforms as $platformId) {
+                $uniqueRule = Rule::unique('module_props')
+                    ->where('module_id',   $moduleId)
+                    ->where('site_id',     $siteId)
+                    ->where('platform_id', $platformId)
+                    ->where('name',        $name)
+                    ->where('group',       $group);
 
-        //lang
-        $langData['value'] = $data['value'];
-        $langData['updated_at'] = htcms_get_current_date();
+                if ($isEdit && $editId) {
+                    $uniqueRule = $uniqueRule->ignore($editId);
+                }
 
-        $arrLangData = ['data' => $langData];
-        QueryLogger::disableLogging();
-        if ($data['actionPerformed'] === 'edit') {
-            $saveData['platform_id'] = $data['platform_id'];
-            $saveData['module_id'] = $data['module_id'];
+                $validator = Validator::make(
+                    ['name' => $name],
+                    ['name' => ['required', 'max:100', 'string', $uniqueRule]],
+                    ['name.unique' => "A property named \"{$name}\" already exists for this module / site / platform / group combination."]
+                );
 
-            $arrSaveData = ['model' => $this->dataSource,  'data' => $saveData];
-
-            $where = $data['id'];
-            //This is in base controller
-            $savedData = $this->saveDataWithLang($arrSaveData, $arrLangData, $where, $updateInAllLanguages);
-        } else {
-
-            $saveData['created_at'] = htcms_get_current_date();
-
-            //it will always be in array
-            $allPlatforms = $data['platform_id'];
-            $allModules = $data['module_id'];
-            //insert in all platform
-            if (is_array($allPlatforms)) {
-                foreach ($allPlatforms as $current_platform_id) {
-                    $saveData['platform_id'] = $current_platform_id;
-                    //check if there is multiple modules
-                    if (is_array($allModules)) {
-                        foreach ($allModules as $current_module_id) {
-                            $saveData['module_id'] = $current_module_id;
-                            $arrSaveData = ['model' => $this->dataSource,  'data' => $saveData];
-                            $savedData = $this->saveDataWithLang($arrSaveData, $arrLangData);
-                        }
-                    }
+                if ($validator->fails()) {
+                    return redirect()->back()
+                        ->withErrors($validator)
+                        ->withInput();
                 }
             }
         }
-        QueryLogger::enableLogging();
-        $viewData['id'] = $savedData['id'];
+
+        // --- Save ---
+        $updateInAllLanguages = (isset($data['update_in_all_language']) && (string) $data['update_in_all_language'] === '1');
+
+        $saveData = [
+            'group'      => $group,
+            'name'       => $name,
+            'site_id'    => $siteId,
+            'updated_at' => htcms_get_current_date(),
+        ];
+
+        $langData    = ['value' => $data['value'], 'updated_at' => htcms_get_current_date()];
+        $arrLangData = ['data' => $langData];
+
+        QueryLogger::startBuffering();
+
+        if ($isEdit) {
+            $saveData['platform_id'] = $data['platform_id'];
+            $saveData['module_id']   = $data['module_id'];
+
+            $arrSaveData = ['model' => $this->dataSource, 'data' => $saveData];
+            $savedData   = $this->saveDataWithLang($arrSaveData, $arrLangData, $editId, $updateInAllLanguages);
+        } else {
+            $saveData['created_at'] = htcms_get_current_date();
+
+            foreach ($allPlatforms as $current_platform_id) {
+                $saveData['platform_id'] = $current_platform_id;
+                foreach ($allModules as $current_module_id) {
+                    $saveData['module_id'] = $current_module_id;
+                    $arrSaveData = ['model' => $this->dataSource, 'data' => $saveData];
+                    $savedData   = $this->saveDataWithLang($arrSaveData, $arrLangData);
+                }
+            }
+        }
+
+        QueryLogger::commitLogs();
+
+        $viewData['id']       = $savedData['id'];
         $viewData['saveData'] = $data;
-        $viewData['backURL'] = $data['backURL'];
-        $viewData['isSaved'] = $savedData['isSaved'];
+        $viewData['backURL']  = $data['backURL'];
+        $viewData['isSaved']  = $savedData['isSaved'];
 
         return htcms_admin_view('common.saveinfo', $viewData);
+    }
+
+    /**
+     * Convert an arbitrary string to camelCase.
+     * e.g. "my-key_name" → "myKeyName", "My Key" → "myKey"
+     */
+    private function toCamelCase(string $value): string
+    {
+        $words = preg_split('/[\s\-_]+/', trim($value));
+        $first = strtolower(array_shift($words));
+        $rest  = array_map('ucfirst', array_map('strtolower', $words));
+        return $first . implode('', $rest);
+    }
+
+    public function getModuleGroup(Request $request)
+    {        
+        $term   = $request->input('q') ?? $request->input('term');
+        $siteId = $request->input('site_id') ?? htcms_get_siteId_for_admin();
+
+        $groups = ModuleProp::searchModuleGroup($siteId, $term);
+
+        return response()->json($groups);
     }
 }

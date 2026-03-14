@@ -31,6 +31,7 @@ class RoleController extends BaseAdminController
         $rules = [
             'name' => 'required|max:255|string',
             'label' => 'nullable|max:255|string',
+            'description' => 'nullable|string',
         ];
 
         $validator = Validator::make($request->all(), $rules);
@@ -46,10 +47,10 @@ class RoleController extends BaseAdminController
 
         $saveData['name'] = $data['name'];
         $saveData['label'] = $data['label'];
+        $saveData['description'] = $data['description'];
 
-        $permissions = $data['permissions'];
-
-        $updatePermission = $data['updatePermission'];
+        $permissions = $data['permissions'] ?? [];       
+        $updatePermission = $data['updatePermission'] ?? false;
 
         $arrSaveData = ['model' => $this->dataSource,  'data' => $saveData];
 

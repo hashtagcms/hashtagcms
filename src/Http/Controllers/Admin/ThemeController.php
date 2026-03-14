@@ -44,22 +44,13 @@ class ThemeController extends BaseAdminController
             'name' => 'required|max:60|string',
             'alias' => ['required', 'max:60', 'string',
                 Rule::unique('themes')->where(function ($query) use ($request) {
-                    $query->where('site_id', $request->input('site_id'))
-                        ->where('alias', $request->input('alias'));
-                })],
+                    $query->where('site_id', $request->input('site_id'));
+                })->ignore($request->input('id', 0), 'id')],
             'directory' => 'required|max:60|string',
             'body_class' => 'nullable|max:255|string',
             'img_preview' => 'nullable|file',
             'skeleton' => 'required',
         ];
-
-        if ($request->input('id') > 0) {
-            $rules['alias'] = Rule::unique('themes')->where(function ($query) use ($request) {
-                $query->where('site_id', $request->input('site_id'))
-                    ->where('alias', $request->input('alias'))
-                    ->where('id', '<>', $request->input('id'));
-            });
-        }
 
         $validator = Validator::make($request->all(), $rules);
 
@@ -87,12 +78,12 @@ class ThemeController extends BaseAdminController
         //update Image
         $img_preview = $this->upload($module_name, request()->file('img_preview'));
 
-        if ($img_preview != null) {
-            $saveData['img_preview'] = $img_preview;
-        }
-
         if ($data['img_preview_deleted'] != '0') {
             $saveData['img_preview'] = '';
+        }
+
+        if ($img_preview != null) {
+            $saveData['img_preview'] = $img_preview;
         }
 
         $arrSaveData = ['model' => $this->dataSource,  'data' => $saveData];

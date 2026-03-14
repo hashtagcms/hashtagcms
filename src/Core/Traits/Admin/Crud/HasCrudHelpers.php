@@ -38,6 +38,8 @@ trait HasCrudHelpers
         $data['extraData'] = $this->getExtraDataForListing();
         $data['moreActionBarItems'] = $this->getMoreActionBarItems();
         $data['minResults'] = (isset($this->minResults)) ? $this->minResults : -1;
+        $data['showAddButton'] = $this->getAddButtonStatus();
+        $data['showSearch'] = $this->getSearchButtonStatus();
 
         return $data;
     }
@@ -242,6 +244,22 @@ trait HasCrudHelpers
     protected function getUserRights()
     {
         return (request()->user()->isSuperAdmin() == 1) ? Arr::flatten(Permission::all('name')->toArray()) : request()->user()->rights();
+    }
+
+
+    /**
+     * Get Add Button Status
+     *
+     * @return bool
+     */
+    protected function getAddButtonStatus()
+    {
+        return $this->showAddButton ?? true;
+    }
+
+    protected function getSearchButtonStatus()
+    {
+        return $this->showSearch ?? true;
     }
 
     /**

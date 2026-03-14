@@ -10,14 +10,17 @@ namespace HashtagCms\Models;
 
 use HashtagCms\Models\BaseModel;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
+use HashtagCms\Core\Utils\CacheKeys;
 
 abstract class AdminBaseModel extends BaseModel
 {
     public function __construct(array $attributes = [])
     {
-        parent::__construct($attributes);
-        $this->perPage = config('hashtagcmsadmin.cmsInfo.records_per_page');
+        parent::__construct($attributes);       
+        $this->perPage = session(CacheKeys::CMS_RECORDS_PER_PAGE, config('hashtagcmsadmin.cmsInfo.records_per_page'));
     }
 
     /**
@@ -33,8 +36,20 @@ abstract class AdminBaseModel extends BaseModel
         //DB::enableQueryLog();
         $obj = ($with != '') ? static::with($with) : new static;
 
+        // Apply Contributor filter: Only show their own content
+        $user = Auth::user();
+        if ($user && $user->isContributor() && !$user->isAdmin()) {
+            $tableName = $obj->getModel()->getTable();
+            if (Schema::hasColumn($tableName, 'insert_by')) {
+                $obj = $obj->where($tableName.'.insert_by', $user->id);
+            } else if (Schema::hasColumn($tableName, 'user_id')) {
+                $obj = $obj->where($tableName.'.user_id', $user->id);
+            }
+        }
+
         //add where condition
         if (count($searchParams) > 0) {
+          
 
             foreach ($searchParams as $key => $searchParam) {
 
@@ -58,7 +73,8 @@ abstract class AdminBaseModel extends BaseModel
         //Order by id desc
         $obj = $obj->orderBy($obj->getModel()->getKeyName(), 'DESC');
 
-        $res = $obj->paginate(htcms_admin_config('records_per_page'));
+        $perPage = session(CacheKeys::CMS_RECORDS_PER_PAGE, config('hashtagcmsadmin.cmsInfo.records_per_page'));
+        $res = $obj->paginate($perPage);
 
         //dd(DB::getQueryLog());
         return $res;
@@ -73,7 +89,7 @@ abstract class AdminBaseModel extends BaseModel
      */
     public static function searchData($with = '', $field = null, $opr = null, $val = null, $where = [])
     {
-
+        
         $arr = null;
         //echo "$field, $opr, $val";
 
@@ -103,11 +119,13 @@ abstract class AdminBaseModel extends BaseModel
                 $with = $relationWhere;
             }
 
+            $perPage = session(CacheKeys::CMS_RECORDS_PER_PAGE, config('hashtagcmsadmin.cmsInfo.records_per_page'));
+
             $data = self::with($with)->whereHas($relationWhere, function ($query) use ($field, $opr, $val) {
 
                 $query->where($field, $opr, $val);
 
-            })->paginate(htcms_admin_config('records_per_page'));
+            })->orderBy(self::getModel()->getKeyName(), 'DESC')->paginate($perPage);
 
             return $data;
 
@@ -143,7 +161,7 @@ abstract class AdminBaseModel extends BaseModel
 
         try {
 
-            QueryLogger::log('editStart', $queryLog, $data, $id);
+            QueryLogger::log('editStart', $queryLog, $data, (int)$id);
 
         } catch (\Exception $exception) {
 
@@ -152,7 +170,6 @@ abstract class AdminBaseModel extends BaseModel
         }
 
         return $data;
-
     }
 
     /**

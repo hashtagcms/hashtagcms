@@ -20,8 +20,8 @@ class CustomModulePolicy extends BaseCmsPolicy
     /**
      * Determine whether the user can view the module.
      *
-     * @param  \HashtagCms\Models\User|null  $user
-     * @param  \HashtagCms\Models\CmsPermission|null  $permission
+     * @param  User|null  $user
+     * @param  CmsPermission|null  $permission
      * @return bool
      */
     public function view(?User $user, ?CmsPermission $permission): bool
@@ -32,8 +32,8 @@ class CustomModulePolicy extends BaseCmsPolicy
     /**
      * Determine whether the user can create in the module.
      *
-     * @param  \HashtagCms\Models\User|null  $user
-     * @param  \HashtagCms\Models\CmsPermission|null  $permission
+     * @param  User|null  $user
+     * @param  CmsPermission|null  $permission
      * @return bool
      */
     public function create(?User $user, ?CmsPermission $permission): bool
@@ -44,8 +44,8 @@ class CustomModulePolicy extends BaseCmsPolicy
     /**
      * Determine whether the user can update in the module.
      *
-     * @param  \HashtagCms\Models\User|null  $user
-     * @param  \HashtagCms\Models\CmsPermission|null  $permission
+     * @param  User|null  $user
+     * @param  CmsPermission|null  $permission
      * @return bool
      */
     public function update(?User $user, ?CmsPermission $permission): bool
@@ -56,8 +56,8 @@ class CustomModulePolicy extends BaseCmsPolicy
     /**
      * Determine whether the user can delete in the module.
      *
-     * @param  \HashtagCms\Models\User|null  $user
-     * @param  \HashtagCms\Models\CmsPermission|null  $permission
+     * @param  User|null  $user
+     * @param  CmsPermission|null  $permission
      * @return bool
      */
     public function delete(?User $user, ?CmsPermission $permission): bool
@@ -71,8 +71,8 @@ class CustomModulePolicy extends BaseCmsPolicy
      * This demonstrates how to add module-specific permission logic
      * while still leveraging the base class functionality.
      *
-     * @param  \HashtagCms\Models\User|null  $user
-     * @param  \HashtagCms\Models\CmsPermission|null  $permission
+     * @param  User|null  $user
+     * @param  CmsPermission|null  $permission
      * @param  mixed  $resource
      * @return bool
      */
@@ -103,8 +103,8 @@ class CustomModulePolicy extends BaseCmsPolicy
      *
      * You can override any base method to customize behavior for your module.
      *
-     * @param  \HashtagCms\Models\User|null  $user
-     * @param  \HashtagCms\Models\CmsPermission|null  $permission
+     * @param  User|null  $user
+     * @param  CmsPermission|null  $permission
      * @param  string  $action
      * @return bool
      */

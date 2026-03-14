@@ -6,6 +6,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use HashtagCms\Core\Traits\RoleManager;
+use HashtagCms\Core\Traits\SiteManager; // Added this import
 use HashtagCms\Models\Site;
 use HashtagCms\Models\UserProfile;
 use HashtagCms\Models\Role;
@@ -13,7 +14,7 @@ use HashtagCms\Models\UserSite;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, Notifiable, RoleManager;
+    use HasApiTokens, Notifiable, RoleManager, SiteManager;
 
     /**
      * The attributes that are mass assignable.

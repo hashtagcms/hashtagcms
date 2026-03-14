@@ -5,7 +5,7 @@ namespace HashtagCms\Database\Seeds;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
-class SitesTableSeeder extends Seeder
+class SitesTableSeeder extends BaseSeeder
 {
     /**
      * Run the database seeds.
@@ -15,20 +15,35 @@ class SitesTableSeeder extends Seeder
     public function run()
     {
         $date = date('Y-m-d H:i:s');
+        
+        // Find default lang and country
+        $firstLang = DB::table('langs')->first();
+        $firstCountry = DB::table('countries')->where('iso_code', 'IN')->first() ?? DB::table('countries')->first();
+        
+        $langId = $firstLang ? $firstLang->id : '1';
+        $countryId = $firstCountry ? $firstCountry->id : '110';
+
         $sites = [
-            ['id' => '1', 'name' => 'Hashtag CMS', 'category_id' => '1', 'theme_id' => '1', 'platform_id' => '1', 'lang_id' => '1', 'country_id' => '110', 'under_maintenance' => '0', 'domain' => 'www.hashtagcms.com', 'context' => 'rexhashtagcms', 'favicon' => '', 'lang_count' => '1', 'created_at' => $date, 'updated_at' => $date, 'deleted_at' => null],
+            ['id' => '1', 'name' => 'Hashtag CMS', 'category_id' => '1', 'theme_id' => '1', 'platform_id' => '1', 'lang_id' => $langId, 'country_id' => $countryId, 'under_maintenance' => '0', 'domain' => 'www.hashtagcms.com', 'context' => 'rexhashtagcms', 'favicon' => '', 'lang_count' => '1', 'created_at' => $date, 'updated_at' => $date, 'deleted_at' => null],
         ];
 
-        $site_langs = [
-            ['site_id' => '1', 'lang_id' => '1', 'title' => 'Welcome to #CMS', 'created_at' => $date, 'updated_at' => $date, 'deleted_at' => null],
-            ['site_id' => '1', 'lang_id' => '2', 'title' => '#CMS में आपका स्वागत है', 'created_at' => $date, 'updated_at' => $date, 'deleted_at' => null],
-        ];
+        $this->insertOrSkip('sites', $sites, ['id']);
 
-        if (DB::table('sites')->get()->count() == 0) {
-            DB::table('sites')->insert($sites);
-            DB::table('site_langs')->insert($site_langs);
-        } else {
-            echo "SeedingError: `sites` table is not empty\n";
+        $selectedLangs = $this->getSelectedLanguages();
+        foreach ($selectedLangs as $isoCode) {
+            $siteLangs = $this->loadTranslations('sites', $isoCode);
+            
+            // Find the lang_id for this isoCode
+            $lang = DB::table('langs')->where('iso_code', $isoCode)->first();
+            
+            if ($lang && !empty($siteLangs)) {
+                $dataToInsert = [];
+                foreach ($siteLangs as $siteLang) {
+                    $siteLang['lang_id'] = $lang->id;
+                    $dataToInsert[] = $siteLang;
+                }
+                $this->insertOrUpdate('site_langs', $dataToInsert, ['site_id', 'lang_id']);
+            }
         }
     }
 }

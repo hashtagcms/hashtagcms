@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Cache\RateLimiter as CacheRateLimiter;
 use Illuminate\Http\JsonResponse;
+use HashtagCms\Core\Utils\CacheKeys;
 
 class LoginController extends FrontendBaseController
 {
@@ -176,7 +177,7 @@ class LoginController extends FrontendBaseController
      */
     protected function attemptLogin(Request $request)
     {
-        if (config('hashtagcms.enable_external_api')) {
+        if (config('hashtagcms.externals.enable_external_api')) {
             return $this->loginViaExternalApi($request);
         }
         return $this->guard()->attempt(
@@ -306,7 +307,7 @@ class LoginController extends FrontendBaseController
     public function logout(Request $request)
     {
 
-        if (config('hashtagcms.enable_external_api')) {
+        if (config('hashtagcms.externals.enable_external_api')) {
             $this->logoutViaExternalApi($request);
         }
 
@@ -421,7 +422,7 @@ class LoginController extends FrontendBaseController
     private function loginViaExternalApi(Request $request)
     {
         try {
-            $loginUrl = config('hashtagcms.login_api');
+            $loginUrl = config('hashtagcms.externals.login_api');
             $apiSecret = config('hashtagcms.api_secret');
 
             $response = Http::withHeaders([
@@ -440,8 +441,8 @@ class LoginController extends FrontendBaseController
                 if ($token && $userData) {
 
                     //Store token
-                    session(['hashtagcms_api_token' => $token]);
-                    session(['hashtagcms_api_user' => $userData]);
+                    session([CacheKeys::CMS_API_TOKEN => $token]);
+                    session([CacheKeys::CMS_API_USER => $userData]);
 
                     // Login locally using the custom provider
                     // We need to retrieve the user instance that our custom provider creates from the session
@@ -484,9 +485,9 @@ class LoginController extends FrontendBaseController
     private function logoutViaExternalApi(Request $request)
     {
         try {
-            $token = session('hashtagcms_api_token');
+            $token = session(CacheKeys::CMS_API_TOKEN);
             if ($token) {
-                $logoutUrl = config('hashtagcms.logout_api');
+                $logoutUrl = config('hashtagcms.externals.logout_api');
                 $apiSecret = config('hashtagcms.api_secret');
 
                 Http::withHeaders([

@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Validator;
 use HashtagCms\Core\Helpers\Message;
 use HashtagCms\Models\Festival;
 use HashtagCms\Models\QueryLogger;
+use HashtagCms\Models\Site;
 
 class FestivalController extends BaseAdminController
 {
@@ -176,21 +177,38 @@ class FestivalController extends BaseAdminController
      */
     public function updateIndex()
     {
+        if (! $this->checkPolicy('edit')) {
+            return htcms_admin_view('common.error', Message::getWriteError(), \request()->ajax());
+        }
 
-        $a = [];
-        $data = request()->all();
-        QueryLogger::setLogginStatus(false);
-        foreach ($data as $key => $posData) {
-            if ($posData != null) {
-                $where = $posData['where']['id'];
-                $saveData['position'] = $posData['position'];
-                $arrSaveData = ['model' => $this->dataSource, 'data' => $saveData];
-                $savedData = $this->saveData($arrSaveData, $where);
-                array_push($a, $posData);
+        $payload = request()->all();
+        $datas   = $payload['data'] ?? $payload;
+
+        if (!is_array($datas)) {
+            return ['isSaved' => 0, 'indexUpdated' => 0, 'error' => 'Invalid data format'];
+        }
+
+        $rows = [];
+        foreach ($datas as $posData) {
+            if (is_array($posData)) {
+                $id = $posData['id'] ?? ($posData['where']['id'] ?? null);
+                if ($id !== null) {
+                    $rows[] = [
+                        'id'       => (int) $id,
+                        'position' => (int) ($posData['position'] ?? 0),
+                    ];
+                }
             }
         }
-        QueryLogger::setLogginStatus(true);
 
-        return ['indexUpdated' => $a];
+        $table    = (new $this->dataSource)->getTable();
+        try {
+            $affected = $this->bulkUpdateIndex($table, $rows);
+            Site::clearConfigCache();
+        } catch (\Exception $exception) {
+            return ['isSaved' => false, 'error' => true, 'message' => $exception->getMessage()];
+        }
+
+        return ['isSaved' => true, 'indexUpdated' => $affected, 'affected' => $affected];
     }
 }

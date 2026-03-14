@@ -57,7 +57,7 @@ class HelperTest extends TestCase
         Config::set('hashtagcmsadmin.cmsInfo.theme', 'neo');
         Config::set('hashtagcmsadmin.cmsInfo.version', '1.0.0');
         Config::set('hashtagcmsadmin.cmsInfo.theme_assets', 'assets/fe');
-        Config::set('hashtagcmsadmin.base_path', 'admin');
+        Config::set('hashtagcmsadmin.cmsInfo.base_path', '/admin');
         Config::set('hashtagcmsadmin.cmsInfo.app_url', 'http://localhost');
 
         $this->assertEquals('neo', htcms_admin_theme());

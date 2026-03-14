@@ -5,8 +5,12 @@ namespace HashtagCms\Tests\Feature;
 use HashtagCms\Testing\TestCase;
 use Illuminate\Support\Facades\DB;
 
+use Illuminate\Foundation\Testing\DatabaseMigrations;
+use HashtagCms\Database\Seeds\HashtagCmsDatabaseSeeder;
+
 class FrontendTest extends TestCase
 {
+    use DatabaseMigrations;
     /**
      * Test home page loads.
      * Uses SQLite in-memory database - seeds and installs CMS automatically.
@@ -16,7 +20,7 @@ class FrontendTest extends TestCase
     public function test_home_page_loads()
     {
         // Seed and install CMS for in-memory SQLite testing
-        $this->seed(\HashtagCms\Database\Seeds\HashtagCmsDatabaseSeeder::class);
+        $this->seed(HashtagCmsDatabaseSeeder::class);
         $this->installSite([
             'site_domain' => 'localhost',
             'site_context' => 'web'
@@ -35,7 +39,7 @@ class FrontendTest extends TestCase
     public function test_all_category_routes_return_200()
     {
         // Seed and install CMS for in-memory SQLite testing
-        $this->seed(\HashtagCms\Database\Seeds\HashtagCmsDatabaseSeeder::class);
+        $this->seed(HashtagCmsDatabaseSeeder::class);
         $this->installSite([
             'site_domain' => 'localhost',
             'site_context' => 'web'

@@ -13,15 +13,15 @@ class HashtagCmsDatabaseSeeder extends Seeder
      */
     public function run()
     {
-        //Site
-        $this->call(SitesTableSeeder::class);
-
         //Language
         $this->call(LangsTableSeeder::class);
 
         //Countries
         $this->call(CountriesTableSeeder::class);
         $this->call(CountryLangsTableSeeder::class);
+
+        //Site
+        $this->call(SitesTableSeeder::class);
 
         //Cities
         $this->call(CitiesTableSeeder::class);

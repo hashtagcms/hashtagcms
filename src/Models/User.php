@@ -52,6 +52,10 @@ class User extends AdminBaseModel
      */
     public function cmsmodules()
     {
+        //if user is admin or super-admin please return all modules else return only allowed modules
+        if ($this->isSuperAdmin() || $this->isAdmin()) {
+            return CmsModule::getAdminModules();
+        }
         return $this->hasMany(CmsPermission::class);
     }
 

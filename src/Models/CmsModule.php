@@ -3,10 +3,31 @@
 namespace HashtagCms\Models;
 
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
+use HashtagCms\Core\Utils\CacheKeys;
+use HashtagCms\Core\Utils\RedisCacheManager;
 
 class CmsModule extends AdminBaseModel
 {
     protected $guarded = [];
+
+    protected static function booted()
+    {
+        static::saved(function () {
+            RedisCacheManager::flush();
+        });
+        static::deleted(function () {
+            RedisCacheManager::flush();
+        });
+    }
+
+    /**
+     * Clear all module related caches
+     */
+    public static function clearModuleCaches()
+    {
+        RedisCacheManager::flush();
+    }
 
     /**
      * Get admin modules
@@ -16,7 +37,9 @@ class CmsModule extends AdminBaseModel
      */
     public static function getAdminModules($user_id = null)
     {
-        return static::with(['child'])->orderBy('position', 'asc')->get();
+        return Cache::rememberForever(CacheKeys::CMS_ADMIN_MODULES_MASTER_LIST, function() {
+            return static::with(['child'])->orderBy('position', 'asc')->get();
+        });
     }
 
     /**
@@ -98,7 +121,7 @@ class CmsModule extends AdminBaseModel
      */
     public static function parentOnly()
     {
-        return self::where('parent_id', '=', 0)->get();
+        return self::where('parent_id', '=', 0)->orderBy('position', 'asc')->get();
     }
 
     /************ Create Module **********************/

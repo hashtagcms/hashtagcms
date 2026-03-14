@@ -29,7 +29,6 @@ trait Populator
         $extraData = $data['extraData'];
 
         if ($source != null) {
-
             $data['paginator'] = $source::getData($sourceWith, [], $where);
 
             /*echo "<pre>";

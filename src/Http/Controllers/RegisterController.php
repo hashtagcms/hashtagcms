@@ -83,7 +83,7 @@ class RegisterController extends FrontendBaseController
     /**
      * Create a new user instance after a valid registration.
      *
-     * @return \HashtagCms\User
+     * @return User
      */
     protected function create(array $data)
     {

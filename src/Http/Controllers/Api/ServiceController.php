@@ -8,6 +8,7 @@ use HashtagCms\Core\Main\ServiceLoader;
 use HashtagCms\Core\Traits\FeEssential;
 use HashtagCms\Core\Utils\RedisCacheManager;
 use Symfony\Component\HttpFoundation\Response;
+use HashtagCms\Core\Utils\CacheKeys;
 
 class ServiceController extends ApiBaseController
 {
@@ -41,7 +42,7 @@ class ServiceController extends ApiBaseController
 
         $keyParams = array_merge([$context, $lang, $platform], $this->getHeaderCacheKeys($request));
         $prefix = RedisCacheManager::getApiPrefix();
-        $key = RedisCacheManager::generateKey($prefix . \HashtagCms\Core\Utils\CacheKeys::SITE_CONFIGS, $keyParams);
+        $key = RedisCacheManager::generateKey($prefix . CacheKeys::SITE_CONFIGS, $keyParams);
 
         try {
             $ttl = $this->getCacheTTL('cache_load_config_ttl');
@@ -79,7 +80,7 @@ class ServiceController extends ApiBaseController
 
         $loader = new ServiceLoader();
         $keyParams = array_merge([$context, $lang, $platform, $category, $microsite], $this->getHeaderCacheKeys($request));
-        $prefix = config('hashtagcms.external_api_cache_prefix', 'api_');
+        $prefix = config('hashtagcms.externals.external_api_cache_prefix', 'api_');
         $key = RedisCacheManager::generateKey("{$prefix}load_data", $keyParams);
 
         try {
@@ -117,7 +118,7 @@ class ServiceController extends ApiBaseController
 
         $loader = new ServiceLoader();
         $keyParams = array_merge([$context, $lang, $platform, $category, $microsite], $this->getHeaderCacheKeys($request));
-        $prefix = config('hashtagcms.external_api_cache_prefix', 'api_');
+        $prefix = config('hashtagcms.externals.external_api_cache_prefix', 'api_');
         $key = RedisCacheManager::generateKey("{$prefix}load_data", $keyParams);
 
         try {
@@ -155,7 +156,7 @@ class ServiceController extends ApiBaseController
             $category = $query['category'] ?? null;
             $keyParams = array_merge([$context, $lang, $platform, $category, $limit], $this->getHeaderCacheKeys($request));
             $prefix = RedisCacheManager::getApiPrefix();
-            $key = RedisCacheManager::generateKey($prefix . \HashtagCms\Core\Utils\CacheKeys::BLOG_LATESTS, $keyParams);
+            $key = RedisCacheManager::generateKey($prefix . CacheKeys::BLOG_LATESTS, $keyParams);
             
             $result = RedisCacheManager::remember($key, function () use ($loader, $context, $lang, $platform, $category, $limit) {
                 return $loader->blogLatests($context, $lang, $platform, $category, $limit);

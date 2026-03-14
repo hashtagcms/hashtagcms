@@ -1,11 +1,11 @@
-# HashtagCms Developer Documentation
+# HashtagCMS Developer Documentation
 
-Welcome to the comprehensive HashtagCms Developer Documentation. This guide will help you understand and work with HashtagCms from beginner to advanced levels.
+Welcome to the comprehensive HashtagCMS Developer Documentation. This guide will help you understand and work with HashtagCMS from beginner to advanced levels.
 
 ## 📚 Documentation Structure
 
 ### Getting Started
-1. [Introduction](01-introduction.md) - What is HashtagCms and its key features
+1. [Introduction](01-introduction.md) - What is HashtagCMS and its key features
 2. [Installation Guide](02-installation.md) - Step-by-step installation instructions
 3. [Quick Start](03-quick-start.md) - Get up and running quickly
 
@@ -23,11 +23,11 @@ Welcome to the comprehensive HashtagCms Developer Documentation. This guide will
 12. [Media Management](12-media.md) - Uploading and managing media files
 
 ### Advanced Features
-13. [API & Headless CMS](13-api-headless.md) - Using HashtagCms as a headless CMS
+13. [API & Headless CMS](13-api-headless.md) - Using HashtagCMS as a headless CMS
 14. [Custom Modules](14-custom-modules.md) - Creating custom modules
 15. [Hooks & Events](15-hooks-events.md) - Extending functionality with hooks
 16. [User Management & Permissions](16-users-permissions.md) - Managing users and roles
-17. [Database & Models](17-database-models.md) - Understanding the database structure
+17. [Database & Data Structure](17-database-models.md) - Understanding the database structure
 
 ### Extended Features
 18. [Licensing System](18-licensing.md) - Understanding the licensing system
@@ -37,7 +37,7 @@ Welcome to the comprehensive HashtagCms Developer Documentation. This guide will
 
 ### Development
 22. [Console Commands](22-console-commands.md) - Available artisan commands
-23. [Frontend Development](23-frontend-dev.md) - Building frontend with HashtagCms
+23. [Frontend Development](23-frontend-dev.md) - Building frontend with HashtagCMS
 24. [Backend Development](24-backend-dev.md) - Admin panel customization
 25. [Middleware & Security](25-middleware-security.md) - Security features and middleware
 
@@ -63,7 +63,7 @@ Welcome to the comprehensive HashtagCms Developer Documentation. This guide will
 
 ## 📖 About This Documentation
 
-This documentation is generated from the actual HashtagCms codebase and reflects the current state of the system. All features, classes, and methods documented here are available in your installation.
+This documentation is generated from the actual HashtagCMS codebase and reflects the current state of the system. All features, classes, and methods documented here are available in your installation.
 
 **Version**: 1.6.0  
 **Last Updated**: November 2025
@@ -78,4 +78,4 @@ If you need additional help:
 
 ## 📝 License
 
-HashtagCms is released under the MIT License. See the [Licensing System](18-licensing.md) documentation for information about extended features.
+HashtagCMS is released under the MIT License. See the [Licensing System](18-licensing.md) documentation for information about extended features.

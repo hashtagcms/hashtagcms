@@ -170,7 +170,7 @@ class FormHelper
             $maxWidthStyle = ($maxWidth === null) ? '' : "max-width:{$maxWidth}px;";
 
             if ($isImage) {
-                $tag = "<a target='_blank' href='{$value}'><img {$imgHeight} {$imgWidth} src='{$value}' alt='Preview' /></a>";
+                $tag = "<a target='_blank' href='{$value}'><img {$imgHeight} {$imgWidth} src='{$value}' alt='Preview' style='{$maxHeightStyle}' /></a>";
             } else {
                 $filename = $fileInfo['filename'] ?? 'file';
                 $tag = "<i class='fa fa-paperclip text-danger'></i>&nbsp;<a target='_blank' href='{$value}'>{$filename}.{$extension}</a>";
@@ -182,7 +182,7 @@ class FormHelper
                 // Escaping variables in onclick for safety
                 $safeName = htmlspecialchars($name, ENT_QUOTES);
                 $safeFileName = htmlspecialchars((string)$originalFileName, ENT_QUOTES);
-                $deleteIcon = "&nbsp;<i style='float:left; margin-right: 10px;' title='Delete' class='fa fa-trash-o hand' onclick='document.getElementById(\"__hashtagcms_{$safeName}__\").style.display=\"none\";document.getElementById(\"{$safeName}_deleted\").value=\"{$safeFileName}\"'></i>";
+                $deleteIcon = "&nbsp;<i style='float:left; margin-right: 10px;' title='Delete' class='fa fa-trash-o cursor-pointer hand' onclick='document.getElementById(\"__hashtagcms_{$safeName}__\").style.display=\"none\";document.getElementById(\"{$safeName}_deleted\").value=\"{$safeFileName}\"'></i>";
             }
 
             $html[] = "<div id='__hashtagcms_{$name}__' style='{$maxHeightStyle}{$maxWidthStyle};margin-top:10px;'>

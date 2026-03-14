@@ -17,7 +17,7 @@ class CmsInstall extends Command
      *
      * @var string
      */
-    protected $signature = 'cms:install';
+    protected $signature = 'cms:install {--langs=en : Languages to install (comma-separated ISO codes)}';
 
     /**
      * The console command description.
@@ -45,6 +45,34 @@ class CmsInstall extends Command
     {
         try {
             if (DB::connection()->getDatabaseName()) {
+
+                $langs = $this->option('langs');
+                $langsArray = explode(',', $langs);
+                $validatedLangs = [];
+                $unsupportedLangs = [];
+
+                foreach ($langsArray as $lang) {
+                    $lang = trim($lang);
+                    $path = __DIR__ . "/../../Database/Seeds/Translations/{$lang}";
+                    if (is_dir($path)) {
+                        $validatedLangs[] = $lang;
+                    } else {
+                        $unsupportedLangs[] = $lang;
+                    }
+                }
+
+                if (empty($validatedLangs)) {
+                    $this->error('No valid languages provided. Defaulting to English (en).');
+                    $validatedLangs = ['en'];
+                }
+
+                if (!empty($unsupportedLangs)) {
+                    $this->warn('The following languages are not supported and will be skipped: ' . implode(', ', $unsupportedLangs));
+                }
+
+                // Store validated languages in config for seeders to access
+                config(['hashtagcms.install_languages' => $validatedLangs]);
+
                 $hasTable = Schema::hasTable('migrations');
                 $hasPropsTable = Schema::hasTable('site_props');
 
@@ -108,7 +136,7 @@ class CmsInstall extends Command
 
     private function installNow($installation)
     {
-        $this->alert('Installing HashtagCms. Please wait...');
+        $this->alert('Installing HashtagCMS. Please wait...');
 
         $this->info('> Creating Tables...');
 

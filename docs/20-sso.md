@@ -1,4 +1,7 @@
-# SSO Integration (Extended+) @todo: Coming soon
+# SSO Integration (Extended+)
+
+> [!WARNING]
+> **COMING SOON**: Advanced SSO integration is currently in development and will be available in a future update. The documentation below reflects the planned implementation.
 
 Enable Advanced Single Sign-On (SSO) for your Admin Panel.
 
@@ -23,7 +26,7 @@ In `config/hashtagcms.php` (or published config):
 ## How It Works
 1.  Admin Login page shows "Login with SSO" button.
 2.  User is redirected to IdP.
-3.  On return, HashtagCms checks if the email exists in `users` table.
+3.  On return, HashtagCMS checks if the email exists in `users` table.
 4.  If yes, logs them in.
 5.  If configured, auto-provisions the user with a default "Editor" role.
 

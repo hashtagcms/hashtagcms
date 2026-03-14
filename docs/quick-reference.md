@@ -1,4 +1,4 @@
-# HashtagCms Quick Reference Card
+# HashtagCMS Quick Reference Card
 
 Quick reference for the most commonly used features, commands, and functions.
 
@@ -165,16 +165,16 @@ GET /api/hashtagcms/user/v1/me
 
 ```blade
 {{-- Menu --}}
-{!! HashtagCms::getHeaderMenuHTML(10, 'nav-class') !!}
+{!! HashtagCMS::getHeaderMenuHTML(10, 'nav-class') !!}
 
 {{-- Content --}}
-{!! HashtagCms::getBodyContent() !!}
-{!! HashtagCms::getHeaderContent() !!}
-{!! HashtagCms::getFooterContent() !!}
+{!! HashtagCMS::getBodyContent() !!}
+{!! HashtagCMS::getHeaderContent() !!}
+{!! HashtagCMS::getFooterContent() !!}
 
 {{-- Meta --}}
-{!! HashtagCms::getAllMetaTags() !!}
-<title>{{ HashtagCms::getHeaderTitle() }}</title>
+{!! HashtagCMS::getAllMetaTags() !!}
+<title>{{ HashtagCMS::getHeaderTitle() }}</title>
 
 {{-- Assets --}}
 <link href="{{ htcms_asset('style.css', 'css') }}">
@@ -189,7 +189,7 @@ GET /api/hashtagcms/user/v1/me
 @endif
 
 {{-- Layout Manager --}}
-{!! app()->HashtagCms->layoutManager()->renderStack('scripts') !!}
+{!! app()->HashtagCMS->layoutManager()->renderStack('scripts') !!}
 ```
 
 ## 🔐 Configuration
@@ -288,7 +288,7 @@ composer dump-autoload
 ```bash
 # WARNING: Deletes all data
 php artisan migrate:fresh
-php artisan db:seed --class=HashtagCms\\Database\\Seeds\\HashtagCmsDatabaseSeeder
+php artisan db:seed --class=HashtagCMS\\Database\\Seeds\\HashtagCMSDatabaseSeeder
 ```
 
 ### Fix Permissions

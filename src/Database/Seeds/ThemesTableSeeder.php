@@ -18,16 +18,15 @@ class ThemesTableSeeder extends Seeder
         $date = date('Y-m-d H:i:s');
 
         $themes = [
-            ['id' => '1', 'site_id' => '1', 'name' => 'Basic', 'alias' => 'BASIC', 'directory' => 'basic', 'body_class' => 'app-default', 'img_preview' => null, 'skeleton' => '<div id="app" >
+            ['id' => '1', 'site_id' => '1', 'name' => 'Modern', 'alias' => 'MODERN', 'directory' => 'modern', 'body_class' => 'app-default', 'img_preview' => null, 'skeleton' => '<div id="app" >
 <div>
         %{cms.hook.HOOK_HEADER}%
 </div>
-<main class="basic-theme">
+<main class="modern-theme">
     <div class="content-wrapper oh">
         %{cms.hook.HOOK_ONE_COLUMN}%
     </div>
 </main>
-<hr />
 <div class="footer clearfix">
         %{cms.hook.HOOK_FOOTER}%
 </div>
@@ -41,8 +40,6 @@ class ThemesTableSeeder extends Seeder
 
         if (DB::table($table_name)->get()->count() == 0) {
             DB::table($table_name)->insert($themes);
-        } else {
-            echo "SeedingError: `$table_name` table is not empty\n";
-        }
+        } 
     }
 }

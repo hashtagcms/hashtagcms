@@ -10,6 +10,7 @@ use HashtagCms\Http\Controllers\Controller;
 use HashtagCms\Models\Site;
 use HashtagCms\Models\SiteProp;
 use HashtagCms\User;
+use HashtagCms\Core\Utils\CacheKeys;
 
 class InstallController extends Controller
 {
@@ -23,8 +24,8 @@ class InstallController extends Controller
         $data = $this->getInfo();
 
         if ($data['isInstalled'] === true) {
-            return redirect('/')->with('__hashtagcms_message__', 'Site is already configured');
-            exit;
+            return redirect('/')->with(CacheKeys::CMS_MESSAGE, 'Site is already configured');
+            //exit;
         }
         $data['siteInfo']->context = Str::uuid();
 

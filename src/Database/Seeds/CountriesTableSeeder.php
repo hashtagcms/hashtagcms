@@ -4,7 +4,7 @@ namespace HashtagCms\Database\Seeds;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
-class CountriesTableSeeder extends Seeder
+class CountriesTableSeeder extends BaseSeeder
 {
     /**
      * Run the database seeds.
@@ -16,9 +16,7 @@ class CountriesTableSeeder extends Seeder
 
         $table_name = 'countries';
         $date = date('Y-m-d H:i:s');
-        if(DB::table($table_name)->get()->count() == 0) {
-            DB::table($table_name)->insert(
-                [
+        $countries = [
                     array('id' => '1','zone_id' => '1','iso_code' => 'DE','currency_id' => '1','call_prefix' => '49','contains_states' => '0','need_identification_number' => '0','need_zip_code' => '1','zip_code_format' => 'NNNNN','display_tax_label' => '1','created_at' => $date,'updated_at' => $date,'deleted_at' => NULL),
                     array('id' => '2','zone_id' => '1','iso_code' => 'AT','currency_id' => '1','call_prefix' => '43','contains_states' => '0','need_identification_number' => '0','need_zip_code' => '1','zip_code_format' => 'NNNN','display_tax_label' => '1','created_at' => $date,'updated_at' => $date,'deleted_at' => NULL),
                     array('id' => '3','zone_id' => '1','iso_code' => 'BE','currency_id' => '1','call_prefix' => '32','contains_states' => '0','need_identification_number' => '0','need_zip_code' => '1','zip_code_format' => 'NNNN','display_tax_label' => '1','created_at' => $date,'updated_at' => $date,'deleted_at' => NULL),
@@ -263,12 +261,7 @@ class CountriesTableSeeder extends Seeder
                     array('id' => '242','zone_id' => '5','iso_code' => 'PF','currency_id' => '1','call_prefix' => '689','contains_states' => '0','need_identification_number' => '0','need_zip_code' => '1','zip_code_format' => '','display_tax_label' => '1','created_at' => $date,'updated_at' => $date,'deleted_at' => NULL),
                     array('id' => '243','zone_id' => '5','iso_code' => 'TF','currency_id' => '1','call_prefix' => '0','contains_states' => '0','need_identification_number' => '0','need_zip_code' => '1','zip_code_format' => '','display_tax_label' => '1','created_at' => $date,'updated_at' => $date,'deleted_at' => NULL),
                     array('id' => '244','zone_id' => '7','iso_code' => 'AX','currency_id' => '1','call_prefix' => '0','contains_states' => '0','need_identification_number' => '0','need_zip_code' => '1','zip_code_format' => 'NNNNN','display_tax_label' => '1','created_at' => $date,'updated_at' => $date,'deleted_at' => NULL)
-                ]
-            );
-
-        } else {
-            echo "SeedingError: `$table_name` table is not empty\n";
-        }
-
+        ];
+        $this->insertOrSkip($table_name, $countries, ['id']);
     }
 }

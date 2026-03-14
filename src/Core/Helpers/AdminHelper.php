@@ -4,6 +4,7 @@
  * Load view - This is just for admin
  */
 use Illuminate\Support\Str;
+use HashtagCms\Core\Utils\CacheKeys;
 
 if (! function_exists('htcms_admin_view')) {
     /**
@@ -29,6 +30,18 @@ if (! function_exists('htcms_admin_view')) {
                 $data['message'] = 'View not found! '.htcms_admin_get_view_path($name);
             }
             $name = [htcms_admin_get_view_path($name), htcms_admin_get_view_path('common.error')]; //if there is no view defined
+        }
+
+        // Standardize Back Link Case Sensitivity and provide default
+        if (!isset($data['backUrl']) && !isset($data['backURL'])) {
+            if (isset(request()->module_info->controller_name)) {
+                $data['backUrl'] = htcms_admin_path(request()->module_info->controller_name);
+            }
+        }
+        if (isset($data['backUrl']) && !isset($data['backURL'])) {
+            $data['backURL'] = $data['backUrl'];
+        } else if (isset($data['backURL']) && !isset($data['backUrl'])) {
+            $data['backUrl'] = $data['backURL'];
         }
 
         if ($isAjax) {
@@ -105,9 +118,9 @@ if (! function_exists('htcms_admin_theme')) {
      *
      * @return mixed
      */
-    function htcms_admin_theme()
+    function htcms_admin_theme($theme="modern")
     {
-        return config('hashtagcmsadmin.cmsInfo.theme');
+        return config('hashtagcmsadmin.cmsInfo.theme', $theme);
     }
 
 }
@@ -202,7 +215,10 @@ if (! function_exists('htcms_set_language_id_for_admin')) {
      */
     function htcms_set_language_id_for_admin($id)
     {
-        return session()->put('lang_id', $id);
+        //session()->put(CacheKeys::CMS_LANG_ID, $id);        
+        session([CacheKeys::CMS_LANG_ID => $id]);
+        session()->save();        
+        return true;
     }
 }
 
@@ -215,7 +231,7 @@ if (! function_exists('htcms_get_language_id_for_admin')) {
      */
     function htcms_get_language_id_for_admin()
     {
-        return session('lang_id', 1);
+        return session(CacheKeys::CMS_LANG_ID, 1);
     }
 
 }
@@ -227,7 +243,8 @@ if (! function_exists('htcms_set_siteId_for_admin')) {
      */
     function htcms_set_siteId_for_admin($id)
     {
-        return session()->put('site_id', $id);
+        session()->put(CacheKeys::CMS_SITE_ID, $id);
+        return true;
     }
 
 }
@@ -241,7 +258,7 @@ if (! function_exists('htcms_get_siteId_for_admin')) {
      */
     function htcms_get_siteId_for_admin()
     {
-        return session('site_id', 1);
+        return session(CacheKeys::CMS_SITE_ID, 1);
     }
 
 }
@@ -289,5 +306,14 @@ if (! function_exists('htcms_get_current_date')) {
     function htcms_get_current_date()
     {
         return date('Y-m-d H:i:s');
+    }
+}
+
+if(!function_exists('htcms_get_admin_theme')){
+    /**
+     * Get current admin theme
+     */
+    function htcms_get_admin_theme() {
+        return config('hashtagcmsadmin.cmsInfo.theme');
     }
 }

@@ -33,6 +33,8 @@ trait BaseInfo
 
     protected $configData;
 
+    protected float $startTime;
+
     /***
      * Web link could be
      * www.hashtagcms.org/en/web/home
@@ -57,6 +59,8 @@ trait BaseInfo
 
         info('BaseInfo: Start Processing...');
 
+        $this->startTime = microtime(true);
+
         // ******************** Init Managers ********************* //
         $this->infoLoader = app()->HashtagCms->infoLoader();
         $this->layoutManager = app()->HashtagCms->layoutManager();
@@ -68,7 +72,7 @@ trait BaseInfo
 
         $requestContext = new RequestContext($request);
 
-        app(ContextPipeline::class)
+        return app(ContextPipeline::class)
             ->send($requestContext)
             ->through([
                 SiteConfigResolver::class,
@@ -80,6 +84,7 @@ trait BaseInfo
             ->then(function (RequestContext $context) {
                 // Finalize keys from context (Map to InfoLoader)
                 $this->finalizeContext($context);
+                return $context;
             });
 
     }
@@ -127,7 +132,12 @@ trait BaseInfo
             $context->platform['id'], 
             $microsite_id
         );
-    }    
+        $infoLoader->setConfigData($context->configData);
+
+        $endTime = microtime(true);
+        $diff = round(($endTime - $this->startTime) * 1000, 2);
+        $infoLoader->setPerformance('configLoadTime', $diff);
+    }
     /**
      * Load config
      */

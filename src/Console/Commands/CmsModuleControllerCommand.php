@@ -19,7 +19,7 @@ class CmsModuleControllerCommand extends Command
                             {name : The name of a controller}
                             {dataFields? : Fields to be displayed in listing}
                             {dataSource? : To fetch the data from this model}                            
-                            {dataWith? : To dispaly data with some other tables}
+                            {dataWith? : To display data with some other tables}
                             {actionFields? : Action fields. ie. ["edit", "delete"]}
                             {bindDataWithAddEdit? : These data will be available at the time of add/edit}                            
                             ';
@@ -43,6 +43,9 @@ class CmsModuleControllerCommand extends Command
 
     protected $bindDataWithAddEdit;
 
+    /** @var ScaffoldGenerator */
+    protected $scaffold;
+
     private $paths = [
         'sourceDir' => 'hashtagcms/cmsmodule',
         'sourceFile' => 'index.ms',
@@ -65,7 +68,6 @@ class CmsModuleControllerCommand extends Command
         parent::__construct();
 
         $this->files = $files;
-
     }
 
     /**
@@ -87,6 +89,9 @@ class CmsModuleControllerCommand extends Command
 
         $this->bindDataWithAddEdit = $this->argument('bindDataWithAddEdit');
 
+        // Initialise the ScaffoldGenerator with the resolved package base path
+        $this->scaffold = new ScaffoldGenerator($this->files, $this->packageBasePath());
+
         $this->init('controller');
 
         $data = $this->createController($this->name);
@@ -94,7 +99,6 @@ class CmsModuleControllerCommand extends Command
         $this->clean($this->currentSourceFile);
 
         return $data;
-
     }
 
     /**
@@ -102,13 +106,12 @@ class CmsModuleControllerCommand extends Command
      */
     public function createController($controller_name)
     {
-
         //#1. Name?
         if (empty($controller_name)) {
             $controller_name = $this->ask('Please enter controller name...');
         }
 
-        $controller_name = Str::title($this->name);
+        $controller_name = Str::studly($this->name);
 
         $this->alert("Creating {$controller_name}Controller");
 
@@ -130,26 +133,27 @@ class CmsModuleControllerCommand extends Command
 
         //Copy views
         $this->copyViews($controller_name);
-
     }
 
     protected function askQuestionAndCreateController($controller_name, $isExist = false)
     {
+        $isInteractive = defined('STDIN') && $this->input->isInteractive();
 
         //#2: Question
         if (empty($this->dataFields)) {
-            $this->dataFields = $this->ask('Please enter fields name (dataFields): You can write like: id, name, etc', '*');
+            $this->dataFields = $isInteractive
+                ? $this->ask('Please enter fields name (dataFields): You can write like: id, name, etc', '*')
+                : '*';
         }
-
-        //$this->dataFields = explode(",", $this->dataFields);
-        //$this->dataFields = explode(",", $this->dataFields);
 
         //#3: Question
         if (empty($this->dataSource)) {
-            $this->dataSource = $this->ask('Please enter model name: (dataSource): ', Str::title($this->name));
+            $this->dataSource = $isInteractive
+                ? $this->ask('Please enter model name: (dataSource): ', Str::studly($this->name))
+            : Str::studly($this->name);
         }
 
-        $this->dataSource = Str::title($this->dataSource);
+        $this->dataSource = Str::studly(Str::singular($this->dataSource));
 
         $dataWith = $this->getDataWith($this->dataSource);
 
@@ -159,122 +163,122 @@ class CmsModuleControllerCommand extends Command
         }
 
         if (empty($dataWith) && $dataWith != null) {
-            $data = $this->ask("Any relation with another model? (dataWith) type 'null' if no relation with other model. ie. ", 'lang');
-            $data = (strtolower($data) == 'null' || empty(trim($data))) ? null : $data;
-            $this->setDataWith($this->dataSource, $data);
-
+            if ($isInteractive) {
+                $data = $this->ask("Any relation with another model? (dataWith) type 'null' if no relation with other model. ie. ", 'lang');
+                $data = (strtolower($data) == 'null' || empty(trim($data))) ? null : $data;
+                $this->setDataWith($this->dataSource, $data);
+            }
         }
-
-        $isExist = $this->isAdminControllerExists($controller_name);
 
         $this->replaceControllerContext($controller_name);
 
         $this->info('Controller created successfully.');
-
     }
 
     protected function replaceControllerContext($name)
     {
+        $controller_name = Str::studly($name) . 'Controller';
+        $filename        = $this->currentSourceFile;
+        $namespace       = $this->laravel->getNamespace();
+        $dataSource      = Str::studly(Str::singular($this->dataSource));
 
-        $controller_name = Str::title($name).'Controller';
-
-        $filename = $this->currentSourceFile;
-
-        //Search pattern
-        $patterns = [];
-        $patterns['namespace'] = '/{{namespace}}/';
-        $patterns['controller_name'] = '/{{controller_name}}/';
-        $patterns['dataFields'] = '/{{dataFields}}/';
-        $patterns['dataSource'] = '/{{dataSource}}/';
-        $patterns['dataWith'] = '/{{dataWith}}/';
-        $patterns['actionFields'] = '/{{actionFields}}/';
-        $patterns['bindDataWithAddEdit'] = '/{{bindDataWithAddEdit}}/';
-
-        $patterns['validationFields'] = '/{{validationFields}}/';
-
-        //replacement pattern
-        $replacements = [];
-
-        $replacements['namespace'] = $this->laravel->getNamespace();
-        $replacements['controller_name'] = $controller_name;
-
+        // ── field rendering ───────────────────────────────────────────
         $this->dataFields = str_replace(' ', '', $this->dataFields);
-
         $dataFields = $this->dataFields;
 
-        if ($dataFields != '*') {
-            $dataFields = explode(',', $this->dataFields);
-            $dataFields = "['".implode("','", $dataFields)."']";
+        if ($dataFields !== '*') {
+            $raw        = explode(',', $this->dataFields);
+            $dataFields = "['" . implode("','", $raw) . "']";
         } else {
-            $dataFields = "'*'";
+            // Auto-derive from DB schema when caller passed '*'
+            $dataFields = $this->generateDataFields($dataSource);
         }
 
-        $replacements['dataFields'] = $dataFields;
-        $replacements['dataSource'] = Str::title($this->dataSource);
-
-        $dataWith = $this->getDataWith($this->dataSource);
-
-        if (! empty($dataWith)) {
-            $dataWith = explode(',', $dataWith);
-            $dataWith = "['".implode("','", $dataWith)."']";
+        // ── dataWith ──────────────────────────────────────────────────
+        $rawDataWith = $this->getDataWith($this->dataSource);
+        if ($rawDataWith === null) {
+            // No argument provided: auto-discover from DB schema
+            $dataWith = $this->generateDataWith($dataSource);
+        } elseif ($rawDataWith === '' || $rawDataWith === 'null' || $rawDataWith === '[]') {
+            // Explicitly empty: []
+            $dataWith = "[]";
         } else {
-            $dataWith = "''";
+            // Comma-separated list provided
+            $parts    = explode(',', $rawDataWith);
+            $dataWith = "['" . implode("', '", $parts) . "']";
         }
 
-        $replacements['dataWith'] = $dataWith;
+        // ── related model imports ─────────────────────────────────────
+        $useRelatedModels = $this->generateUseModels($dataSource, $namespace);
 
-        $replacements['actionFields'] = 'array("edit", "delete")';
-        $replacements['bindDataWithAddEdit'] = 'array("zones"=>array("dataSource"=>Zone::class, "method"=>"all"),
-                                            "currencies"=>array("dataSource"=>Currency::class, "method"=>"all"))';
+        // ── $bindDataWithAddEdit property ─────────────────────────────
+        $bindDataWithAddEdit = $this->generateBindData($dataSource, $namespace);
 
-        $replacements['validationFields'] = $this->getValidationFields($name);
+        // ── store() save blocks ───────────────────────────────────────
+        $saveDataBlock = $this->generateSaveDataBlock($dataSource);
+        $langBlocks    = $this->generateLangDataBlock($dataSource);
 
-        $replaced = preg_replace(
-            $patterns,
-            $replacements,
-            file_get_contents($filename)
-        );
+        $replacements = [
+            'namespace'            => $namespace,
+            'controller_name'      => $controller_name,
+            'dataFields'           => $dataFields,
+            'dataSource'           => $dataSource,
+            'dataSourceLower'      => strtolower($dataSource),
+            'dataWith'             => $dataWith,
+            'useRelatedModels'     => $useRelatedModels,
+            'bindDataWithAddEdit'  => $bindDataWithAddEdit,
+            'validationFields'     => $this->getValidationFields($dataSource),
+            'saveDataBlock'        => $saveDataBlock,
+            'langDataBlock'        => $langBlocks['langDataBlock'],
+            'saveMethod'           => $langBlocks['saveMethod'],
+            'saveMethodInsert'     => $langBlocks['saveMethodInsert'],
+        ];
 
-        file_put_contents(
-            $filename,
-            $replaced,
-            FILE_BINARY
-        );
+        // Use ScaffoldGenerator to replace tokens in the existing temp stub
+        $content = $this->files->get($filename);
+        $content = $this->scaffold->replaceTokens($content, $replacements);
+        $this->files->put($filename, $content);
 
-        $targetFileName = $this->getValidTarget($this->paths['targetDir'].'/'.$controller_name.'.php', 'app');
+        $targetFileName = $this->getValidTarget($this->paths['targetDir'] . '/' . $controller_name . '.php', 'app');
         $this->files->copy($filename, $targetFileName);
 
-        info('Controller created  '.$controller_name);
-
+        info('Controller created  ' . $controller_name);
     }
 
     /**
-     * Copy views
+     * Copy views — uses ScaffoldGenerator for cleaner stub → target write.
+     * Computes phpVarsBlock and formFieldsBlock from the live DB table structure.
      */
     private function copyViews($name)
     {
-        $name = strtolower($name); //Controller name
+        $name = strtolower($name);
 
         $adminBaseResourceFolder = htcms_admin_base_resource();
         $vendor = $this->paths['vendor'];
 
-        $viewDir = $vendor.'/'.$adminBaseResourceFolder.'/'.strtolower($name);
-        $viewFolder = resource_path('views/'.$viewDir);
+        $viewDir    = $vendor . '/' . $adminBaseResourceFolder . '/' . strtolower($name);
+        $viewFolder = resource_path('views/' . $viewDir);
 
-        if (! $this->files->isDirectory($viewFolder)) {
-            $this->files->makeDirectory($viewFolder, 0755, true, true);
+        $this->scaffold->ensureDirectory($viewFolder);
+
+        $this->alert('Creating views...');
+
+        // Compute view-field blocks from the live DB table schema
+        $dataSourceModel = Str::studly(Str::singular($this->dataSource ?? $name));
+
+        $replacements = [
+            'moduleName'     => Str::headline($name),
+            'phpVarsBlock'   => $this->generateViewPhpVars($dataSourceModel),
+            'formFieldsBlock' => $this->generateViewFormFields($dataSourceModel),
+        ];
+
+        foreach ($this->views as $stubFile => $targetFile) {
+            $stubPath   = $this->scaffold->getStubPath($this->paths['sourceDir'] . '/views/' . $stubFile);
+            $targetPath = resource_path('views/' . $vendor . '/' . $adminBaseResourceFolder . "/$name/" . $targetFile);
+
+            $written = $this->scaffold->generate($stubPath, $targetPath, $replacements, false);
+            $this->info($written ? 'Copied: ' . $targetPath : 'Skipped (already exists): ' . $targetPath);
         }
-
-        $this->alert('creating views...');
-        foreach ($this->views as $s => $t) {
-            $source = $this->getValidSourceFileName($this->paths['sourceDir'].'/views/'.$s);
-            $target = resource_path('views/'.$vendor.'/'.$adminBaseResourceFolder."/$name/".$t);
-            if (! $this->files->exists($target)) {
-                $this->files->copy($source, $target);
-                $this->info('Copied: '.$target);
-            }
-        }
-
     }
 
     /********* common ***************/

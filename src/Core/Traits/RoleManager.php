@@ -10,8 +10,32 @@ trait RoleManager
 {
     public function isSuperAdmin()
     {
-
         return $this->hasRole('super-admin') || $this->hasRole('super-duper-admin');
+    }
+
+    public function isAdmin()
+    {
+        return $this->isSuperAdmin() || $this->hasRole('admin');
+    }
+
+    public function isEditor()
+    {
+        return $this->hasRole('editor');
+    }
+
+    public function isContributor()
+    {
+        return $this->hasRole('contributor');
+    }
+
+    public function isApprover()
+    {
+        return $this->hasRole('approver');
+    }
+
+    public function isReadOnlyRole()
+    {
+        return $this->hasRole('ReadOnly');
     }
 
     public function roles()
@@ -30,7 +54,11 @@ trait RoleManager
 
         }
 
-        return (bool) $role->intersect($this->roles)->count();
+        // Compare by primary key only — two Role collections loaded through different
+        // eager-load paths (e.g. Permission::with('roles') vs $user->roles) carry
+        // different pivot/relation attributes, so intersect() on the full models
+        // never finds a match even when IDs are identical.
+        return (bool) $role->pluck('id')->intersect($this->roles->pluck('id'))->count();
 
     }
 

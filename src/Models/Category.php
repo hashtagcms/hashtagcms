@@ -5,6 +5,7 @@ namespace HashtagCms\Models;
 use Illuminate\Support\Facades\DB;
 use HashtagCms\Core\Scopes\SiteScope;
 use HashtagCms\Core\Traits\Admin\Common;
+use Illuminate\Support\Str;
 
 class Category extends AdminBaseModel
 {
@@ -178,8 +179,6 @@ class Category extends AdminBaseModel
         if ($microsite_id !== null) {
             $where['microsite_id'] = $microsite_id;
         }
-
-        //working here
         return DB::table('module_site')->select('*')->where($where)->orderBy('position', 'ASC')->get();
     }
 
@@ -265,18 +264,30 @@ class Category extends AdminBaseModel
      * @param  int  $limit
      * @return mixed
      */
-    public static function getReadCounts($limit = 10)
+    public static function getReadCounts($limit = 10, $trucate = 0)
     {
-        return self::orderBy('read_count', 'DESC')->take($limit)->get(['read_count', 'link_rewrite']);
+        $data = self::orderBy('read_count', 'DESC')->take($limit)->get(['read_count', 'link_rewrite'])->toArray();
+        if ($trucate > 0) {
+            foreach ($data as $key => $val) {
+                $data[$key]['link_rewrite'] = Str::limit($val->link_rewrite, $trucate, '');
+            }
+        }
+        return $data;
     }
 
     /**
      * @param  int  $limit
      * @return mixed
      */
-    public static function getContentReadCounts($limit = 10)
+    public static function getContentReadCounts($limit = 10, $trucate = 0)
     {
-        return Page::orderBy('read_count', 'DESC')->take($limit)->get(['read_count', 'link_rewrite']);
+        $data = Page::orderBy('read_count', 'DESC')->take($limit)->get(['read_count', 'link_rewrite'])->toArray();
+        if ($trucate > 0) {
+            foreach ($data as $key => $val) {
+                $data[$key]['link_rewrite'] = Str::limit($val->link_rewrite, $trucate, '');
+            }
+        }
+        return $data;
     }
 
     /**

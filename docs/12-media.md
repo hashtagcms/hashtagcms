@@ -1,6 +1,6 @@
 # Media Management
 
-HashtagCms includes a Gallery/Media Manager for handling file uploads.
+HashtagCMS includes a Gallery/Media Manager for handling file uploads.
 
 ## Storage Location
 By default, files are stored in `storage/app/public/media` and symlinked to `public/media`.
@@ -8,7 +8,7 @@ By default, files are stored in `storage/app/public/media` and symlinked to `pub
 - **CDN**: You can change the `http_path` to point to an S3 bucket or CloudFront URL if you offload media.
 
 ## The Gallery Concept
-Instead of just "uploading an image to a post", HashtagCms uses **Galleries**.
+Instead of just "uploading an image to a post", HashtagCMS uses **Galleries**.
 - You create a gallery (e.g., "Summer Event 2024").
 - You upload 20 photos to it, depends on the memory limit.
 - You assign this Gallery to a **Page** or **Category**.
@@ -29,4 +29,4 @@ It automatically handles checking if the URL is local or remote (http/https).
 - Documents (PDF, DOCX) - *If configured*
 
 ## Image Resizing
-HashtagCms does not currently enforce strict image resizing on upload (to preserve quality), but it is recommended to use an image processing service (like Cloudinary or a custom Intervention Image middleware) if you need dynamic thumbnails on the frontend.
+HashtagCMS does not currently enforce strict image resizing on upload (to preserve quality), but it is recommended to use an image processing service (like Cloudinary or a custom Intervention Image middleware) if you need dynamic thumbnails on the frontend.

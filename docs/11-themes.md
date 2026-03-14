@@ -1,6 +1,6 @@
 # Theme Development
 
-A Theme in HashtagCms controls the visual presentation. 
+A Theme in HashtagCMS controls the visual presentation. 
 - **Theme Assets**: `hashtagcms-git/resources/assets/fe/{theme_name}` (JS, CSS, Images, etc.)
 - **Theme Views**: `hashtagcms-git/resources/views/fe/{theme_name}` (Blade templates)
 
@@ -41,15 +41,15 @@ The core magic in `_layout_/index.blade.php`:
 <!DOCTYPE html>
 <html>
 <head>
-    {!! app()->HashtagCms->layoutManager()->getHeaderContent(); !!}
-    {!! app()->HashtagCms->layoutManager()->getMetaContent(); !!}
-    <title>{!! app()->HashtagCms->layoutManager()->getTitle(); !!}</title>
+    {!! app()->HashtagCMS->layoutManager()->getHeaderContent(); !!}
+    {!! app()->HashtagCMS->layoutManager()->getMetaContent(); !!}
+    <title>{!! app()->HashtagCMS->layoutManager()->getTitle(); !!}</title>
 </head>
 <body>
     
-    {!! app()->HashtagCms->layoutManager()->getBodyContent(); !!}
+    {!! app()->HashtagCMS->layoutManager()->getBodyContent(); !!}
 
-    {!! app()->HashtagCms->layoutManager()->getFooterContent(); !!}
+    {!! app()->HashtagCMS->layoutManager()->getFooterContent(); !!}
 </body>
 </html>
 ```

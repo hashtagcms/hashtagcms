@@ -41,7 +41,7 @@ function makeArrays(themes, resourceDir, targetDir) {
 
 let themesForFrontend = [
     {
-        theme: { source: 'basic', type: 'theme' }, //folder
+        theme: { source: 'modern', type: 'theme' }, //folder
         assets: [
             { source: 'js/app.js', target: 'js/app', type: 'js' },
             { source: 'sass/app.scss', target: 'css/app', type: 'css' },
@@ -53,7 +53,7 @@ let themesForFrontend = [
 
 let themesForBackend = [
     {
-        theme: { source: 'neo', type: 'theme' }, //folder
+        theme: { source: 'modern', type: 'theme' }, //folder
         assets: [
             { source: 'js/app.js', target: 'js/app', type: 'js' },
             { source: 'js/dashboard.js', target: 'js/dashboard', type: 'js' },

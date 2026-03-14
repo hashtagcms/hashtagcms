@@ -7,7 +7,7 @@ if (!function_exists('htcms_get_resource')) {
      */
     function htcms_get_resource(string $resource = ''): string
     {
-        $layoutManager = app()->HashtagCms->layoutManager();
+        $layoutManager = app('HashtagCmsLayoutManager');
         $path = $layoutManager->getResourcePath();
         
         // Use config instead of env directly
@@ -35,7 +35,7 @@ if (!function_exists('htcms_get_header_menu')) {
      */
     function htcms_get_header_menu(string $active = ''): array
     {
-        return app()->HashtagCms->getHeaderMenu($active);
+        return app('HashtagCms')->getHeaderMenu($active);
     }
 }
 
@@ -55,7 +55,7 @@ if (!function_exists('htcms_get_header_menu_html')) {
     {
         $maxLimit = ($maxLimit == null) ? -1 : $maxLimit;
 
-        return app()->HashtagCms->getHeaderMenuHtml($data, $maxLimit, $css);
+        return app('HashtagCms')->getHeaderMenuHtml($data, $maxLimit, $css);
     }
 }
 
@@ -66,7 +66,7 @@ if (!function_exists('htcms_parse_string_for_view')) {
      */
     function htcms_parse_string_for_view($string = ''): string
     {
-        return app()->HashtagCms->layoutManager()->parseStringForView($string);
+        return app('HashtagCmsLayoutManager')->parseStringForView($string);
     }
 }
 
@@ -144,7 +144,7 @@ if (!function_exists('htcms_get_path')) {
      */
     function htcms_get_path(string $path): string
     {
-        $layoutManager = app()->HashtagCms->layoutManager();
+        $layoutManager = app('HashtagCmsLayoutManager');
 
         if ($layoutManager->hasLangOrPlatformInUrl()) {
             $lang = htcms_get_lang_info('isoCode');
@@ -158,6 +158,18 @@ if (!function_exists('htcms_get_path')) {
     }
 
 }
+if (!function_exists('htcms_get_language_url')) {
+    /**
+     * Get language switcher URL
+     */
+    function htcms_get_language_url(string $isoCode, ?string $path = null): string
+    {
+        $platform = htcms_get_platform_info('linkRewrite');
+        $path = $path ?? htcms_get_category_info('linkRewrite') ?? '/';
+
+        return htcms_get_domain_path($isoCode . '/' . $platform . '/' . $path);
+    }
+}
 
 if (!function_exists('htcms_get_js_resource')) {
 
@@ -166,7 +178,7 @@ if (!function_exists('htcms_get_js_resource')) {
      */
     function htcms_get_js_resource(string $path): string
     {
-        return app()->HashtagCms->layoutManager()->parseStringForPath("%{js_path}%/$path");
+        return app('HashtagCmsLayoutManager')->parseStringForPath("%{js_path}%/$path");
     }
 
 }
@@ -178,7 +190,7 @@ if (!function_exists('htcms_get_css_resource')) {
      */
     function htcms_get_css_resource(string $path): string
     {
-        return app()->HashtagCms->layoutManager()->parseStringForPath("%{css_path}%/$path");
+        return app('HashtagCmsLayoutManager')->parseStringForPath("%{css_path}%/$path");
     }
 
 }
@@ -190,7 +202,7 @@ if (!function_exists('htcms_get_image_resource')) {
      */
     function htcms_get_image_resource(string $path): string
     {
-        return app()->HashtagCms->layoutManager()->parseStringForPath("%{image_path}%/$path");
+        return app('HashtagCmsLayoutManager')->parseStringForPath("%{image_path}%/$path");
     }
 
 }
@@ -208,7 +220,8 @@ if (!function_exists('htcms_get_site_info')) {
      */
     function htcms_get_site_info(?string $key = null): string|array|null
     {
-        return htcms_data_key_or_null(app()->HashtagCms->infoLoader()->getSiteData(), $key);
+        
+        return htcms_data_key_or_null(app('HashtagCmsInfoLoader')->getSiteData(), $key);
     }
 
 }
@@ -220,7 +233,7 @@ if (!function_exists('htcms_get_site_id')) {
      */
     function htcms_get_site_id(): int
     {
-        return app()->HashtagCms->infoLoader()->getInfoKeeper('siteId');
+        return app('HashtagCmsInfoLoader')->getInfoKeeper('siteId');
     }
 
 }
@@ -232,7 +245,7 @@ if (!function_exists('htcms_get_lang_info')) {
      */
     function htcms_get_lang_info(?string $key = null): string|array|null
     {
-        return htcms_data_key_or_null(app()->HashtagCms->infoLoader()->getLangData(), $key);
+        return htcms_data_key_or_null(app('HashtagCmsInfoLoader')->getLangData(), $key);
     }
 
 }
@@ -259,7 +272,7 @@ if (!function_exists('htcms_get_language_id')) {
      */
     function htcms_get_language_id(): int
     {
-        return htcms_data_key_or_null(app()->HashtagCms->infoLoader()->getLangData(), 'id');
+        return htcms_data_key_or_null(app('HashtagCmsInfoLoader')->getLangData(), 'id');
     }
 }
 
@@ -270,7 +283,7 @@ if (!function_exists('htcms_get_platform_info')) {
      */
     function htcms_get_platform_info(?string $key = null): string|array|null
     {
-        return htcms_data_key_or_null(app()->HashtagCms->infoLoader()->getPlatformData(), $key);
+        return htcms_data_key_or_null(app('HashtagCmsInfoLoader')->getPlatformData(), $key);
     }
 
 }
@@ -282,7 +295,7 @@ if (!function_exists('htcms_get_category_info')) {
      */
     function htcms_get_category_info(?string $key = null): string|array|null
     {
-        return htcms_data_key_or_null(app()->HashtagCms->infoLoader()->getCategoryData(), $key);
+        return htcms_data_key_or_null(app('HashtagCmsInfoLoader')->getCategoryData(), $key);
     }
 }
 
@@ -293,7 +306,7 @@ if (!function_exists('htcms_get_page_info')) {
      */
     function htcms_get_page_info(?string $key = null): string|array|null
     {
-        return htcms_data_key_or_null(app()->HashtagCms->infoLoader()->getPageData(), $key);
+        return htcms_data_key_or_null(app('HashtagCmsInfoLoader')->getPageData(), $key);
     }
 }
 
@@ -304,7 +317,7 @@ if (!function_exists('htcms_get_theme_info')) {
      */
     function htcms_get_theme_info(?string $key = null): string|array|null
     {
-        return htcms_data_key_or_null(app()->HashtagCms->infoLoader()->getThemeData(), $key);
+        return htcms_data_key_or_null(app('HashtagCmsInfoLoader')->getThemeData(), $key);
     }
 }
 
@@ -315,7 +328,7 @@ if (!function_exists('htcms_get_body_content')) {
      */
     function htcms_get_body_content(): string
     {
-        return app()->HashtagCms->layoutManager()->getBodyContent();
+        return app('HashtagCmsLayoutManager')->getBodyContent();
     }
 }
 
@@ -326,12 +339,12 @@ if (!function_exists('htcms_get_header_content')) {
      */
     function htcms_get_header_content(bool $reverse = false): string
     {
-        $layoutManager = app()->HashtagCms->layoutManager();
+        $layoutManager = app('HashtagCmsLayoutManager');
         $category = $layoutManager->getMetaObject('category');
         $theme = $layoutManager->getMetaObject('theme');
         $content = ($reverse == true) ? $category['header_content'] . $theme['header_content'] : $theme['header_content'] . $category['header_content'];
 
-        return app()->HashtagCms->layoutManager()->parseStringForPath($content);
+        return app('HashtagCmsLayoutManager')->parseStringForPath($content);
     }
 }
 
@@ -342,12 +355,12 @@ if (!function_exists('htcms_get_footer_content')) {
      */
     function htcms_get_footer_content(bool $reverse = false): string
     {
-        $layoutManager = app()->HashtagCms->layoutManager();
+        $layoutManager = app('HashtagCmsLayoutManager');
         $category = $layoutManager->getMetaObject('category');
         $theme = $layoutManager->getMetaObject('theme');
         $content = ($reverse == true) ? $theme['footer_content'] . $category['footer_content'] : $category['footer_content'] . $theme['footer_content'];
 
-        return app()->HashtagCms->layoutManager()->parseStringForPath($content);
+        return app('HashtagCmsLayoutManager')->parseStringForPath($content);
     }
 }
 
@@ -358,7 +371,7 @@ if (!function_exists('htcms_get_header_title')) {
      */
     function htcms_get_header_title(): string
     {
-        return app()->HashtagCms->layoutManager()->getTitle();
+        return app('HashtagCmsLayoutManager')->getTitle();
     }
 }
 
@@ -369,7 +382,7 @@ if (!function_exists('htcms_get_all_meta_tags')) {
      */
     function htcms_get_all_meta_tags(): string
     {
-        return app()->HashtagCms->layoutManager()->getMetaContent();
+        return app('HashtagCmsLayoutManager')->getMetaContent();
     }
 }
 
@@ -380,7 +393,7 @@ if (!function_exists('htcms_get_shared_data')) {
      */
     function htcms_get_shared_data(string $module_alias = ''): mixed
     {
-        return app()->HashtagCms->getSharedModuleData($module_alias);
+        return app('HashtagCms')->getSharedModuleData($module_alias);
     }
 }
 
@@ -394,11 +407,11 @@ if (!function_exists('htcms_get_site_props')) {
         $categoryInfo = htcms_get_category_info();
         $platformInfo = htcms_get_platform_info();
         $pageInfo = htcms_get_page_info();
-        $props = app()->HashtagCms->infoLoader()->getSitePropsDataKeyVal();
+        $props = app('HashtagCmsInfoLoader')->getSitePropsDataKeyVal();
         $siteProps = [
             'siteId' => htcms_get_site_id(),
             'siteContext' => htcms_get_site_info('context'),
-            'underMaintainance' => htcms_get_site_info('underMaintainance'),
+            'underMaintenance' => htcms_get_site_info('underMaintenance'),
             'language' => htcms_get_lang_info('name'),
             'categoryId' => $categoryInfo['id'],
             'categoryName' => $categoryInfo['name'],
@@ -415,19 +428,36 @@ if (!function_exists('htcms_get_site_props')) {
     }
 }
 
+if (!function_exists('htcms_get_config_data')) {
+    /**
+     * Get site config data
+     */
+    function htcms_get_config_data(?string $key = null): mixed
+    {
+        return app('HashtagCmsInfoLoader')->getConfigData($key);
+    }
+}
+
 if (!function_exists('htcms_trans')) {
     /**
      * Translate by key
      * Priority: HashtagCms module -> Lang file -> substring after last dot
      *
      * @param string $key
+     * @param array|string|null $replace
      * @param string|null $default
      */
-    function htcms_trans(string $key, ?string $default = null): string
+    function htcms_trans(string $key, $replace = [], ?string $default = null): string
     {
+        if (is_string($replace)) {
+            $default = $replace;
+            $replace = [];
+        }
+        $replace = $replace ?? [];
+
         // Try precise match first
         // e.g., "hashtagcms::file.key" or "auth.failed"
-        $str = __($key);
+        $str = __($key, $replace);
 
         // If not found (returns key), and it is a namespaced key
         $isHashtag = str_contains($key, 'hashtagcms::');
@@ -436,7 +466,7 @@ if (!function_exists('htcms_trans')) {
             // Try to find in generic lang file by stripping namespace
             // e.g. "hashtagcms::messages.foo" -> "messages.foo" attempting to load from local lang/en
             $keyWithoutNamespace = str_replace('hashtagcms::', '', $key);
-            $str = __($keyWithoutNamespace);
+            $str = __($keyWithoutNamespace, $replace);
         }
 
         // If still not found (returns original key or modified key)
@@ -471,5 +501,19 @@ if (!function_exists('____')) {
     function ____(string $key): string
     {
         return htcms_trans($key);
+    }
+}
+
+if (!function_exists('htcms_get_performance')) {
+    /**
+     * Get performance metrics
+     */
+    function htcms_get_performance(?string $key = null): mixed
+    {
+        $val = app('HashtagCmsInfoLoader')->getPerformance($key);
+        if ($key === 'pageRenderTime' && empty($val)) {
+            return '%%HTCMS_PAGE_RENDER_TIME%%';
+        }
+        return $val;
     }
 }

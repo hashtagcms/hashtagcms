@@ -19,16 +19,11 @@ class SiteConfigResolver implements ContextResolver
     protected InfoLoader $infoLoader;
     protected LayoutManager $layoutManager;
 
-    /** 
-     * @param DataLoader $dataLoader
-     * @param InfoLoader $infoLoader
-     * @param LayoutManager $layoutManager
-     */
-    public function __construct(DataLoader $dataLoader, InfoLoader $infoLoader, LayoutManager $layoutManager)
+    public function __construct()
     {
-        $this->dataLoader = $dataLoader;
-        $this->infoLoader = $infoLoader;
-        $this->layoutManager = $layoutManager;
+        $this->dataLoader = app('HashtagCmsDataLoader');
+        $this->infoLoader = app('HashtagCmsInfoLoader');
+        $this->layoutManager = app('HashtagCmsLayoutManager');
     }
 
     /**
@@ -88,7 +83,7 @@ class SiteConfigResolver implements ContextResolver
             }
             
             $siteContext = $siteDataInfo->context;
-            $configData = $this->loadConfig($siteContext, null, null, false);
+            $configData = $this->loadConfig($siteContext, null, null, false);            
         }
 
         // Set Festival Info
@@ -104,6 +99,33 @@ class SiteConfigResolver implements ContextResolver
 
         $context->configData = $configData;
         $context->siteData = $configData['site'];
+
+        // Check for maintenance mode
+        if (isset($context->siteData['underMaintenance']) && $context->siteData['underMaintenance'] == 1) {
+            $maintenanceConfig = config('hashtagcms.message.maintenance');
+            
+            $content = "Site is under maintenance";
+            $status = 503; 
+
+            if (!empty($maintenanceConfig)) {
+                if (!empty($maintenanceConfig['view']) && view()->exists($maintenanceConfig['view'])) {
+                    return response()->view($maintenanceConfig['view'], ['siteData' => $context->siteData], $status);
+                }
+                
+                if (!empty($maintenanceConfig['html'])) {
+                    $content = $maintenanceConfig['html'];
+                }
+            }
+            
+            // Wrap in full HTML to prevent server-side interception
+            if (!str_contains($content, '<html')) {
+                $content = "<!DOCTYPE html><html><head><title>Maintenance</title></head><body>$content</body></html>";
+            }
+            
+            return response($content, $status)
+                ->header('Content-Type', 'text/html')
+                ->header('Retry-After', '3600');
+        }
 
         return $next($context);
     }

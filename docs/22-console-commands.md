@@ -1,6 +1,6 @@
 # Console Commands Reference
 
-HashtagCms provides several artisan commands to help you manage your CMS installation.
+HashtagCMS provides several artisan commands to help you manage your CMS installation.
 
 ## Available Commands
 
@@ -8,7 +8,7 @@ HashtagCms provides several artisan commands to help you manage your CMS install
 
 #### cms:install
 
-Install HashtagCms with database migrations and seeders.
+Install HashtagCMS with database migrations and seeders.
 
 **Usage**:
 ```bash
@@ -31,7 +31,7 @@ php artisan cms:install
 
 #### cms:version
 
-Display the current HashtagCms version.
+Display the current HashtagCMS version.
 
 **Usage**:
 ```bash
@@ -40,87 +40,190 @@ php artisan cms:version
 
 **Output**:
 ```
-HashtagCms Version: 1.6.0
+HashtagCMS Version: 1.6.0
 ```
 
 ---
 
-### Code Generation
+## Code Generation
 
-#### cms:module-controller
+### cms:module _(Interactive Wizard)_
 
-Generate a new module controller.
+The recommended way to create a new admin panel module end-to-end.
+
+**Usage**:
+```bash
+php artisan cms:module
+```
+
+**What it does (interactive prompts)**:
+
+| Prompt | Example answer |
+|---|---|
+| Generate scaffolding files? | Yes |
+| Module name | `BlogPost` |
+| Sub-title / description | `Manage Blog Posts` |
+| Admin URL path (controller mapping) | `blog-posts` |
+| Parent module | Root Level |
+| Sidebar icon | `fa fa-pencil` |
+| Listing template | `common/listing` |
+| Editor template | `addedit` |
+| Main database table | `blog_posts` |
+| Relations (repeat until done) | `lang → hasMany → BlogPostLang` [LangScope?] |
+
+**What gets generated automatically**:
+
+- **Controller** — `app/Http/Controllers/Admin/BlogPostController.php`
+  - `$dataFields` auto-derived from table (dot-notation for relations: `lang.name`, `zone.name`)
+  - `$dataWith` auto-derived from `_id` columns + lang relation
+  - `$bindDataWithAddEdit` for all `_id` foreign key dropdowns
+  - `store()` with validation rules, `$saveData` assignments, lang block, correct save method
+  - Related model `use` statements resolved (app namespace first, then `HashtagCMS\Models` fallback)
+
+- **Model** — `app/Models/BlogPost.php`
+  - Relationship methods (`lang()`, `zone()`, etc.)
+  - `LangScope` boot method if the relation has `isLanguage = true`
+  - Related models created recursively if they don't exist yet
+
+- **Validator** — `app/Http/Requests/BlogPostControllerRequest.php`
+  - Rules auto-derived from DB column types
+
+- **View** — `resources/views/be/modern/blog-post/addedit.blade.php`
+  - Tailwind card layout
+  - Form fields generated from DB schema (text, textarea, select, checkbox, date, number)
+  - Dropdowns for `_id` FK columns
+  - Lang fields section if lang table exists
+
+- **Database record** — module entry saved to `cms_modules`
+
+**Summary table shown before saving**:
+```
++--------------------+-------------------------------+
+| Field              | Value                         |
++--------------------+-------------------------------+
+| Module Name        | BlogPost                      |
+| Sub-Title          | Manage Blog Posts             |
+| Controller Mapping | blog-posts                    |
+| Parent             | Root Level                    |
+| Icon CSS           | fa fa-pencil                  |
+| Listing Template   | common/listing                |
+| Editor Template    | addedit                       |
+| Main Data Source   | BlogPost                      |
+| Relations          | lang (hasMany) [LangScope ✓]  |
+| Generate Files     | Yes                           |
++--------------------+-------------------------------+
+```
+
+---
+
+### cms:controller
+
+Generate a module admin controller.
+
+**Usage**:
+```bash
+php artisan cms:controller {name} {dataSource} {dataWith?} {dataFields?}
+```
+
+**Example**:
+```bash
+php artisan cms:controller Country Country null '*'
+```
+
+When `dataFields` is `*`, all field declarations are auto-derived from the live DB table schema.
+
+**Generated File**: `app/Http/Controllers/Admin/CountryController.php`
+
+---
+
+### cms:model
+
+Generate a module Eloquent model with optional relationship methods.
+
+**Usage**:
+```bash
+php artisan cms:model {name} {methods?}
+```
+
+The `methods` argument is a `~`-separated list of comma-separated tuples:
+```
+alias,relationType,ModelName,langScopeFlag~alias2,relationType2,ModelName2,0
+```
+
+**Example**:
+```bash
+# Country model with lang (hasMany, LangScope) and zone (belongsTo, no LangScope)
+php artisan cms:model Country "lang,hasMany,CountryLang,1~zone,belongsTo,Zone,0"
+```
+
+**Generated File**: `app/Models/Country.php`
+
+If the related model (e.g. `CountryLang`) doesn't already exist, it is auto-created recursively. If `langScopeFlag = 1`, the related model gets a `LangScope` boot method.
+
+---
+
+### cms:validator
+
+Generate a `FormRequest` validator class with rules auto-derived from the DB table schema.
+
+**Usage**:
+```bash
+php artisan cms:validator {name} {validatorName?}
+```
+
+**Example**:
+```bash
+php artisan cms:validator Country CountryControllerRequest
+```
+
+**Generated File**: `app/Http/Requests/CountryControllerRequest.php`
+
+Rules are derived from column types (e.g. `varchar(65)` → `max:65|string`, `tinyint(1)` → `boolean`, `_id` → `numeric`).
+
+---
+
+### cms:validation
+
+Discover and list validation rules for a specific table without generating a file.
+
+**Usage**:
+```bash
+php artisan cms:validation {tableName}
+```
+
+**Example**:
+```bash
+php artisan cms:validation blog_posts
+```
+
+**Output**:
+Outputs a comma-separated string of validation rules derived from the table schema, useful for manual copying into other controllers or modules.
+
+---
+
+### cms:module-controller _(legacy alias)_
+
+Lower-level command — prefer `cms:module` for full scaffolding.
 
 **Usage**:
 ```bash
 php artisan cms:module-controller {ControllerName}
 ```
 
-**Example**:
-```bash
-php artisan cms:module-controller ProductController
-```
-
-**Generated File**: `app/Http/Controllers/Admin/ProductController.php`
-
-**Template**:
-```php
-<?php
-
-namespace App\Http\Controllers\Admin;
-
-use HashtagCms\Http\Controllers\Admin\BaseAdminController;
-
-class ProductController extends BaseAdminController
-{
-    protected $model = 'Product';
-    protected $viewPath = 'admin.products';
-    
-    public function index()
-    {
-        // Your code here
-    }
-}
-```
-
 ---
 
-#### cms:module-model
+### cms:module-model _(legacy alias)_
 
-Generate a new module model.
+Lower-level command — prefer `cms:module` for full scaffolding.
 
 **Usage**:
 ```bash
 php artisan cms:module-model {ModelName}
 ```
 
-**Example**:
-```bash
-php artisan cms:module-model Product
-```
-
-**Generated File**: `app/Models/Product.php`
-
-**Template**:
-```php
-<?php
-
-namespace App\Models;
-
-use HashtagCms\Models\AdminBaseModel;
-
-class Product extends AdminBaseModel
-{
-    protected $table = 'products';
-    protected $guarded = [];
-    
-    // Add your relationships and methods here
-}
-```
-
 ---
 
-#### cms:frontend-controller
+### cms:frontend-controller
 
 Generate a frontend controller.
 
@@ -129,36 +232,13 @@ Generate a frontend controller.
 php artisan cms:frontend-controller {ControllerName}
 ```
 
-**Example**:
-```bash
-php artisan cms:frontend-controller ShopController
-```
-
 **Generated File**: `app/Http/Controllers/ShopController.php`
-
----
-
-#### cms:validator
-
-Generate a form validator.
-
-**Usage**:
-```bash
-php artisan cms:validator {ValidatorName}
-```
-
-**Example**:
-```bash
-php artisan cms:validator ProductValidator
-```
-
-**Generated File**: `app/Http/Requests/ProductValidator.php`
 
 ---
 
 ### Setup
 
-#### setup:standalone
+#### cms:setup-standalone
 
 Setup the application for standalone usage (usually when using as an API or separate frontend).
 
@@ -169,7 +249,7 @@ php artisan cms:setup-standalone {--force}
 
 **What it does**:
 - Publishes configuration, assets, and views
-- Asks for HashtagCms API URL, Token, and Secret
+- Asks for HashtagCMS API URL, Token, and Secret
 - Updates `.env` file with provided credentials
 - Sets `HASHTAGCMS_LOAD_MODULE_FROM_DB=false`
 
@@ -335,7 +415,7 @@ php artisan vendor:publish --tag=hashtagcms.assets
  #### Publish All
 
 ```bash
-php artisan vendor:publish --provider="HashtagCms\HashtagCmsServiceProvider"
+php artisan vendor:publish --provider="HashtagCMS\HashtagCMSServiceProvider"
 ```
 
 Publishes everything at once.
@@ -347,7 +427,7 @@ Publishes everything at once.
 ### Fresh Installation
 
 ```bash
-# 1. Install HashtagCms
+# 1. Install HashtagCMS
 php artisan cms:install
 
 # 2. Publish assets
@@ -393,7 +473,7 @@ php artisan cms:exportdata
 php artisan migrate:fresh
 
 # Seed data
-php artisan db:seed --class=HashtagCms\\Database\\Seeds\\HashtagCmsDatabaseSeeder
+php artisan db:seed --class=HashtagCMS\\Database\\Seeds\\HashtagCMSDatabaseSeeder
 
 # Import backed up data
 php artisan cms:importdata

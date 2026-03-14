@@ -9,7 +9,7 @@ use Illuminate\Support\Str;
 use HashtagCms\Core\Helpers\Message;
 use HashtagCms\Models\CmsModule;
 use HashtagCms\Models\QueryLogger;
-
+use HashtagCms\Core\Utils\RedisCacheManager;
 class CmsmoduleController extends BaseAdminController
 {
     protected $dataFields = ['id', 'name', 'sub_title', 'controller_name', 'updated_at'];
@@ -35,16 +35,12 @@ class CmsmoduleController extends BaseAdminController
 
         $rules = [
             'name' => 'required|max:255',
-            'controller_name' => 'required|max:255',
+            'controller_name' => 'required|max:255|unique:cms_modules,controller_name,'.$request->input('id', 0).',id',
             'sub_title' => 'required|max:100',
             'icon_css' => 'max:255',
             'parent_id' => 'nullable|numeric',
             'position' => 'numeric',
         ];
-
-        if ($request->input('id') == 0) {
-            $rules['controller_name'] = $rules['controller_name'].'|unique:cms_modules';
-        }
 
         $validator = Validator::make($request->all(), $rules);
 
@@ -69,6 +65,7 @@ class CmsmoduleController extends BaseAdminController
 
         //date
         $saveData['updated_at'] = htcms_get_current_date();
+        
         if ($data['actionPerformed'] !== 'edit') {
             $saveData['created_at'] = htcms_get_current_date();
         }
@@ -118,22 +115,40 @@ class CmsmoduleController extends BaseAdminController
      */
     public function updateIndex()
     {
+        if (! $this->checkPolicy('edit')) {
+            return htcms_admin_view('common.error', Message::getWriteError(), \request()->ajax());
+        }
 
-        $a = [];
-        $data = request()->all();
-        QueryLogger::setLogginStatus(false);
-        foreach ($data as $key => $posData) {
-            if ($posData != null) {
-                $where = $posData['where']['id'];
-                $saveData['position'] = $posData['position'];
-                $arrSaveData = ['model' => $this->dataSource, 'data' => $saveData];
-                $savedData = $this->saveData($arrSaveData, $where);
-                array_push($a, $posData);
+        $payload = request()->all();
+        $datas   = $payload['data'] ?? $payload;
+
+        if (!is_array($datas)) {
+            return ['isSaved' => 0, 'indexUpdated' => 0, 'error' => 'Invalid data format'];
+        }
+
+        $rows = [];
+        foreach ($datas as $posData) {
+            if (is_array($posData)) {
+                $id = $posData['id'] ?? ($posData['where']['id'] ?? null);
+                if ($id !== null) {
+                    $rows[] = [
+                        'id'       => (int) $id,
+                        'position' => (int) ($posData['position'] ?? 0),
+                    ];
+                }
             }
         }
-        QueryLogger::setLogginStatus(true);
 
-        return ['indexUpdated' => $a];
+        $table    = (new $this->dataSource)->getTable();
+        try {
+            $affected = $this->bulkUpdateIndex($table, $rows);
+            // Clear caches so the new order is reflected immediately
+            RedisCacheManager::flush();
+        } catch (\Exception $exception) {
+            return ['isSaved' => false, 'error' => true, 'message' => $exception->getMessage()];
+        }
+
+        return ['isSaved' => true, 'indexUpdated' => $affected, 'affected' => $affected];
     }
 
     /**
@@ -173,16 +188,12 @@ class CmsmoduleController extends BaseAdminController
 
         $rules = [
             'name' => 'required|max:255',
-            'controller_name' => 'required|max:255',
+            'controller_name' => 'required|max:255|unique:cms_modules,controller_name,'.$request->input('id', 0).',id',
             'sub_title' => 'required|max:100',
             'icon_css' => 'max:255',
             'parent_id' => 'nullable|numeric',
             'position' => 'numeric',
         ];
-
-        if ($request->input('id') == 0) {
-            $rules['controller_name'] = $rules['controller_name'].'|unique:cms_modules';
-        }
 
         $validator = Validator::make($request->all(), $rules);
 
@@ -201,17 +212,19 @@ class CmsmoduleController extends BaseAdminController
 
         $data = $request->all();
 
-        $controller_name = $data['controller_name'];
+        $controller_name = Str::studly($data['controller_name']);
         $validator_name = $data['validator_name'];
 
         $dataSource = $data['dataSource'];
         $dataSource = str_replace('::class', '', $dataSource);
+        $dataSource = Str::studly(Str::singular($dataSource));
 
         $dataFields = (! empty($data['selectedFields'])) ? implode(',', $data['selectedFields']) : '*';
-        $dataWith = (! empty($data['dataWith'])) ? implode(',', $data['dataWith']) : 'null';
+        $dataWith = (! empty($data['dataWith']) && count($data['relationModels']['models'] ?? []) > 0) ? implode(',', $data['dataWith']) : '[]';
 
         $createFiles = (isset($data['createFiles']) && $data['createFiles'] == false) ? false : true;
 
+        
         try {
 
             if ($createFiles == true) {
@@ -228,11 +241,13 @@ class CmsmoduleController extends BaseAdminController
 
                 foreach ($relationModels as $key => $model) {
 
-                    $current = $model;
-                    $model_name = str_replace('::class', '', $current['model']);
+                    $current       = $model;
+                    $model_name    = str_replace('::class', '', $current['model']);
                     $relationAlias = $current['relationAlias'];
-                    $relationType = $current['relationType'];
-                    $methods .= "$relationAlias,$relationType,$model_name~";
+                    $relationType  = $current['relationType'];
+                    // isLanguage flag (4th segment) — tells cms:model to add LangScope to the related model
+                    $isLanguage    = (!empty($current['isLanguage']) && $current['isLanguage']) ? '1' : '0';
+                    $methods .= "$relationAlias,$relationType,$model_name,$isLanguage~";
                 }
 
                 //remove last tilt
@@ -241,8 +256,14 @@ class CmsmoduleController extends BaseAdminController
                 }
 
                 Artisan::call('cms:model', [
-                    'name' => $dataSource,
+                    'name'    => $dataSource,
                     'methods' => $methods,
+                ]);
+
+                // Scaffold FormRequest validator class from DB table schema
+                Artisan::call('cms:validator', [
+                    'name'          => $dataSource,
+                    'validatorName' => $controller_name . 'Request',
                 ]);
 
             }

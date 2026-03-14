@@ -47,6 +47,47 @@ class AuthorController extends BaseAdminController
     ];
 
     /**
+     * Inject a role → permissions + access-level map so the view can show
+     * what each role allows (and whether sites are auto-assigned) without AJAX.
+     */
+    protected function getExtraDataForEdit($bindData = null, $useBoth = false)
+    {
+        $data = parent::getExtraDataForEdit($bindData, $useBoth);
+
+        // Super-admin role slugs — must match RoleManager::isSuperAdmin()
+        $superAdminSlugs = ['super-admin', 'super-duper-admin'];
+
+        // Eager-load permissions for every role in a single query
+        $rolesWithPermissions = Role::with('permissions')->get();
+
+        $rolePermissionsMap = [];
+        foreach ($rolesWithPermissions as $role) {
+            $isSuperAdmin = in_array(strtolower($role->name), $superAdminSlugs);
+
+            $rolePermissionsMap[$role->id] = [
+                'name'          => $role->name,
+                'description'   => $role->description ?? '',
+                'is_super_admin'=> $isSuperAdmin,
+                // site_access tells the view what to display for the Sites field
+                'site_access'   => $isSuperAdmin
+                    ? 'all'        // super-admin: all sites automatically
+                    : 'manual',    // admin/others: must be assigned specific sites
+                'site_access_label' => $isSuperAdmin
+                    ? 'All sites (automatic — no site assignment needed)'
+                    : 'Specific sites only — must be manually assigned below',
+                'permissions'   => $role->permissions->map(fn($p) => [
+                    'id'   => $p->id,
+                    'name' => $p->name,
+                ])->values()->toArray(),
+            ];
+        }
+
+        $data['rolePermissionsMap'] = json_encode($rolePermissionsMap);
+
+        return $data;
+    }
+
+    /**
      * Store a newly created resource in storage.
      *
      * @return \Illuminate\Http\Response
@@ -59,17 +100,13 @@ class AuthorController extends BaseAdminController
         }
 
         $rules = [
-            'email' => 'required|email|max:255|unique:users',
+            'email' => 'required|email|max:255|unique:users,email,' . $request->input('id', 0) . ',id',
             'name' => 'required|max:255|string',
             'password' => 'nullable|max:255|string',
             'facebook_user_id' => 'nullable|max:255|string',
             'google_user_id' => 'nullable|max:255|string',
             'remember_token' => 'nullable|max:100|string',
         ];
-
-        if ($request->input('id') > 0) {
-            $rules['email'] = 'required|email|max:255|unique:users,email,' . $request->input('id');
-        }
 
         $validator = Validator::make($request->all(), $rules);
 
@@ -85,11 +122,11 @@ class AuthorController extends BaseAdminController
         $saveData['email'] = $data['email'];
         $saveData['user_type'] = 'Staff';
 
-        $roles = $data['roles']; //Save in user_role table
-        $updateRoles = ($data['updateRoles'] == 1) ? true : false;
+        $roles = $data['roles'] ?? [];  
+        $updateRoles = ($data['updateRoles'] ?? 0) == 1;
 
-        $sites = $data['sites']; //Save in user_role table
-        $updateSites = ($data['updateSites'] == 1) ? true : false;
+        $sites = $data['sites'] ?? []; 
+        $updateSites = ($data['updateSites'] ?? 0) == 1;
 
         if (!empty($data['password'])) {
             $saveData['password'] = User::makePassword($data['password']);
@@ -121,13 +158,20 @@ class AuthorController extends BaseAdminController
         $user = User::find($id);
 
         //Insert/Update Roles
-        if (!empty($roles) && $updateRoles == true) {
+        if (!empty($roles) && $updateRoles == true) {            
+            $superAdminSlugs = ['super-admin', 'super-duper-admin'];
+            $requestingRoles = Role::whereIn('id', $roles)->pluck('name')->map(fn($n) => strtolower($n))->toArray();
+            $isAssigningSuperAdmin = !empty(array_intersect($requestingRoles, $superAdminSlugs));
+
+            if ($isAssigningSuperAdmin && !auth()->user()->isSuperAdmin()) {
+                return htcms_admin_view('common.error', ['message' => 'Only a super-admin can grant the super-admin role.']);
+            }
+
             $user->detachAllRoles(); //remove old roles
 
             //Get Roles
             $allRoles = Role::find($roles);
             $user->assignMultipleRole($allRoles); //Assign new roles
-
         }
 
         //Insert/Update Site relation
@@ -158,7 +202,7 @@ class AuthorController extends BaseAdminController
     {
 
         if (!$this->checkPolicy('edit')) {
-            return htcms_admin_view('common.error', Message::getReadError(), \request()->ajax());
+            return htcms_admin_view('common.error', Message::getWriteError(), \request()->ajax()); 
         }
 
         if ($user_id == 0) {
@@ -171,7 +215,7 @@ class AuthorController extends BaseAdminController
 
         $viewData['results'] = ['id' => $user_id];
         $viewData['allModules'] = $allModules;
-        $viewData['isSuperAdmin'] = $userWithModules->isSuperAdmin();
+        $viewData['isSuperAdmin'] = $userWithModules->isSuperAdmin() || $userWithModules->isAdmin();
         $viewData['userModules'] = $userWithModules;
         $viewData['backURL'] = $this->getBackURL();
         $viewData['actionPerformed'] = 'edit';
@@ -179,8 +223,6 @@ class AuthorController extends BaseAdminController
         return htcms_admin_view('author.permission', $viewData);
 
     }
-
-    //working here
 
     /**
      * Save Module Permission
@@ -191,7 +233,7 @@ class AuthorController extends BaseAdminController
     {
 
         if (!$this->checkPolicy('edit')) {
-            return htcms_admin_view('common.error', Message::getReadError());
+            return htcms_admin_view('common.error', Message::getWriteError());
         }
         try {
             $data = request()->all();

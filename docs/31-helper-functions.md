@@ -1,6 +1,6 @@
 # Helper Functions Reference
 
-HashtagCms provides numerous helper functions globally available throughout your application.
+HashtagCMS provides numerous helper functions globally available throughout your application.
 
 ## Frontend Helpers
 

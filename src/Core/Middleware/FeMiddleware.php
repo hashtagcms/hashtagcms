@@ -26,8 +26,12 @@ class FeMiddleware
         $this->request = $request;
 
         info('================== FeMiddleware: ['.$request->path().'] ====================');
-        $this->process($this->request);
+        $response = $this->process($this->request);
         info('================== End============================================');
+
+        if ($response instanceof \Symfony\Component\HttpFoundation\Response) {
+            return $response;
+        }
 
         return $next($this->request);
     }
@@ -52,9 +56,11 @@ class FeMiddleware
 
         if ($this->shouldProcess($path)) {
 
-            $this->setBaseInfo($request);
+            return $this->setBaseInfo($request);
 
         }
+
+        return null;
 
     }
 }

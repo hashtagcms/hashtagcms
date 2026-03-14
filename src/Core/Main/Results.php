@@ -19,7 +19,16 @@ class Results
      */
     private function makeArray(mixed $data): array
     {
-        return json_decode(json_encode($data), true);
+        return !empty($data) ? json_decode(json_encode($data), true) : [];
+    }
+
+    private function sanitizeQuery(string $query): string
+    {
+        // Remove control characters (ASCII 0-31 and 127) and replace with a space
+        $query = preg_replace('/[\x00-\x1F\x7F]/', ' ', $query);
+
+        // Collapse multiple whitespace characters into a single space and trim
+        return trim(preg_replace('/\s+/', ' ', $query));
     }
 
     /**
@@ -27,6 +36,8 @@ class Results
      */
     private function selectOneOrMany(string $query, array $byParams = [], ?string $database = null, ?bool $selectOne = null): array
     {
+        //sanitize query
+        $query = $this->sanitizeQuery($query);
 
         $queryParams = (count($byParams) == 0) ? $this->findAndReplaceGlobalIds($query) : $byParams;
 

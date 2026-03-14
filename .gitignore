@@ -23,3 +23,5 @@ dump.rdb
 /summaries
 /old-resources
 .antigravity
+.claude
+.claude/

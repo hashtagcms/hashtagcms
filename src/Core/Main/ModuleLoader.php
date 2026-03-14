@@ -168,7 +168,7 @@ class ModuleLoader
     public function getCustomModule(mixed $module): ?array
     {
         $handler = $module->data_handler;
-        info("ModuleLoader: handler: ".$handler. " module_name: ".$module->name.' check: '.(strpos($handler, '@') !== false));
+        info("ModuleLoader: handler: " . $handler . " module_name: " . $module->name . ' check: ' . (strpos($handler, '@') !== false));
         $data = [];
         try {
             if (strpos($handler, '@') !== false) {
@@ -216,14 +216,39 @@ class ModuleLoader
     public function getUnknownModule(mixed $module): ?array
     {
         $dataType = $module->data_type;
-        $moduleType = "get{$dataType}Module";
-        $appNamespace = app()->getNamespace();
-        $callableApp = $appNamespace . "Parser\ModuleParser";
-        if (class_exists($callableApp) && method_exists($callableApp, $moduleType)) {
-            $moduleParser = new $callableApp;
-            $data = $moduleParser->{$moduleType}($module);
+        //url query params
+        $queryParams = request()->all();
 
-            return $this->manipulateModuleData($data, $module);
+        $appNamespace = app()->getNamespace();
+        try {
+            // 1. Check Automatic Service Discovery (App\Services\{DataHandler})
+            if (!empty($dataType)) {
+                $className = $appNamespace . "Services\\" . $dataType;
+                $data = [];
+                if (class_exists($className)) {
+                    $instance = app($className);
+                    if (method_exists($instance, 'handle')) {
+                        $instance->handle($module, $queryParams);
+                        if (method_exists($instance, 'getResult')) {
+                            $data = $instance->getResult();
+                        }
+                        return $this->manipulateModuleData($data, $module);
+                    }
+                }
+            }
+
+            // 2. Fallback to ModuleParser
+            $moduleType = "get{$dataType}Module";
+            $callableApp = $appNamespace . "Parser\ModuleParser";
+            if (class_exists($callableApp) && method_exists($callableApp, $moduleType)) {
+                $moduleParser = new $callableApp;
+                $data = $moduleParser->{$moduleType}($module);
+
+                return $this->manipulateModuleData($data, $module);
+            }
+        } catch (\Exception $e) {
+            info("Error in calling: $dataType for module: {$module->alias}");
+            return [];
         }
 
         return [];

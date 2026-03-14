@@ -19,6 +19,10 @@ $defaultPage = config('hashtagcmsadmin.cmsInfo.defaultPage', 'dashboard');
 $adminBasePath = config('hashtagcmsadmin.cmsInfo.base_path', 'admin');
 //Register Admin
 Route::prefix($adminBasePath)->group(function () use ($namespace, $appNamespace, $defaultPage) {
+    Route::get('/heartbeat', function () {
+        return response()->json(['status' => 'alive']);
+    })->middleware(['web', 'auth:sanctum'])->name('admin.heartbeat');
+
 
     Route::match(['get', 'post', 'delete'], '{controller?}/{method?}/{params?}', function (Request $request, $controller = '', $method = '', $params = null) use ($namespace, $appNamespace, $defaultPage) {
 
@@ -91,13 +95,13 @@ Route::prefix($adminBasePath)->group(function () use ($namespace, $appNamespace,
             abort(404);
         }
 
-    })->middleware(['web', 'auth:sanctum', 'cmsModuleInfo', 'cmsInterceptor'])->where('params', '^((?!assets/).)*?');
+    })->middleware(['web', 'auth:sanctum', 'cmsModuleInfo', 'cmsInterceptor'])->where('params', HashtagCms::getIgnoredPath());
 });
 
 if (HashtagCms::isRoutesEnabled()) {
 
     Route::match(['get', 'post', 'delete'], '{all?}', function (Request $request, $all = '/') {
-
+        
         $infoLoader = app()->HashtagCms->infoLoader();
 
         $infoKeeper = $infoLoader->getInfoKeeper();
@@ -148,23 +152,24 @@ if (HashtagCms::isRoutesEnabled()) {
         }
 
     })->where('all', HashtagCms::getIgnoredPath())->middleware(['web', 'interceptor']);
-    //Keep some original routes
-    //Auth::routes();
-
+    
     // Authentication Routes...
-    Route::get('login', 'App\Http\Controllers\LoginController@index')->name('login');
-    Route::post('login', 'App\Http\Controllers\LoginController@index');
-    Route::post('logout', 'App\Http\Controllers\LoginController@logout')->name('logout');
+    $loginController = class_exists($appNamespace . 'Http\Controllers\LoginController') ? $appNamespace . 'Http\Controllers\LoginController' : $namespace . 'Http\Controllers\LoginController';
+    $logoutController = class_exists($appNamespace . 'Http\Controllers\LogoutController') ? $appNamespace . 'Http\Controllers\LogoutController' : $namespace . 'Http\Controllers\LogoutController';
+
+    Route::get('login', $loginController . '@index')->name('login');
+    Route::post('login', $loginController . '@index');
+    Route::post('logout', $logoutController . '@logout')->name('logout');
 
     // Registration Routes...
-    if (Route::has('register')) {
-        Route::get('register', 'App\Http\Controllers\RegisterController@index')->name('register');
-        Route::post('register', 'App\Http\Controllers\RegisterController@register');
-    }
+    $registerController = class_exists($appNamespace . 'Http\Controllers\RegisterController') ? $appNamespace . 'Http\Controllers\RegisterController' : $namespace . 'Http\Controllers\RegisterController';
+    Route::get('register', $registerController . '@index')->name('register');
+    Route::post('register', $registerController . '@register');
 
     // Password Reset Routes...
-    Route::get('password/reset', 'App\Http\Controllers\PasswordController@index')->name('password.request');
-    Route::post('password/email', 'App\Http\Controllers\PasswordController@email')->name('password.email');
-    Route::get('password/reset/{token}', 'App\Http\Controllers\PasswordController@reset')->name('password.reset');
-    Route::post('password/reset', 'App\Http\Controllers\PasswordController@update')->name('password.update');
+    $passwordController = class_exists($appNamespace . 'Http\Controllers\PasswordController') ? $appNamespace . 'Http\Controllers\PasswordController' : $namespace . 'Http\Controllers\PasswordController';
+    Route::get('password/reset', $passwordController . '@index')->name('password.request');
+    Route::post('password/email', $passwordController . '@email')->name('password.email');
+    Route::get('password/reset/{token}', $passwordController . '@reset')->name('password.reset');
+    Route::post('password/reset', $passwordController . '@update')->name('password.update');
 }

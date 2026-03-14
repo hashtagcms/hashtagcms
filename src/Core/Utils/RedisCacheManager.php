@@ -193,7 +193,7 @@ class RedisCacheManager
      */
     public static function getApiPrefix(): string
     {
-        return config('hashtagcms.external_api_cache_prefix', 'api_');
+        return config('hashtagcms.externals.external_api_cache_prefix', 'api_');
     }
 
     /**

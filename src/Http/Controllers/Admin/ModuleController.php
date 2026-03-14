@@ -8,6 +8,7 @@ use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use HashtagCms\Core\Helpers\Message;
 use HashtagCms\Models\Module;
+use HashtagCms\Models\ModuleType;
 use HashtagCms\Models\Site;
 
 class ModuleController extends BaseAdminController
@@ -18,8 +19,7 @@ class ModuleController extends BaseAdminController
 
     protected $bindDataWithAddEdit = ['sites' => ['dataSource' => Site::class, 'method' => 'all', 'params' => ['id', 'name']],
         'methodTypes' => ['dataSource' => Module::class, 'method' => 'getMethodTypes'],
-        'dataTypes' => ['dataSource' => Module::class, 'method' => 'getDataTypes'],
-        'dataTypesInfo' => ['dataSource' => Module::class, 'method' => 'getDataTypesInfo'],
+        'moduleTypes' => ['dataSource' => ModuleType::class, 'method' => 'getActiveTypes'],
     ];
 
     protected $actionFields = ['edit', 'delete']; //This is last column of the row
@@ -44,9 +44,8 @@ class ModuleController extends BaseAdminController
                 'max:60',
                 'string',
                 Rule::unique('modules')->where(function ($query) use ($request) {
-                    $query->where('site_id', $request->input('site_id'))
-                        ->where('alias', $request->input('alias'));
-                }),
+                    $query->where('site_id', $request->input('site_id'));
+                })->ignore($request->input('id', 0), 'id'),
             ],
             'linked_module' => 'nullable|max:60|string',
             'view_name' => 'required|max:200|string',
@@ -57,19 +56,6 @@ class ModuleController extends BaseAdminController
             'cache_group' => 'nullable|max:100|string',
             'live_edit' => 'nullable|integer',
         ];
-
-        if ($request->input('id') > 0) {
-            $rules['alias'] = [
-                'required',
-                'max:60',
-                'string',
-                Rule::unique('modules')->where(function ($query) use ($request) {
-                    $query->where('site_id', $request->input('site_id'))
-                        ->where('alias', $request->input('alias'))
-                        ->where('id', '<>', $request->input('id'));
-                }),
-            ];
-        }
 
         $validator = Validator::make($request->all(), $rules);
 
@@ -89,14 +75,11 @@ class ModuleController extends BaseAdminController
 
         $data = $request->all();
 
-        $saveData['name'] = $data['name'];
-
-        //$saveData['title'] = $data["title"];
-
-        $saveData['alias'] = strtoupper($data['alias']);
+        $saveData['name'] = $data['name'];        
+        $saveData['alias'] = strtoupper(str_replace(" ", "_", $data['alias']));
         $saveData['view_name'] = Str::kebab(strtolower($data['view_name']));
         $saveData['service_params'] = $data['service_params'];
-        $saveData['data_type'] = $data['data_type'];
+        $saveData['data_type'] = str_replace(" ", "", $data['data_type']);
         $saveData['method_type'] = $data['method_type'];
         $saveData['is_mandatory'] = $data['is_mandatory'];
 
@@ -109,7 +92,7 @@ class ModuleController extends BaseAdminController
         $saveData['shared'] = $data['shared'];
         $saveData['is_seo_module'] = $data['is_seo_module'];
 
-        $saveData['headers'] = $data['headers'] ?? ''; //added on 20 Jan 2022
+        $saveData['headers'] = $data['headers'] ?? '';
 
         $saveData['query_statement'] = $data['query_statement'];
         $saveData['query_as'] = $data['query_as'];
@@ -121,106 +104,46 @@ class ModuleController extends BaseAdminController
         if ($data['actionPerformed'] !== 'edit') {
             $saveData['created_at'] = htcms_get_current_date();
         }
-
         $saveData['updated_at'] = htcms_get_current_date();
 
         $arrSaveData = ['model' => $this->dataSource, 'data' => $saveData];
+        $id = $data['id'] ?? 0;
+        $updateInAllSites = (int)$data['update_inAllSites'] === 1;
+        $savedData = ['id' => $id, 'isSaved' => false];
 
-        //For getting all available sites
-        $sites = Site::select('id')->get();
+        if ($updateInAllSites) {
+            $sites = Site::select('id')->get();
+            $canSyncAll = true;
 
-        $logic = '';
-        if ($data['update_inAllSites'] == 1) {
-            if ($data['actionPerformed'] == 'edit') {
-                $Module = Module::find($data['id']);
-                if ($Module['alias'] == $data['alias']) {
-                    $logic = 'ALL_SITES_ENABLED_EDIT_ALL';
-                } else {
-                    $logic = 'ALL_SITES_ENABLED_EDIT_ONE';
+            // Check if it's an edit and if the alias has changed
+            if ($data['actionPerformed'] === 'edit') {
+                $module = Module::find($id);
+                if ($module && $module->alias !== $saveData['alias']) {
+                    $canSyncAll = false;
+                }
+            }
+
+            if ($canSyncAll) {
+                $syncData = $saveData;
+                unset($syncData['site_id']); // Don't sync site_id
+                unset($syncData['created_at']); // Let updateOrCreate handle creation date if new
+                
+                foreach ($sites as $site) {
+                    $module = Module::updateOrCreate(
+                        ['site_id' => $site->id, 'alias' => $syncData['alias']],
+                        $syncData
+                    );
+                    $savedData['id'] = $module->id;
+                    $savedData['isSaved'] = true;
                 }
             } else {
-                $logic = 'ALL_SITES_ENABLED_CREATE_ALL';
+                // Alias changed, only update the current record
+                $savedData = $this->saveData($arrSaveData, $id);
             }
         } else {
-            if ($data['actionPerformed'] == 'edit') {
-                $logic = 'EDIT';
-            } else {
-                $logic = 'CREATE';
-            }
-        }
-
-        switch ($logic) {
-            case 'ALL_SITES_ENABLED_EDIT_ALL':
-                foreach ($sites as $site) {
-                    $Module = Module::updateOrCreate(
-                        ['site_id' => $site['id'], 'alias' => $saveData['alias']],
-                        [
-                            'name' => $saveData['name'],
-                            'view_name' => $saveData['view_name'],
-                            'data_type' => $saveData['data_type'],
-                            'linked_module' => $saveData['linked_module'],
-                            'query_statement' => $saveData['query_statement'],
-                            'query_as' => $saveData['query_as'],
-                            'data_handler' => $saveData['data_handler'],
-                            'data_key_map' => $saveData['data_key_map'],
-                            'description' => $saveData['description'],
-                            'is_mandatory' => $saveData['is_mandatory'],
-                            'method_type' => $saveData['method_type'],
-                            'service_params' => $saveData['service_params'],
-                            'individual_cache' => $saveData['individual_cache'],
-                            'cache_group' => $saveData['cache_group'],
-                            'live_edit' => $saveData['live_edit'],
-                            'created_at' => htcms_get_current_date(),
-                            'updated_at' => htcms_get_current_date(),
-                        ]
-                    );
-                    $savedData['id'] = $Module['id'];
-                    $savedData['isSaved'] = true;
-                }
-                break;
-            case 'ALL_SITES_ENABLED_EDIT_ONE':
-                $where = $data['id'];
-                //This is in base controller
-                $savedData = $this->saveData($arrSaveData, $where);
-                break;
-            case 'ALL_SITES_ENABLED_CREATE_ALL':
-                foreach ($sites as $site) {
-                    $Module = Module::create([
-                        'site_id' => $site['id'],
-                        'name' => $saveData['name'],
-                        'alias' => $saveData['alias'],
-                        'linked_module' => $saveData['linked_module'],
-                        'view_name' => $saveData['view_name'],
-                        'data_type' => $saveData['data_type'],
-                        'query_statement' => $saveData['query_statement'],
-                        'query_as' => $saveData['query_as'],
-                        'data_handler' => $saveData['data_handler'],
-                        'data_key_map' => $saveData['data_key_map'],
-                        'description' => $saveData['description'],
-                        'is_mandatory' => $saveData['is_mandatory'],
-                        'method_type' => $saveData['method_type'],
-                        'service_params' => $saveData['service_params'],
-                        'individual_cache' => $saveData['individual_cache'],
-                        'cache_group' => $saveData['cache_group'],
-                        'live_edit' => $saveData['live_edit'],
-                        'created_at' => htcms_get_current_date(),
-                        'updated_at' => htcms_get_current_date(),
-                    ]);
-                    $savedData['id'] = $Module['id'];
-                    $savedData['isSaved'] = true;
-                }
-                break;
-            case 'EDIT':
-                $where = $data['id'];
-                //This is in base controller
-                $savedData = $this->saveData($arrSaveData, $where);
-                break;
-            case 'CREATE':
-                // This is in base controller
-                $savedData = $this->saveData($arrSaveData);
-                break;
-            default:
-                $viewData['isSaved'] = 0;
+            // Normal single site save/create
+            $where = ($data['actionPerformed'] === 'edit') ? $id : null;
+            $savedData = $this->saveData($arrSaveData, $where);
         }
 
         $viewData['id'] = $savedData['id'];
@@ -230,5 +153,24 @@ class ModuleController extends BaseAdminController
 
         return $viewData;
 
+    }
+
+    /**
+     * Get module alias for auto suggest
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getModuleAlias(Request $request)
+    {
+        if (! $this->checkPolicy('read')) {
+            return response()->json(['message' => 'Permission denied'], 403);
+        }
+        $q = $request->get('q');
+        
+        $results = Module::where('alias', 'LIKE', "%$q%")
+            ->limit(10)
+            ->get(['alias']);
+
+        return response()->json($results);
     }
 }

@@ -5,8 +5,12 @@ namespace HashtagCms\Tests\Feature;
 use HashtagCms\Testing\TestCase;
 use Illuminate\Support\Facades\Artisan;
 
+use Illuminate\Foundation\Testing\DatabaseMigrations;
+use HashtagCms\Database\Seeds\HashtagCmsDatabaseSeeder;
+
 class CommandTest extends TestCase
 {
+    use DatabaseMigrations;
     /**
      * Set up the test - explicitly seed for command tests.
      */
@@ -14,7 +18,7 @@ class CommandTest extends TestCase
     {
         parent::setUp();
         // Command tests need the database seeded
-        $this->seed(\HashtagCms\Database\Seeds\HashtagCmsDatabaseSeeder::class);
+        $this->seed(HashtagCmsDatabaseSeeder::class);
     }
 
     /**

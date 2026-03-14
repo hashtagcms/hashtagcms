@@ -5,16 +5,22 @@ namespace HashtagCms;
 use Illuminate\Routing\Router;
 use Illuminate\Routing\RouteRegistrar;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Http\Exceptions\PostTooLargeException;
+use Illuminate\Contracts\Debug\ExceptionHandler;
 use HashtagCms\Console\Commands\CmsFrontendControllerCommand;
 use HashtagCms\Console\Commands\CmsInstall;
 use HashtagCms\Console\Commands\CmsModuleControllerCommand;
+use HashtagCms\Console\Commands\CmsModuleCreateCommand;
 use HashtagCms\Console\Commands\CmsModuleModelCommand;
+use HashtagCms\Console\Commands\CmsModuleValidatorCommand;
+use HashtagCms\Console\Commands\CmsLanguageInstall;
 use HashtagCms\Console\Commands\CmsValidatorCommand;
 use HashtagCms\Console\Commands\Cmsversion;
 use HashtagCms\Console\Commands\ImportDatabaseData;
 use HashtagCms\Console\Commands\ExportDatabaseData;
 use HashtagCms\Console\Commands\SetupStandalone;
 use HashtagCms\Console\Commands\CmsShowInstructions;
+use HashtagCms\Console\Commands\CmsAdminPanelTestCommand;
 use HashtagCms\Core\Middleware\Admin\BeMiddleware;
 use HashtagCms\Core\Middleware\Admin\CmsModuleInfo;
 use HashtagCms\Core\Middleware\API\Etag;
@@ -88,6 +94,33 @@ class HashtagCmsServiceProvider extends ServiceProvider
         // Register all package commands in one place
         $this->registerPackageCommands();
 
+        // Handle oversized POST/upload requests gracefully site-wide.
+        // Laravel's built-in ValidatePostSize middleware throws PostTooLargeException
+        // BEFORE StartSession runs, so withErrors()/session flash is unreliable.
+        // We use a URL query param instead — no session dependency.
+        $this->app->make(ExceptionHandler::class)->renderable(
+            function (PostTooLargeException $e, $request) {
+                $maxSize = ini_get('post_max_size') ?: ini_get('upload_max_filesize') ?: '(unknown)';
+                $message = "The uploaded file is too large. Maximum allowed size is {$maxSize}. Please reduce the file size and try again.";
+
+                // AJAX / fetch — return structured JSON
+                if ($request->expectsJson() || $request->ajax()) {
+                    return response()->json([
+                        'isSaved' => false,
+                        'success' => false,
+                        'message' => $message,
+                        'errors'  => ['img_preview' => [$message]],
+                    ], 413);
+                }
+
+                // Regular form POST — redirect back with error in the URL query string
+                // so it survives the redirect without needing a started session.
+                $backUrl  = $request->headers->get('referer') ?: url()->previous();
+                $separator = str_contains($backUrl, '?') ? '&' : '?';
+                return redirect($backUrl . $separator . '_upload_error=' . urlencode($message));
+            }
+        );
+
     }
 
     /**
@@ -154,8 +187,8 @@ class HashtagCmsServiceProvider extends ServiceProvider
         //Publishing the views for admin common
         // hashtagcms.views.admincommon
         $this->publishes([
-            __DIR__ . '/../resources/views/be/neo/common' => resource_path('views/vendor/hashtagcms/be/neo/common'),
-            __DIR__ . '/../resources/views/be/neo/index.blade.php' => resource_path('views/vendor/hashtagcms/be/neo/index.blade.php'),
+            __DIR__ . '/../resources/views/be/modern/common' => resource_path('views/vendor/hashtagcms/be/modern/common'),
+            __DIR__ . '/../resources/views/be/modern/index.blade.php' => resource_path('views/vendor/hashtagcms/be/modern/index.blade.php'),
         ], $this->groupName . '.views.admincommon');
 
         //Export view and js for admin and frontend
@@ -190,11 +223,14 @@ class HashtagCmsServiceProvider extends ServiceProvider
         $this->commands([
                 // Core installation commands
             CmsInstall::class,
+            CmsLanguageInstall::class,
             CmsValidatorCommand::class,
 
                 // Code generation commands
+            CmsModuleCreateCommand::class,
             CmsModuleModelCommand::class,
             CmsModuleControllerCommand::class,
+            CmsModuleValidatorCommand::class,
             CmsFrontendControllerCommand::class,
 
                 // Utility commands
@@ -204,7 +240,8 @@ class HashtagCmsServiceProvider extends ServiceProvider
             ImportDatabaseData::class,
             ExportDatabaseData::class,
             SetupStandalone::class,
-            CmsShowInstructions::class
+            CmsShowInstructions::class,
+            CmsAdminPanelTestCommand::class
         ]);
     }
 

@@ -52,4 +52,24 @@ class ModuleProp extends AdminBaseModel
     {
         return $this->belongsTo(Platform::class);
     }
+
+    /**
+     * Search Module Group
+     *
+     * @param $siteId
+     * @param $term
+     * @return \Illuminate\Support\Collection
+     */
+    public static function searchModuleGroup($siteId, $term)
+    {
+        $groups = ModuleProp::where('site_id', $siteId)
+            ->whereNotNull('group')
+            ->where('group', '!=', '')
+            ->where('group', 'like', "%{$term}%")
+            ->distinct()
+            ->orderBy('group')
+            ->pluck('group');
+
+        return $groups;
+    }
 }

@@ -5,6 +5,8 @@ namespace HashtagCms\Listeners\SiteCloner;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use HashtagCms\Events\SiteCloner\SiteCloningProgress;
+use HashtagCms\Core\Utils\CacheKeys;
+use HashtagCms\Core\Utils\RedisCacheManager;
 
 /**
  * Listener for site cloning progress event
@@ -17,8 +19,8 @@ class HandleSiteCloningProgress
     public function handle(SiteCloningProgress $event): void
     {
         // Update status in cache
-        $prefix = \HashtagCms\Core\Utils\RedisCacheManager::getInternalPrefix();
-        $status = Cache::get("{$prefix}".\HashtagCms\Core\Utils\CacheKeys::CLONE_JOB."_{$event->jobId}", []);
+        $prefix = RedisCacheManager::getInternalPrefix();
+        $status = Cache::get("{$prefix}".CacheKeys::CLONE_JOB."_{$event->jobId}", []);
 
         $status = array_merge($status, [
             'status' => 'in_progress',
@@ -45,7 +47,7 @@ class HandleSiteCloningProgress
         ];
 
         Cache::put(
-            "{$prefix}".\HashtagCms\Core\Utils\CacheKeys::CLONE_JOB."_{$event->jobId}",
+            "{$prefix}".CacheKeys::CLONE_JOB."_{$event->jobId}",
             $status,
             now()->addHours(24)
         );

@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use HashtagCms\Core\Utils\RedisCacheManager;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Http\Exceptions\HttpResponseException;
+use HashtagCms\Core\Utils\CacheKeys;
 
 class CacheController extends ApiBaseController
 {
@@ -82,7 +83,7 @@ class CacheController extends ApiBaseController
         
         // Match keys with this context. Using * prefix to handle Laravel cache prefix.
         $prefix = RedisCacheManager::getApiPrefix();
-        $pattern = "*{$prefix}" . \HashtagCms\Core\Utils\CacheKeys::SITE_CONFIGS . "_{$context}_*";
+        $pattern = "*{$prefix}" . CacheKeys::SITE_CONFIGS . "_{$context}_*";
         
         try {
             $count = RedisCacheManager::clearByPattern($pattern);
@@ -110,7 +111,7 @@ class CacheController extends ApiBaseController
         
         // Match keys with this context. Using * prefix to handle Laravel cache prefix.
         $prefix = RedisCacheManager::getApiPrefix();
-        $pattern = "*{$prefix}" . \HashtagCms\Core\Utils\CacheKeys::LOAD_DATA . "_{$context}_*";
+        $pattern = "*{$prefix}" . CacheKeys::LOAD_DATA . "_{$context}_*";
         
         try {
             $count = RedisCacheManager::clearByPattern($pattern);

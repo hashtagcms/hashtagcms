@@ -12,6 +12,8 @@ class ContactController extends BaseAdminController
 
     protected $actionFields = ['delete']; //This is last column of the row
 
+    protected $showAddButton = false;
+
     /*protected $bindDataWithAddEdit = array("zones"=>array("dataSource"=>Zone::class, "method"=>"all"),
                                         "currencies"=>array("dataSource"=>Currency::class, "method"=>"all"));*/
 

@@ -1,6 +1,6 @@
 # External API Loading Functionality
 
-HashtagCms supports loading configuration and data from an External API source, enabling Headless and Microservice architectures. This functionality allows a frontend application (or an instance of HashtagCms) to fetch its entire site structure, content, and settings from a central HashtagCms server.
+HashtagCMS supports loading configuration and data from an External API source, enabling Headless and Microservice architectures. This functionality allows a frontend application (or an instance of HashtagCMS) to fetch its entire site structure, content, and settings from a central HashtagCMS server.
 
 ## Overview
 
@@ -9,16 +9,20 @@ The External API loading system relies on a secure handshake between the **Clien
 1.  **Site Context**: A unique identifier for each site (e.g., `web`, `app`, `blog`).
 2.  **API Secret**: A secure key shared between the Client and the Server, specific to the Site Context.
 
-## Configuration
+To enable and configure External API loading, you must update your `config/hashtagcms.php` file on the **Client**. These settings are nested under the `externals` array:
 
-To enable and configure External API loading, you must update your `config/hashtagcms.php` file on the **Client**.
-
-## Configuration
+```php
+'externals' => [
+    'enable_external_api' => env('HASHTAGCMS_ENABLE_EXTERNAL_API', false),
+    'external_api_base_url' => env('HASHTAGCMS_EXTERNAL_API_BASE_URL', env('APP_URL')),
+    // ... other endpoints
+],
+```
 
 To enable External API loading, you need to configure the connection on the **Client** application (the one fetching the data).
 
 ### 1. Enable External API
-Update your `.env` file to point to the remote HashtagCms API:
+Update your `.env` file to point to the remote HashtagCMS API:
 
 ```env
 HASHTAGCMS_ENABLE_EXTERNAL_API=true
@@ -53,7 +57,7 @@ In `config/hashtagcms.php`, the `domains` array maps the **Hostname** to a **Con
 
 ## How It Works
 
-When `HashtagCms` initializes (via `BaseInfo` middleware), it checks if `HASHTAG_CMS_ENABLE_EXTERNAL_API` is `true`.
+When `HashtagCMS` initializes (via `BaseInfo` middleware), it checks if `HASHTAG_CMS_ENABLE_EXTERNAL_API` is `true`.
 
 ### 1. Context Resolution
 The system determines the current **Site Context** based on the request domain (using the `domains` config).

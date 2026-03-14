@@ -1,6 +1,6 @@
-# HashtagCms Complete Feature List
+# HashtagCMS Complete Feature List
 
-This document provides a comprehensive list of all features available in HashtagCms, organized by category.
+This document provides a comprehensive list of all features available in HashtagCMS, organized by category.
 
 ## 📋 Table of Contents
 
@@ -12,7 +12,7 @@ This document provides a comprehensive list of all features available in Hashtag
 6. [User Management](#user-management)
 7. [API & Headless CMS](#api--headless-cms)
 8. [Admin Panel](#admin-panel)
-9. [Database & Models](#database--models)
+9. [Database & Data Structure](#database--data-structure)
 10. [Security Features](#security-features)
 11. [Developer Tools](#developer-tools)
 12. [Extended Features](#premium-features)
@@ -325,7 +325,7 @@ This document provides a comprehensive list of all features available in Hashtag
 
 ---
 
-## Database & Models
+## Database & Data Structure
 
 ### Database Tables
 - ✅ Sites
@@ -391,7 +391,7 @@ This document provides a comprehensive list of all features available in Hashtag
 ## Developer Tools
 
 ### Console Commands
-- ✅ `cms:install` - Install HashtagCms
+- ✅ `cms:install` - Install HashtagCMS
 - ✅ `cms:version` - Show version
 - ✅ `cms:module-controller` - Generate controller
 - ✅ `cms:module-model` - Generate model
@@ -622,4 +622,4 @@ This document provides a comprehensive list of all features available in Hashtag
 
 ---
 
-**Note**: This feature list is based on HashtagCms version 1.6.0. Features may be added or modified in future versions.
+**Note**: This feature list is based on HashtagCMS version 1.6.0. Features may be added or modified in future versions.

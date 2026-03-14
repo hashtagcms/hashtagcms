@@ -1,22 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<phpunit bootstrap="vendor/autoload.php"
-         backupGlobals="false"
-         backupStaticAttributes="false"
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
+         bootstrap="../packages-testing/vendor/autoload.php"
          colors="true"
-         verbose="true"
-         convertErrorsToExceptions="true"
-         convertNoticesToExceptions="true"
-         convertWarningsToExceptions="true"
          processIsolation="false"
          stopOnFailure="false">
     <testsuites>
-        <testsuite name="Package">
-            <directory suffix=".php">./tests/</directory>
+        <testsuite name="Unit">
+            <directory suffix=".php">./tests/Unit</directory>
+        </testsuite>
+        <testsuite name="Feature">
+            <directory suffix=".php">./tests/Feature</directory>
         </testsuite>
     </testsuites>
-    <filter>
-        <whitelist>
+    <source>
+        <include>
             <directory>src/</directory>
-        </whitelist>
-    </filter>
+        </include>
+    </source>
+    <php>
+        <env name="APP_ENV" value="testing"/>
+        <env name="APP_KEY" value="base64:A77rQkkitW6VDrZZy5tjjpEhbVRm6o3Igh5G34zupts="/>
+        <env name="APP_MAINTENANCE_DRIVER" value="file"/>
+        <env name="BCRYPT_ROUNDS" value="4"/>
+        <env name="DB_CONNECTION" value="sqlite"/>
+        <env name="DB_DATABASE" value="/Users/marghoobsuleman/www/suleman/opensourced/focused/hashtagcms/packages-testing/database/dusk.sqlite"/>
+        <env name="CACHE_STORE" value="array"/>
+        <env name="SESSION_DRIVER" value="array"/>
+        <env name="QUEUE_CONNECTION" value="sync"/>
+        <env name="MAIL_MAILER" value="array"/>
+    </php>
 </phpunit>

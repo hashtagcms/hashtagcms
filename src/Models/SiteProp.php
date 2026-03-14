@@ -57,4 +57,27 @@ class SiteProp extends AdminBaseModel
     {
         return $this->belongsTo(Platform::class);
     }
+
+
+    /**
+     * Get Site Prop Group
+     *
+     * @param $siteId
+     * @param $term
+     * @return \Illuminate\Support\Collection 
+     */
+    public static function searchSitePropGroup($siteId, $term)
+    {
+       $groups = SiteProp::where('group_name', 'like', "%{$term}%")
+            ->whereNotNull('group_name')
+            ->where('group_name', '!=', '')
+            ->where('site_id', $siteId)
+            ->distinct()
+            ->orderBy('group_name')            
+            ->pluck('group_name');            
+
+        return $groups;
+        
+
+    }
 }

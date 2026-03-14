@@ -2,13 +2,13 @@
 
 ## General Questions
 
-### What is HashtagCms?
+### What is HashtagCMS?
 
-HashtagCms is a powerful, flexible Content Management System built on Laravel that can function as both a traditional CMS and a headless CMS. It supports multi-site, multi-platform, and multi-language architectures out of the box.
+HashtagCMS is a powerful, flexible Content Management System built on Laravel that can function as both a traditional CMS and a headless CMS. It supports multi-site, multi-platform, and multi-language architectures out of the box.
 
-### Is HashtagCms free?
+### Is HashtagCMS free?
 
-Yes, the core HashtagCms is free and open-source under the MIT license. Extended features like MongoDB support, SSO login, and Figma integration require a paid license.
+Yes, the core HashtagCMS is free and open-source under the MIT license. Extended features like MongoDB support, SSO login, and Figma integration require a paid license.
 
 ### What are the system requirements?
 
@@ -18,15 +18,15 @@ Yes, the core HashtagCms is free and open-source under the MIT license. Extended
 - Laravel 10+
 - Node.js 16+ (for asset compilation)
 
-### Can I use HashtagCms for commercial projects?
+### Can I use HashtagCMS for commercial projects?
 
-Yes, HashtagCms is released under the MIT license, which allows commercial use.
+Yes, HashtagCMS is released under the MIT license, which allows commercial use.
 
 ---
 
 ## Installation & Setup
 
-### How do I install HashtagCms?
+### How do I install HashtagCMS?
 
 ```bash
 composer create-project laravel/laravel mysite
@@ -69,7 +69,7 @@ $user->password = bcrypt('new_password');
 $user->save();
 ```
 
-### Can I install HashtagCms on shared hosting?
+### Can I install HashtagCMS on shared hosting?
 
 Yes, but ensure your hosting meets the system requirements. You may need to configure the web server to point to the `public` directory.
 
@@ -119,9 +119,9 @@ See [Multi-Site Guide](05-multisite.md).
 
 ## API & Headless CMS
 
-### Can I use HashtagCms as a headless CMS?
+### Can I use HashtagCMS as a headless CMS?
 
-Yes! HashtagCms has a complete RESTful API. See [API & Headless CMS Guide](13-api-headless.md).
+Yes! HashtagCMS has a complete RESTful API. See [API & Headless CMS Guide](13-api-headless.md).
 
 ### How do I get an API secret?
 
@@ -137,7 +137,7 @@ API secrets are configured in `config/hashtagcms.php`:
 
 Laravel Sanctum for token-based authentication.
 
-### Can I use HashtagCms with React/Vue/Angular?
+### Can I use HashtagCMS with React/Vue/Angular?
 
 Yes! The API is framework-agnostic. See examples in the [API Guide](13-api-headless.md).
 
@@ -297,7 +297,7 @@ Yes, with the **Extended** version. See [MongoDB Support](19-mongodb.md).
 
 ### How do I activate advanced features?
 
-Check the official HashtagCms website or reach out via email.
+Check the official HashtagCMS website or reach out via email.
 
 ### What's included in each tier?
 
@@ -322,7 +322,7 @@ Check your license agreement. Some licenses are per-domain.
 ### How do I check which features are available?
 
 ```php
-use HashtagCms\Core\Utils\License;
+use HashtagCMS\Core\Utils\License;
 
 $tier = License::getTier();
 $features = License::getFeatures();
@@ -392,9 +392,9 @@ Yes, create controllers in `app/Http/Controllers/Admin/` and they'll be automati
 
 Add routes to `routes/web.php` or `routes/api.php` as usual in Laravel.
 
-### Can I use HashtagCms with Livewire?
+### Can I use HashtagCMS with Livewire?
 
-Yes, HashtagCms is compatible with Livewire.
+Yes, HashtagCMS is compatible with Livewire.
 
 ---
 
@@ -420,15 +420,15 @@ See [Deployment Guide](27-deployment.md).
 - Enable OPcache
 - Use PHP-FPM for better performance
 
-### Can I use HashtagCms with Docker?
+### Can I use HashtagCMS with Docker?
 
-Yes, you can containerize HashtagCms. Create a Dockerfile based on Laravel requirements.
+Yes, you can containerize HashtagCMS. Create a Dockerfile based on Laravel requirements.
 
 ---
 
 ## Migration & Updates
 
-### How do I update HashtagCms?
+### How do I update HashtagCMS?
 
 ```bash
 # Backup data first
@@ -461,9 +461,9 @@ Create custom import scripts using the `cms:importdata` command as a reference.
 
 ## Security
 
-### Is HashtagCms secure?
+### Is HashtagCMS secure?
 
-HashtagCms follows Laravel security best practices including:
+HashtagCMS follows Laravel security best practices including:
 - CSRF protection
 - XSS prevention
 - SQL injection protection
@@ -505,7 +505,7 @@ Yes, reach out via email for advanced support options.
 
 ## Contributing
 
-### Can I contribute to HashtagCms?
+### Can I contribute to HashtagCMS?
 
 Yes! Contributions are welcome. See [contributing.md](../../contributing.md) for guidelines.
 

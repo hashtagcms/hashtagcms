@@ -59,4 +59,6 @@ class LayoutKeys
     public const FESTIVAL_OBJ = 'festivalObj';
 
     public const FESTIVAL_CSS = 'festivalCss';
+
+    public const SITE_LANG = 'lang';
 }

@@ -56,6 +56,42 @@ class Gallery extends AdminBaseModel
     }
 
     /**
+     * Search group names for auto-suggest
+     */
+    public static function searchGalleryGroup(int $siteId, ?string $term = '')
+    {
+        $query = static::select('group_name')
+            ->where('site_id', $siteId)
+            ->whereNotNull('group_name')
+            ->where('group_name', '!=', '')
+            ->distinct();
+
+        if (!empty($term)) {
+            $query->where('group_name', 'like', "%{$term}%");
+        }
+
+        return $query->orderBy('group_name')->get();
+    }
+
+    /**
+     * Search media types for auto-suggest
+     */
+    public static function searchGalleryType(int $siteId, ?string $term = '')
+    {
+        $query = static::select('media_type')
+            ->where('site_id', $siteId)
+            ->whereNotNull('media_type')
+            ->where('media_type', '!=', '')
+            ->distinct();
+
+        if (!empty($term)) {
+            $query->where('media_type', 'like', "%{$term}%");
+        }
+
+        return $query->orderBy('media_type')->get();
+    }
+
+    /**
      * with tags
      *
      * @return void

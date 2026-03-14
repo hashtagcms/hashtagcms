@@ -1,6 +1,6 @@
 # API & Headless CMS Guide
 
-HashtagCms is built with an API-first approach, making it perfect for use as a headless CMS for mobile apps, SPAs, and any frontend framework.
+HashtagCMS is built with an API-first approach, making it perfect for use as a headless CMS for mobile apps, SPAs, and any frontend framework.
 
 ## API Overview
 
@@ -17,7 +17,7 @@ http://your-domain.com/api/hashtagcms/
 
 ### Authentication
 
-HashtagCms uses Laravel Sanctum for API authentication.
+HashtagCMS uses Laravel Sanctum for API authentication.
 
 ### 1. API Secret (Public Endpoints)
 Most "Public" endpoints (like fetching site data) still require a basic security check to prevent unauthorized cross-origin use or scraping.
@@ -400,7 +400,7 @@ API_SECRET_SITE2=another_secret_key_here
 
 ### Endpoint Configuration
 
-HashtagCms allows you to define custom endpoints for external API calls in your `.env` file (or `config/hashtagcms.php`). This is useful if your API is hosted on a different domain or path.
+HashtagCMS allows you to define custom endpoints for external API calls in your `.env` file (or `config/hashtagcms.php`). These settings are nested under the `externals` key in the configuration file.
 
 **Available Environment Variables**:
 

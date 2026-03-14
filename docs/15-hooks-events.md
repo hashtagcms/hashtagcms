@@ -1,10 +1,10 @@
 # Hooks & Events
 
-HashtagCms allows you to tap into its lifecycle without modifying the core using its Hook system (Zones) and standard Laravel Events.
+HashtagCMS allows you to tap into its lifecycle without modifying the core using its Hook system (Zones) and standard Laravel Events.
 
 ## CMS Hooks (Zones)
 
-In HashtagCms terminology, a "Hook" is primarily a **Zone** or **Position** within a theme where modules can be placed.
+In HashtagCMS terminology, a "Hook" is primarily a **Zone** or **Position** within a theme where modules can be placed.
 Examples: `Header`, `Footer`, `LeftSidebar`, `HomePageTop`.
 
 -   **Management**: Go to **Admin > Hooks** to create or manage hooks.
@@ -15,15 +15,15 @@ Examples: `Header`, `Footer`, `LeftSidebar`, `HomePageTop`.
 
 ## System Events (Laravel Events)
 
-HashtagCms fires standard Laravel events during its execution lifecycle. You can define listeners in your `EventServiceProvider` to execute custom logic (e.g., logging, analytics, data modification).
+HashtagCMS fires standard Laravel events during its execution lifecycle. You can define listeners in your `EventServiceProvider` to execute custom logic (e.g., logging, analytics, data modification).
 
 ### Available Events
 
 | Event Class | Description | Payload Data |
 | :--- | :--- | :--- |
-| `HashtagCms\Events\ModuleLoaded` | Fired immediately after a module's data is loaded/processed. | `$module` (Module Object), `$data` (Processed Data) |
-| `HashtagCms\Events\PageLoaded` | Fired after the entire page content (all modules) is resolved and ready. | `$data` (Full API Response Array) |
-| `HashtagCms\Events\UserVisit` | Fired when a user visits a page (useful for tracking). | `$data` (Request Info, IP, etc.) |
+| `HashtagCMS\Events\ModuleLoaded` | Fired immediately after a module's data is loaded/processed. | `$module` (Module Object), `$data` (Processed Data) |
+| `HashtagCMS\Events\PageLoaded` | Fired after the entire page content (all modules) is resolved and ready. | `$data` (Full API Response Array) |
+| `HashtagCMS\Events\UserVisit` | Fired when a user visits a page (useful for tracking). | `$data` (Request Info, IP, etc.) |
 
 ### Example: Listening to ModuleLoaded
 
@@ -36,7 +36,7 @@ HashtagCms fires standard Laravel events during its execution lifecycle. You can
     ```php
     namespace App\Listeners;
     
-    use HashtagCms\Events\ModuleLoaded;
+    use HashtagCMS\Events\ModuleLoaded;
     use Illuminate\Support\Facades\Log;
     
     class LogModuleData
@@ -55,7 +55,7 @@ HashtagCms fires standard Laravel events during its execution lifecycle. You can
 3.  **Register Listener**:
     In `app/Providers/EventServiceProvider.php`:
     ```php
-    use HashtagCms\Events\ModuleLoaded;
+    use HashtagCMS\Events\ModuleLoaded;
     use App\Listeners\LogModuleData;
     
     protected $listen = [

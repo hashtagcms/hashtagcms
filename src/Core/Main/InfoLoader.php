@@ -38,6 +38,10 @@ class InfoLoader
 
     private array $loadData = [];
 
+    private array $configData = [];
+
+    private array $performance = [];
+
     public function __construct()
     {
         $this->sessionManager = app()->HashtagCms->sessionManager();
@@ -304,7 +308,7 @@ class InfoLoader
     }
 
     /**
-     * Working here
+     * Add Domain in Css and Js Path
      *
      * @return string
      */
@@ -579,5 +583,45 @@ class InfoLoader
     public function getAppCallableValue(): mixed
     {
         return $this->getInfoKeeper(LayoutKeys::CONTROLLER_VALUE) ?? [];
+    }
+
+    /**
+     * Set site config data
+     */
+    public function setConfigData(array $configData): void
+    {
+        $this->configData = $configData;
+    }
+
+    /**
+     * Get site config data
+     */
+    public function getConfigData(?string $key = null): mixed
+    {
+        if ($key === null) {
+            return $this->configData;
+        }
+
+        return $this->configData[$key] ?? null;
+    }
+
+    /**
+     * Set performance metrics
+     */
+    public function setPerformance(string $key, float|int $value): void
+    {
+        $this->performance[$key] = $value;
+    }
+
+    /**
+     * Get performance metrics
+     */
+    public function getPerformance(?string $key = null): mixed
+    {
+        if ($key === null) {
+            return $this->performance;
+        }
+
+        return $this->performance[$key] ?? null;
     }
 }

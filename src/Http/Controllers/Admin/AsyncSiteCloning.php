@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use HashtagCms\Core\Helpers\Message;
 use HashtagCms\Jobs\CloneSiteJob;
 use HashtagCms\Models\Site;
-
+use HashtagCms\Queue\SmartJobDispatcher;
 /**
  * Trait for handling async site cloning
  */
@@ -72,7 +72,7 @@ trait AsyncSiteCloning
             $jobId = uniqid('clone_', true);
 
             // Use smart dispatcher - automatically uses queue or sync buffer
-            $dispatchResult = \HashtagCms\Queue\SmartJobDispatcher::dispatchSiteCloning(
+            $dispatchResult = SmartJobDispatcher::dispatchSiteCloning(
                 (int) $source_site_id,
                 (int) $target_site_id,
                 Auth::id(),
@@ -127,7 +127,7 @@ trait AsyncSiteCloning
 
         try {
             // Use smart dispatcher to get status (works for both queue and sync buffer)
-            $status = \HashtagCms\Queue\SmartJobDispatcher::getJobStatus($jobId);
+            $status = SmartJobDispatcher::getJobStatus($jobId);
 
             if (!$status) {
                 return response()->json([

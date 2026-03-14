@@ -26,8 +26,6 @@ class MediasTableSeeder extends Seeder
 
                 ]
             );
-        } else {
-            echo "SeedingError: `$table_name` table is not empty\n";
-        }
+        } 
     }
 }

@@ -1,0 +1,199 @@
+/*!
+ * secure-ls - v1.2.6
+ * URL - https://github.com/softvar/secure-ls
+ *
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2016-2024 Varun Malhotra
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ *
+ *
+ * Dependencies used -
+ *  1. crypto-js - ^4.2.0
+ *  2. lz-string - ^1.5.0
+ */
+
+/*! ./Base64 */
+
+/*! ./SecureLS */
+
+/*! ./WordArray */
+
+/*! ./cipher-core */
+
+/*! ./constants */
+
+/*! ./core */
+
+/*! ./enc-base64 */
+
+/*! ./enc-utf8 */
+
+/*! ./evpkdf */
+
+/*! ./hmac */
+
+/*! ./md5 */
+
+/*! ./sha1 */
+
+/*! ./sha256 */
+
+/*! ./utils */
+
+/*! For license information please see index.esm.js.LICENSE.txt */
+
+/*! crypto */
+
+/*! crypto-js/aes */
+
+/*! crypto-js/pbkdf2 */
+
+/*! crypto-js/rabbit */
+
+/*! crypto-js/rc4 */
+
+/*! crypto-js/tripledes */
+
+/*! lz-string/libs/lz-string */
+
+/*!**********************!*\
+  !*** ./src/index.js ***!
+  \**********************/
+
+/*!**********************!*\
+  !*** ./src/utils.js ***!
+  \**********************/
+
+/*!***********************!*\
+  !*** ./src/Base64.js ***!
+  \***********************/
+
+/*!************************!*\
+  !*** crypto (ignored) ***!
+  \************************/
+
+/*!*************************!*\
+  !*** ./src/SecureLS.js ***!
+  \*************************/
+
+/*!*************************!*\
+  !*** ./src/enc-utf8.js ***!
+  \*************************/
+
+/*!**************************!*\
+  !*** ./src/WordArray.js ***!
+  \**************************/
+
+/*!**************************!*\
+  !*** ./src/constants.js ***!
+  \**************************/
+
+/*!***************************************!*\
+  !*** ./node_modules/crypto-js/aes.js ***!
+  \***************************************/
+
+/*!***************************************!*\
+  !*** ./node_modules/crypto-js/md5.js ***!
+  \***************************************/
+
+/*!***************************************!*\
+  !*** ./node_modules/crypto-js/rc4.js ***!
+  \***************************************/
+
+/*!****************************************!*\
+  !*** ./node_modules/crypto-js/core.js ***!
+  \****************************************/
+
+/*!****************************************!*\
+  !*** ./node_modules/crypto-js/hmac.js ***!
+  \****************************************/
+
+/*!****************************************!*\
+  !*** ./node_modules/crypto-js/sha1.js ***!
+  \****************************************/
+
+/*!******************************************!*\
+  !*** ./node_modules/crypto-js/evpkdf.js ***!
+  \******************************************/
+
+/*!******************************************!*\
+  !*** ./node_modules/crypto-js/pbkdf2.js ***!
+  \******************************************/
+
+/*!******************************************!*\
+  !*** ./node_modules/crypto-js/rabbit.js ***!
+  \******************************************/
+
+/*!******************************************!*\
+  !*** ./node_modules/crypto-js/sha256.js ***!
+  \******************************************/
+
+/*!*********************************************!*\
+  !*** ./node_modules/crypto-js/tripledes.js ***!
+  \*********************************************/
+
+/*!**********************************************!*\
+  !*** ./node_modules/crypto-js/enc-base64.js ***!
+  \**********************************************/
+
+/*!***********************************************!*\
+  !*** ./node_modules/crypto-js/cipher-core.js ***!
+  \***********************************************/
+
+/*!**************************************************!*\
+  !*** ./node_modules/lz-string/libs/lz-string.js ***!
+  \**************************************************/
+
+/**
+* @vue/compiler-core v3.5.30
+* (c) 2018-present Yuxi (Evan) You and Vue contributors
+* @license MIT
+**/
+
+/**
+* @vue/compiler-dom v3.5.30
+* (c) 2018-present Yuxi (Evan) You and Vue contributors
+* @license MIT
+**/
+
+/**
+* @vue/reactivity v3.5.30
+* (c) 2018-present Yuxi (Evan) You and Vue contributors
+* @license MIT
+**/
+
+/**
+* @vue/runtime-core v3.5.30
+* (c) 2018-present Yuxi (Evan) You and Vue contributors
+* @license MIT
+**/
+
+/**
+* @vue/runtime-dom v3.5.30
+* (c) 2018-present Yuxi (Evan) You and Vue contributors
+* @license MIT
+**/
+
+/**
+* @vue/shared v3.5.30
+* (c) 2018-present Yuxi (Evan) You and Vue contributors
+* @license MIT
+**/

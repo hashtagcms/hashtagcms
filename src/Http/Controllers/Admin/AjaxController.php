@@ -4,11 +4,6 @@ namespace HashtagCms\Http\Controllers\Admin;
 
 class AjaxController extends BaseAdminController
 {
-    public function __construct()
-    {
-
-    }
-
     /**
      * Set Language in session
      *
@@ -31,7 +26,7 @@ class AjaxController extends BaseAdminController
     public function getInfo($model = '', $id = 0)
     {
 
-        if ($this->checkPolicy('read', $model)) {
+        if ($this->checkPolicy('read', null, $model)) {
             //$namespace = app()->getNamespace();
             $namespace = config('hashtagcms.namespace');
 

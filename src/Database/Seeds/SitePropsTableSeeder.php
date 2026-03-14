@@ -25,8 +25,6 @@ class SitePropsTableSeeder extends Seeder
 
         if (DB::table($table_name)->get()->count() == 0) {
             DB::table($table_name)->insert($site_props);
-        } else {
-            echo "SeedingError: `$table_name` table is not empty\n";
-        }
+        } 
     }
 }

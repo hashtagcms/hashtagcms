@@ -1,6 +1,6 @@
 # Deployment Guide
 
-Deploying HashtagCms is similar to deploying a standard Laravel application.
+Deploying HashtagCMS is similar to deploying a standard Laravel application.
 
 ## Server Requirements
 -   PHP 8.2+
@@ -44,4 +44,4 @@ php artisan view:cache
 ```
 
 ## SSL configuration
-HashtagCms forces HTTPS if `APP_URL` starts with `https://`. Ensure your Nginx/Apache config handles the SSL header forwarding correctly.
+HashtagCMS forces HTTPS if `APP_URL` starts with `https://`. Ensure your Nginx/Apache config handles the SSL header forwarding correctly.

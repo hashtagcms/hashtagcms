@@ -143,7 +143,7 @@ class DataLoader
         $categoriesInfo = CategoryResource::collection($siteData->categoryLang)->toArray(request());
         $propsInfo = SitePropResource::collection($propsData)->toArray(request());
         $festivalInfo = FestivalResource::collection($siteData->festival)->toArray(request());
-
+        
         $data['site'] = $siteInfo;
         $data['defaultData'] = $defaultData;
         $data['platforms'] = $platformsInfo;
@@ -200,7 +200,7 @@ class DataLoader
             // Cache Key
             $prefix = RedisCacheManager::getInternalPrefix();
             $cacheKey = "{$prefix}" . CacheKeys::EXTERNAL_CONFIG . "_{$context}_{$lang}_{$platform}";
-            $cacheTTL = config('hashtagcms.external_config_cache_ttl', 60); // Default 60 minutes
+            $cacheTTL = config('hashtagcms.externals.external_config_cache_ttl', 60); // Default 60 minutes
 
             $callback = function () use ($apiUrl, $apiSecret, $queryParams) {
                 $response = Http::withHeaders([
@@ -523,9 +523,9 @@ class DataLoader
 
             // Cache Key
             $paramHash = md5(json_encode($requestParams));
-            $prefix = \HashtagCms\Core\Utils\RedisCacheManager::getExternalSourcePrefix();
-            $cacheKey = "{$prefix}" . \HashtagCms\Core\Utils\CacheKeys::EXTERNAL_CONFIG . "_{$context}_{$lang}_{$platform}_{$category}_{$microsite}_{$paramHash}";
-            $cacheTTL = config('hashtagcms.external_data_cache_ttl', 30); // Default 30 minutes
+            $prefix = RedisCacheManager::getExternalSourcePrefix();
+            $cacheKey = "{$prefix}" . CacheKeys::EXTERNAL_CONFIG . "_{$context}_{$lang}_{$platform}_{$category}_{$microsite}_{$paramHash}";
+            $cacheTTL = config('hashtagcms.externals.external_data_cache_ttl', 30); // Default 30 minutes
 
             $callback = function () use ($apiUrl, $payload, $apiSecret) {
                 $response = Http::withHeaders([

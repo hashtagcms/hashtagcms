@@ -2,6 +2,7 @@
 
 namespace HashtagCms\Services\SiteCloner\Steps;
 
+use HashtagCms\Http\Controllers\Admin\SiteController;
 
 /**
  * Copy settings like modules, themes, categories, etc.
@@ -27,7 +28,7 @@ class CopySettingsStep
     public function execute(int $sourceSiteId, int $targetSiteId): array
     {
         $results = [];
-        $controller = app(\HashtagCms\Http\Controllers\Admin\SiteController::class);
+        $controller = app(SiteController::class);
 
         foreach ($this->itemsToCopy as $item) {
             try {

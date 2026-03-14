@@ -1,6 +1,6 @@
 # Modules - Complete Guide
 
-Modules are the heart of HashtagCms's content delivery system. They define how data is fetched, processed, and displayed.
+Modules are the heart of HashtagCMS content delivery system. They define how data is fetched, processed, and displayed.
 
 ## What are Modules?
 
@@ -13,7 +13,7 @@ Modules are reusable components that:
 
 ## Module Types
 
-HashtagCms supports six different module types, each designed for specific use cases.
+HashtagCMS supports seven different module types, each designed for specific use cases.
 
 ### 1. Static Module
 
@@ -162,10 +162,11 @@ View Name: "modules.weather"
 ```
 
 **How it Works**:
-- No automatic data loading
-- Just renders the view
-- Data must be provided by controller or JavaScript
-- Maximum flexibility
+- No built-in data fetching (SQL/API)
+- If a `Data Handler` is provided in the format `Class@method`, it will be executed
+- If the `Data Handler` is empty, it just renders the view with an empty dataset
+- Data can also be provided by a `ModuleDataModifier` or client-side JavaScript
+- Maximum flexibility for complex or one-off logic
 
 **Example**:
 ```php
@@ -324,62 +325,87 @@ View Name: "modules.user-profile"
 
 ### 7. ServiceLater Module
 
-**Purpose**: Load module without any data processing but return url in view
+**Purpose**: Provide a placeholder for client-side data loading, often including a target URL
 
 **Use Cases**:
-- Custom logic in controller
-- Client-side data loading and you have url
-- Placeholder modules
-- Third-party integrations
+- High-latency data that shouldn't block page load
+- Client-side dashboards
+- Real-time updates via Polling/WebSockets
 
 **Configuration**:
 ```php
 'data_type' => 'ServiceLater'
-'view_name' => 'modules.custom-widget'
+'view_name' => 'modules.lazy-widget'
+'service_url' => 'https://api.example.com/realtime-data'
 ```
 
 **How it Works**:
-- No automatic data loading
-- Just renders the view and you have the url to fetch the data
-- Data must be provided by controller or JavaScript
-- Maximum flexibility
+- Returns an empty dataset by default
+- The `service_url` property is available to the view for AJAX fetching
+- Ideal for maintaining page speed (SEO) while loading rich data later
 
 **Example**:
-```php
-// Module Configuration
-Name: "Interactive Map"
-Data Type: ServiceLater
-View Name: "modules.map"
-```
-
-**Blade Template**:
 ```blade
-<div id="map-container" data-api-key="{{ config('services.maps.key') }}">
-    <!-- Map will be loaded via JavaScript -->
+{{-- modules/lazy-widget.blade.php --}}
+<div id="weather-details" data-url="{{ $module->service_url }}">
+    Loading live stats...
 </div>
 
 <script>
-    // Load map data via AJAX
-    fetch('/api/locations')
+    const el = document.getElementById('weather-details');
+    fetch(el.dataset.url)
         .then(response => response.json())
-        .then(data => initMap(data));
+        .then(data => renderWeather(data));
 </script>
+```
+
+## Module Properties
+
+### Core Properties
+
+```php
+[
+    'id' => 1,
+    'name' => 'Module Name',
+    'alias' => 'module-alias',
+    'data_type' => 'Static|Query|Service|Custom|QueryService|UrlService|ServiceLater',
+    'view_name' => 'modules.template-name',
+    'query' => 'SQL query for Query/QueryService types',
+    'service_url' => 'API URL for Service types',
+    'method_type' => 'GET|POST',
+    'description' => 'Module description',
+    'publish_status' => 1, // 0 = Draft, 1 = Published
+    'site_id' => 1,
+    'insert_by' => 1,
+    'update_by' => 1,
+]
+```
+
+### Module Assignment Properties
+
+```php
+[
+    'module_id' => 1,
+    'category_id' => 1,
+    'site_id' => 1,
+    'platform_id' => 1,
+    'microsite_id' => 0,
+    'position' => 1, // Display order
+    'cache_module' => 0, // Enable caching (requires Redis)
+    'publish_status' => 1,
+]
 ```
 
 ## Creating Modules
 
 ### Via Admin Panel
 
-1. Navigate to **Admin → Module**
-2. Click **Add New Module**
+1. Navigate to **Admin → Layout → Frontend Modules**
+2. Click **Add New**
 3. Fill in module details
 4. Select data type
 5. Configure type-specific settings
 6. Save module
-
-
-
-
 
 ## Module Views (Blade Templates)
 
@@ -441,9 +467,9 @@ View Name: "modules.map"
 
 ## Advanced Module Features
 
-### Module Caching
+### Module Caching (future use)
 
-Enable caching for better performance:
+Enable caching for better performance (coming soon):
 
 ```php
 // In module assignment
@@ -458,29 +484,13 @@ php artisan cache:clear
 ### Module Properties
 Add custom properties to modules using Layout/Module Properties
 
-
-### Module Hooks (@todo: not yet done)
-
-Execute code before/after module loading:
-
-```php
-// In service provider
-Event::listen('module.loading', function($module) {
-    // Before module loads
-});
-
-Event::listen('module.loaded', function($module, $data) {
-    // After module loads
-});
-```
-
 ## Module Best Practices
 
 ### 1. Naming Conventions
 
 - Use descriptive names
-- Use kebab-case for aliases
-- Prefix custom modules: `custom-module-name`
+- Use ALL CAPS for aliases
+- Prefix custom modules: `MODULE_NAME`
 
 ### 2. Performance
 
@@ -538,9 +548,152 @@ Event::listen('module.loaded', function($module, $data) {
 2. Check API availability
 3. Implement caching
 4. Add error handling
+## 🛠️ How to Add a New Module Type
+
+If you need a module type that doesn't fit the built-in patterns (like a specialized `WeatherService`), HashtagCMS provides several primary ways to extend the system.
+
+### Option 1: Using the `Custom` Type (Quickest)
+The `Custom` type allows you to define a specific class and method to handle data fetching.
+
+a.  **Code**: Create a class (e.g., `App\Services\WeatherService`) and a method.
+    ```php
+    namespace App\Services;
+    class WeatherService {
+        public function getWeather($module, $args) {
+            // Fetch your specialized weather data
+            return ['items' => [...]]; 
+        }
+    }
+    ```
+b.  **Admin Panel**:
+    - **Data Type**: Select `Custom`.
+    - **Data Handler**: Enter `App\Services\WeatherService@getWeather`.
+    - **Service Params**: (Optional) pass query string parameters like `lat=52.52&long=13.41`.
+
+---
+
+### Option 2: Automatic Discovery via "Unknown Module Type" (Recommended)
+HashtagCMS provides a powerful discovery hook for any module type that is NOT built into the core. This is the cleanest way to add types like `WeatherService`.
+
+a.  **Admin Panel**: Set **Data Type** to your custom name (e.g., `WeatherService`).
+b.  **Code**: Create a class in `App\Services` named after your **Data Type** (e.g., `App\Services\WeatherService`).
+c.  **Implementation**: Implement a `handle($moduleInfo, $params)` method.
+    ```php
+    namespace App\Services;
+
+    use Illuminate\Support\Facades\Http;
+
+    class WeatherService
+    {
+        private $data = [];
+        /**
+        * Create a new class instance.
+        */
+        public function __construct()
+        {
+            //
+        }
+
+        public function handle($moduleInfo, $params)
+        {        
+            $dataHandler = $moduleInfo["data_handler"]; //it's url        
+            $dataKayMap = $moduleInfo["data_key_map"]; //it's mapping what to replace in url 
+            $lat = $params['lat'] ?? 52.52; //coming from params
+            $long = $params['long'] ?? 13.41; //coming from params
+            $dataHandler = str_replace(":lat", $lat, $dataHandler);
+            $dataHandler = str_replace(":long", $long, $dataHandler);
+            
+            try {
+                $response = Http::get($dataHandler);
+                $this->data = $response->json();
+                info("Calling WeatherService handle");            
+            } catch (\Exception $e) {
+                info("Error calling api: $dataHandler " . $e->getMessage());
+            }
+        }
+
+        public function getResult()
+        {
+            return $this->data;
+        }
+    }
+    ```
+d.  **Result**: When the CMS encounters an unknown `Data Type`, it first checks `App\Services\{Data Type}`. If found, it executes your class. If not, it falls back to the `ModuleParser` (Option 3).
+
+---
+
+### Option 3: Implement Global Module Parser (Advanced)
+If you want to add a brand new type (e.g., `WeatherService`) available in the "Data Type" dropdown across the entire system, just enter the name in the "Data Type" field in the admin panel or create it from **Admin → Settings → Module Types**.
+
+#### 1. Implement the Module Parser if you have smaller use case
+The `ModuleLoader` automatically looks for a class named `App\Parser\ModuleParser`. If it exists, it will call a method matching your type name (with `get` prefix and `Module` suffix).
+
+Create `app/Parser/ModuleParser.php`:
+```php
+namespace App\Parser;
+
+class ModuleParser {
+    /**
+     * Handle the "WeatherService" data type
+     */
+    public function getWeatherServiceModule($module) {
+        // $module contains the database record
+        $handler = $module->data_handler; // e.g., 'london-weather'
+        
+        // Custom logic to fetch weather
+        return [
+            'location' => 'London',
+            'forecast' => \App\Models\Weather::where('identifier', $handler)->get()
+        ];
+    }
+}
+```
+
+---
+
+### Option 4: Data Manipulation (`ModuleDataModifier`)
+Sometimes you don't need to change *how* data is fetched, but you need to *transform* it before it reaches the Blade view. The `manipulateModuleData` hook is designed exactly for this.
+
+#### When to Use:
+- Adding calculated fields (e.g., "Reading Time") to dynamic data.
+- Formatting strings or dates globally for a specific module type.
+- Injecting additional context (like user-specific data) into a shared module.
+
+#### How it Works:
+The `ModuleLoader` automatically looks for `App\Parser\ModuleDataModifier`. It attempts to call methods in this order of priority:
+1.  **By Alias**: A camelCase version of the module's alias (e.g., `topBanner`).
+2.  **By Type**: A camelCase version of the module's data type (e.g., `queryService`).
+
+#### Implementation Example:
+Create `app/Parser/ModuleDataModifier.php`:
+
+```php
+namespace App\Parser;
+
+class ModuleDataModifier {
+    /**
+     * Specifically for a module with alias 'latest-news'
+     */
+    public function latestNews($data, $module_obj) {
+        foreach ($data as &$item) {
+            $item['reading_time'] = ceil(str_word_count($item['content']) / 200) . ' min';
+        }
+        return $data;
+    }
+
+    /**
+     * Globally for ALL 'WeatherService' modules
+     */
+    public function weatherService($data, $module_obj) {
+        $data['processed_at'] = now()->format('Y-m-d H:i:s');
+        return $data;
+    }
+}
+```
+
+---
 
 ## Next Steps
-
-- [Custom Modules](14-custom-modules.md) - Create custom module types
-- [Themes](11-themes.md) - Create module templates
+- [Custom Modules](14-custom-modules.md) - Deep dive into custom logic
+- [Themes](11-themes.md) - Create templates for your new module data
 - [API Reference](30-api-reference.md) - Module API documentation

@@ -1,6 +1,6 @@
 # Architecture Overview
 
-HashtagCms is built on top of the Laravel framework, leveraging its robust features while adding a specialized layer for content management. It follows a modular, service-oriented architecture designed for flexibility and performance.
+HashtagCMS is built on top of the Laravel framework, leveraging its robust features while adding a specialized layer for content management. It follows a modular, service-oriented architecture designed for flexibility and performance.
 
 ## System Layers
 
@@ -12,7 +12,7 @@ This is the brain of the CMS. It handles:
 - **Middleware**: intercepting requests to set up context (Site, Lang, Platform).
 
 ### 2. The Data Layer (`src/Models`)
-HashtagCms extends Eloquent models to add CMS-specific features:
+HashtagCMS extends Eloquent models to add CMS-specific features:
 - **AdminBaseModel**: Automatically handles `insert_by`, `update_by`, and audit logging.
 - **BaseModel**: Provides read-only access for frontend to prevent accidental modification.
 - **LangScopes**: automatically filtering content by the current language.
@@ -25,7 +25,7 @@ HashtagCms extends Eloquent models to add CMS-specific features:
 ## Key Design Patterns
 
 ### Service-Oriented Modules
-Instead of monolithic controllers, HashtagCms uses "Service Modules". A module is a self-contained unit (Model + View + Controller logic) that can be reused anywhere.
+Instead of monolithic controllers, HashtagCMS uses "Service Modules". A module is a self-contained unit (Model + View + Controller logic) that can be reused anywhere.
 
 ### Context-Awareness
 Every request passes through a discovery phase where the system identifies:
@@ -36,7 +36,7 @@ Every request passes through a discovery phase where the system identifies:
 This "Context" is then injected into the service container and is available globally via helpers like `htcms_get_site_id()`.
 
 ### The "Everything is a Module" Philosophy
-Unlike traditional CMSs where "Header" or "Menu" might be hardcoded, in HashtagCms, **everything** is a module.
+Unlike traditional CMSs where "Header" or "Menu" might be hardcoded, in HashtagCMS, **everything** is a module.
 - The Menu is a module.
 - The Hero Banner is a module.
 - The Footer is a module.
@@ -63,7 +63,7 @@ This allows for extreme flexibility. You can move the "Main Content" to the side
 This section explains what happens when a user accesses a URL in the browser (Monolithic / Internal flow) or when a client consumes the API.
 
 ## Monolithic / Internal Workflow
-This flow is used when HashtagCms is serving the frontend directly (Laravel Blade Views).
+This flow is used when HashtagCMS is serving the frontend directly (Laravel Blade Views).
 
 ```mermaid
 sequenceDiagram

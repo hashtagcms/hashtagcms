@@ -5,6 +5,8 @@ namespace HashtagCms\Core\Auth;
 use Illuminate\Contracts\Auth\UserProvider;
 use Illuminate\Contracts\Auth\Authenticatable;
 use HashtagCms\Models\User;
+use HashtagCms\Core\Utils\CacheKeys;
+
 
 class ExternalApiUserProvider implements UserProvider
 {
@@ -17,8 +19,8 @@ class ExternalApiUserProvider implements UserProvider
     public function retrieveById($identifier)
     {
         // Check if we have user data in session
-        if (session()->has('hashtagcms_api_user')) {
-            $userData = session('hashtagcms_api_user');
+        if (session()->has(CacheKeys::CMS_API_USER)) {
+            $userData = session(CacheKeys::CMS_API_USER);
             // Ensure the ID matches what we are looking for, usually this is called by session guard
             if ($userData['id'] == $identifier) {
                 return $this->getGenericUser($userData);
@@ -84,10 +86,23 @@ class ExternalApiUserProvider implements UserProvider
     }
 
     /**
+     * Rehash the user's password if required and supported.
+     *
+     * @param  \Illuminate\Contracts\Auth\Authenticatable  $user
+     * @param  array  $credentials
+     * @param  bool  $force
+     * @return void
+     */
+    public function rehashPasswordIfRequired(Authenticatable $user, array $credentials, bool $force = false)
+    {
+        // Handled by External API. No hashing required locally.
+    }
+
+    /**
      * Get a generic user instance.
      *
      * @param  array  $user
-     * @return \HashtagCms\Models\User
+     * @return User
      */
     protected function getGenericUser($user)
     {

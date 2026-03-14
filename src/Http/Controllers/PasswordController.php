@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
+use HashtagCms\Core\Utils\CacheKeys;
 
 class PasswordController extends FrontendBaseController
 {
@@ -278,7 +279,7 @@ class PasswordController extends FrontendBaseController
     protected function sendResetResponse(Request $request, $response)
     {
         return redirect($this->redirectPath())
-            ->with('__hashtagcms_message__', trans($response));
+            ->with(CacheKeys::CMS_MESSAGE, trans($response));
     }
 
     /**

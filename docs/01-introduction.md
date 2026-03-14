@@ -1,8 +1,8 @@
-# Introduction to HashtagCms
+# Introduction to HashtagCMS
 
-## What is HashtagCms?
+## What is HashtagCMS?
 
-HashtagCms is a powerful, flexible, and modern Content Management System built on the Laravel framework. Far from being "just another CMS", it is a **Headless-First**, **Module-Based** platform designed for scalability and multi-tenancy.
+HashtagCMS is a powerful, flexible, and modern Content Management System built on the Laravel framework. Far from being "just another CMS", it is a **Headless-First**, **Module-Based** platform designed for scalability and multi-tenancy.
 
 It decouples content management (Admin) from presentation (Frontend), enabling you to work both as a traditional CMS using standard Laravel Blade or as a headless CMS powering mobile applications and modern JavaScript frameworks (React, Vue, etc.) via its robust API. This makes it perfect for complex, multi-platform projects that demand flexibility.
 
@@ -105,7 +105,7 @@ It decouples content management (Admin) from presentation (Frontend), enabling y
 
 ## Advanced Features
 
-HashtagCms offers advanced features through a tier-based system:
+HashtagCMS offers advanced features through a tier-based system:
 
 ### 🎯 Feature Tiers
 
@@ -186,7 +186,7 @@ HashtagCms offers advanced features through a tier-based system:
 - **API**: RESTful JSON API
 - **Assets**: Webpack for compilation
 
-## What Makes HashtagCms Different?
+## What Makes HashtagCMS Different?
 
 1. **True Multi-Tenancy**: Not just multi-site, but true isolation with shared infrastructure
 2. **Platform Agnostic**: Built for web, mobile, and any platform from day one
@@ -198,7 +198,7 @@ HashtagCms offers advanced features through a tier-based system:
 
 ## Next Steps
 
-- [Installation Guide](02-installation.md) - Install HashtagCms
+- [Installation Guide](02-installation.md) - Install HashtagCMS
 - [Quick Start](03-quick-start.md) - Get started quickly
 - [Architecture Overview](04-architecture.md) - Understand the system
 
@@ -213,6 +213,6 @@ HashtagCms offers advanced features through a tier-based system:
 
 - **GitHub**: https://github.com/hashtagcms/hashtagcms
 - **Packagist**: https://packagist.org/packages/hashtagcms/hashtagcms
-- **Author**: HashtagCms Team
+- **Author**: Marghoob Suleman
 - **Email**: hashtagcms.org@gmail.com
 - **Website**: https://hashtagcms.org

@@ -48,30 +48,15 @@ class StaticmoduleController extends BaseAdminController
                 'max:60',
                 'string',
                 Rule::unique('static_module_contents')->where(function ($query) use ($request) {
-                    $query->where('site_id', $request->input('site_id'))
-                        ->where('alias', $request->input('alias'));
-                })],
-            /*"alias" => "required|max:60|string",*/
+                    $query->where('site_id', $request->input('site_id'));
+                })->ignore($request->input('id', 0), 'id')],
             'update_by' => 'required|numeric',
             'lang_title' => 'required|max:255|string',
             'lang_content' => 'required',
         ];
 
-        if ($request->input('id') > 0) {
-            $rules['alias'] = ['required',
-                'max:60',
-                'string',
-                Rule::unique('static_module_contents')->where(function ($query) use ($request) {
-                    $query->where('site_id', $request->input('site_id'))
-                        ->where('alias', $request->input('alias'))
-                        ->where('id', '<>', $request->input('id'));
-                })];
-        }
-
-        if ($request->input('id') == 0) {
-
+        if ($request->input('id', 0) == 0) {
             $rules['insert_by'] = 'required|numeric';
-
         }
 
         $validator = Validator::make($request->all(), $rules);

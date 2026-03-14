@@ -6,11 +6,14 @@ use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvid
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\View;
+use Illuminate\Support\Facades\Log;
 use HashtagCms\Core\Policies\CmsPolicy;
 use HashtagCms\Core\ViewComposers\Admin\CmsModuleComposer;
 use HashtagCms\Models\CmsPermission;
 use HashtagCms\Models\Permission;
 use Illuminate\Support\Facades\Schema;
+use HashtagCms\Core\Utils\RedisCacheManager;
+use HashtagCms\Core\Utils\CacheKeys;
 class AdminServiceProvider extends ServiceProvider
 {
     protected $policies = [
@@ -31,11 +34,11 @@ class AdminServiceProvider extends ServiceProvider
         $allPermission = $this->loadPermissions();
 
         if ($allPermission != null) {
-
+            Log::info("[AdminServiceProvider] Defining Gate permissions.", ['count' => $allPermission->count()]);
             foreach ($allPermission as $permission) {
 
                 Gate::define($permission->name, function ($user) use ($permission) {
-                    return (($user->hasRole($permission->roles)) || $user->isSuperAdmin()) && $user->user_type == 'Staff';
+                    return (($user->hasRole($permission->roles)) || $user->isAdmin()) && $user->user_type == 'Staff';
                 });
 
             }
@@ -44,7 +47,7 @@ class AdminServiceProvider extends ServiceProvider
         //Only For Admin
         $theme = config('hashtagcmsadmin.cmsInfo.theme');
 
-        View::composer($theme . '.common.*', CmsModuleComposer::class);
+        View::composer([$theme . '.common.sidebar', $theme . '.common.index'], CmsModuleComposer::class);
     }
 
     /**
@@ -57,29 +60,28 @@ class AdminServiceProvider extends ServiceProvider
         try {
             // Check if required tables exist before querying
             // This prevents errors during fresh installation or migrations
-            if (!Schema::hasTable('permissions') || 
-                !Schema::hasTable('cache')) {
+            if (!Schema::hasTable('permissions')) {
                 return null;
             }
 
-            // Use array cache as fallback if database cache is not available
-            // This ensures the service provider works even if cache table doesn't exist
-            $cacheDriver = Schema::hasTable('cache') ? null : 'array';
-            
-            $cacheStore = $cacheDriver ? Cache::store($cacheDriver) : Cache::getFacadeRoot();
+            $ttl = (int)config('hashtagcmsadmin.permissions.cache_ttl', 0);
 
-            // Cache permissions for 1 hour to reduce database queries
-            if (config('hashtagcms.enable_cache') === false) {
-                 return $this->getPermission();
+            // If TTL is 0 or less, skip caching
+            if ($ttl <= 0) {
+                Log::info("[AdminServiceProvider] Loading permissions from database (cache disabled).");
+                return $this->getPermission();
             }
-            
-            return $cacheStore->remember(\HashtagCms\Core\Utils\RedisCacheManager::getInternalPrefix() . \HashtagCms\Core\Utils\CacheKeys::CMS_PERMISSIONS_BOOT, 3600, function () {
+
+            $cacheKey = RedisCacheManager::getInternalPrefix() . CacheKeys::CMS_PERMISSIONS_BOOT;
+
+            return Cache::remember($cacheKey, $ttl, function () {
+                Log::info("[AdminServiceProvider] Cache MISS: Loading permissions from database.");
                 return $this->getPermission();
             });
 
         } catch (\Exception $e) {
             // Log the error but don't break the application
-            logger('AdminServiceProvider: Failed to load permissions - ' . $e->getMessage());
+            Log::error("[AdminServiceProvider] Failed to load permissions.", ['error' => $e->getMessage()]);
             return null;
         }
     }

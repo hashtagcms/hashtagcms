@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Cache;
 use HashtagCms\Http\Resources\PageResource;
 use HashtagCms\Models\Page;
+use HashtagCms\Core\Utils\CacheKeys;
+use HashtagCms\Core\Utils\RedisCacheManager;
 
 class BlogController extends FrontendBaseController
 {
@@ -39,7 +41,7 @@ class BlogController extends FrontendBaseController
 
             $requestCat = ($useMore) ? $moreCategories : $categoryName;
 
-            if (config('hashtagcms.enable_external_api')) {
+            if (config('hashtagcms.externals.enable_external_api')) {
                 // Fetch from External API
                 $results = $this->fetchBlogsFromExternalApi($requestCat, $perPage);
                 $data['results'] = $results;
@@ -77,13 +79,13 @@ class BlogController extends FrontendBaseController
     {
         $context = config('hashtagcms.context');
         $apiSecret = config('hashtagcms.api_secrets.' . $context);
-        $apiUrl = config('hashtagcms.blog_latests_api') ?? str_replace('/load-data', '/blog/latests', config('hashtagcms.data_api'));
+        $apiUrl = config('hashtagcms.blog_latests_api') ?? str_replace('/load-data', '/blog/latests', config('hashtagcms.externals.data_api'));
 
         // Cache Key
         $catKey = is_array($category) ? implode('_', $category) : $category;
-        $prefix = \HashtagCms\Core\Utils\RedisCacheManager::getExternalSourcePrefix();
-        $cacheKey = "{$prefix}" . \HashtagCms\Core\Utils\CacheKeys::EXTERNAL_BLOG . "_{$context}_{$catKey}_{$limit}";
-        $cacheTTL = config('hashtagcms.external_data_cache_ttl', 30);
+        $prefix = RedisCacheManager::getExternalSourcePrefix();
+        $cacheKey = "{$prefix}" . CacheKeys::EXTERNAL_BLOG . "_{$context}_{$catKey}_{$limit}";
+        $cacheTTL = config('hashtagcms.externals.external_data_cache_ttl', 30);
 
         $callback = function () use ($apiUrl, $apiSecret, $context, $category, $limit) {
 

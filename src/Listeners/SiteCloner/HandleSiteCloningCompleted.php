@@ -5,6 +5,8 @@ namespace HashtagCms\Listeners\SiteCloner;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use HashtagCms\Events\SiteCloner\SiteCloningCompleted;
+use HashtagCms\Core\Utils\CacheKeys;
+use HashtagCms\Core\Utils\RedisCacheManager;
 
 /**
  * Listener for site cloning completed event
@@ -17,8 +19,8 @@ class HandleSiteCloningCompleted
     public function handle(SiteCloningCompleted $event): void
     {
         // Update final status in cache
-        $prefix = \HashtagCms\Core\Utils\RedisCacheManager::getInternalPrefix();
-        $status = Cache::get("{$prefix}".\HashtagCms\Core\Utils\CacheKeys::CLONE_JOB."_{$event->jobId}", []);
+        $prefix = RedisCacheManager::getInternalPrefix();
+        $status = Cache::get("{$prefix}".CacheKeys::CLONE_JOB."_{$event->jobId}", []);
 
         $status = array_merge($status, [
             'status' => 'completed',
@@ -31,7 +33,7 @@ class HandleSiteCloningCompleted
         ]);
 
         Cache::put(
-            "{$prefix}".\HashtagCms\Core\Utils\CacheKeys::CLONE_JOB."_{$event->jobId}",
+            "{$prefix}".CacheKeys::CLONE_JOB."_{$event->jobId}",
             $status,
             now()->addDays(7) // Keep completed jobs for 7 days
         );

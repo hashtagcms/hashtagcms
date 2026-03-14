@@ -3,7 +3,7 @@
 namespace HashtagCms\Core\Policies;
 
 use HashtagCms\Models\CmsPermission;
-use HashtagCms\Models\User;
+use HashtagCms\User;
 
 /**
  * Class CmsPolicy
@@ -23,86 +23,58 @@ use HashtagCms\Models\User;
 class CmsPolicy extends BaseCmsPolicy
 {
     /**
-     * Determine whether the user can view the module.
-     *
-     * Checks if the user has access to the module and has 'read' permission via their role.
-     *
-     * @param  \HashtagCms\Models\User|null  $user
-     * @param  \HashtagCms\Models\CmsPermission|null  $permission
-     * @return bool
+     * Determine whether the user can read the module.
      */
-    public function view(?User $user, ?CmsPermission $permission): bool
+    public function read(?User $user, ?CmsPermission $permission, $resource = null): bool
     {
-        return $this->canPerform($user, $permission, 'read');
+        return $this->canPerform($user, $permission, 'read', $resource);
     }
 
     /**
-     * Determine whether the user can create in the module.
-     *
-     * Checks if the user has access to the module and has 'edit' permission via their role.
-     *
-     * @param  \HashtagCms\Models\User|null  $user
-     * @param  \HashtagCms\Models\CmsPermission|null  $permission
-     * @return bool
+     * Determine whether the user can edit in the module.
      */
-    public function create(?User $user, ?CmsPermission $permission): bool
+    public function edit(?User $user, ?CmsPermission $permission, $resource = null): bool
     {
-        return $this->canPerform($user, $permission, 'edit');
-    }
-
-    /**
-     * Determine whether the user can update in the module.
-     *
-     * Checks if the user has access to the module and has 'edit' permission via their role.
-     *
-     * @param  \HashtagCms\Models\User|null  $user
-     * @param  \HashtagCms\Models\CmsPermission|null  $permission
-     * @return bool
-     */
-    public function update(?User $user, ?CmsPermission $permission): bool
-    {
-        return $this->canPerform($user, $permission, 'edit');
+        return $this->canPerform($user, $permission, 'edit', $resource);
     }
 
     /**
      * Determine whether the user can delete in the module.
-     *
-     * Checks if the user has access to the module and has 'delete' permission via their role.
-     *
-     * @param  \HashtagCms\Models\User|null  $user
-     * @param  \HashtagCms\Models\CmsPermission|null  $permission
-     * @return bool
      */
-    public function delete(?User $user, ?CmsPermission $permission): bool
+    public function delete(?User $user, ?CmsPermission $permission, $resource = null): bool
     {
-        return $this->canPerform($user, $permission, 'delete');
+        return $this->canPerform($user, $permission, 'delete', $resource);
     }
 
     /**
      * Determine whether the user can publish in the module.
-     *
-     * Checks if the user has access to the module and has 'publish' permission via their role.
-     *
-     * @param  \HashtagCms\Models\User|null  $user
-     * @param  \HashtagCms\Models\CmsPermission|null  $permission
-     * @return bool
      */
-    public function publish(?User $user, ?CmsPermission $permission): bool
+    public function publish(?User $user, ?CmsPermission $permission, $resource = null): bool
     {
-        return $this->canPerform($user, $permission, 'publish');
+        return $this->canPerform($user, $permission, 'publish', $resource);
     }
 
     /**
      * Determine whether the user can approve in the module.
-     *
-     * Checks if the user has access to the module and has 'approve' permission via their role.
-     *
-     * @param  \HashtagCms\Models\User|null  $user
-     * @param  \HashtagCms\Models\CmsPermission|null  $permission
-     * @return bool
      */
-    public function approve(?User $user, ?CmsPermission $permission): bool
+    public function approve(?User $user, ?CmsPermission $permission, $resource = null): bool
     {
-        return $this->canPerform($user, $permission, 'approve');
+        return $this->canPerform($user, $permission, 'approve', $resource);
+    }
+
+    // Keep Laravel standard names for compatibility if needed, mapping to our logic
+    public function view(?User $user, ?CmsPermission $permission, $resource = null): bool
+    {
+        return $this->read($user, $permission, $resource);
+    }
+
+    public function create(?User $user, ?CmsPermission $permission, $resource = null): bool
+    {
+        return $this->edit($user, $permission, $resource);
+    }
+
+    public function update(?User $user, ?CmsPermission $permission, $resource = null): bool
+    {
+        return $this->edit($user, $permission, $resource);
     }
 }

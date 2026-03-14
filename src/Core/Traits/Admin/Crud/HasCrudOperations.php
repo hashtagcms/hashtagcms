@@ -24,7 +24,7 @@ trait HasCrudOperations
     {
 
         if (!$this->checkPolicy('read')) {
-            return htcms_admin_view('common.error', Message::getReadError());
+            return htcms_admin_view('common.error', Message::getReadError(['backUrl' => $this->getBackURL()]));
         }
 
         $data = $this->getSegregatedData();
@@ -67,10 +67,6 @@ trait HasCrudOperations
      */
     public function edit($id = 0, $param1 = 0)
     {
-        if (!$this->checkPolicy('edit')) {
-            return htcms_admin_view('common.error', Message::getWriteError());
-        }
-
         //Check if has pre edit
         if (method_exists($this, 'preEdit')) {
             $this->preEdit();
@@ -86,6 +82,10 @@ trait HasCrudOperations
         if ($id > 0) {
             $data['results'] = $dataSource::getById($id, $dataWith, $param1);
             $data['backURL'] = $this->getBackURL(true, $id);
+        }
+
+        if (!$this->checkPolicy('edit', $data['results'])) {
+            return htcms_admin_view('common.error', Message::getWriteError(['backUrl' => $this->getBackURL()]));
         }
 
         $data['user_rights'] = $this->getUserRights();
@@ -115,22 +115,22 @@ trait HasCrudOperations
      */
     public function destroy($id)
     {
-        if (!$this->checkPolicy('delete')) {
+        $dataSource = $this->getDataSource();
+        $source = $dataSource::find($id);
+
+        if (!$this->checkPolicy('delete', $source)) {
             return json_encode(['id' => $id, 'success' => 0, 'message' => Message::getDeleteError()]);
         }
 
         QueryLogger::enableQueryLog();
 
-        $dataSource = $this->getDataSource();
-        $source = new $dataSource();
-
-        $isDeleted = $source->destroy($id);
+        $isDeleted = $source->delete();
         $array = ['id' => $id, 'success' => $isDeleted, 'source' => $source];
 
         //Logging
         try {
             $queryLog = QueryLogger::getQueryLog();
-            QueryLogger::log('delete', $queryLog, $source, $id ?? 0);
+            QueryLogger::log('delete', $queryLog, $source, (int)($id ?? 0));
         } catch (\Exception $exception) {
             info($exception->getMessage());
         }
@@ -146,7 +146,7 @@ trait HasCrudOperations
     public function search()
     {
         if (!$this->checkPolicy('read')) {
-            return htcms_admin_view('common.error', Message::getReadError());
+            return htcms_admin_view('common.error', Message::getReadError(['backUrl' => $this->getBackURL()]));
         }
 
         $data = $this->getSegregatedData();
@@ -167,7 +167,10 @@ trait HasCrudOperations
      */
     public function publish($id = 0, $status = 0)
     {
-        if (!$this->checkPolicy('publish')) {
+        $dataSource = $this->getDataSource();
+        $source = $dataSource::find($id);
+
+        if (!$this->checkPolicy('publish', $source)) {
             return response()->json(Message::getWriteError(), 400);
         }
 
@@ -189,7 +192,7 @@ trait HasCrudOperations
         //Logging
         try {
             $queryLog = QueryLogger::getQueryLog();
-            QueryLogger::log('publish', $queryLog, $rData, $where);
+            QueryLogger::log('publish', $queryLog, $rData, (int)$where);
         } catch (\Exception $exception) {
             info($exception->getMessage());
         }

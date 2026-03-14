@@ -6,6 +6,7 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\View;
 use HashtagCms\Core\Utils\LayoutKeys;
 use Mockery\Exception;
+use HashtagCms\Core\Utils\CacheKeys;
 
 class LayoutManager extends Results
 {
@@ -84,12 +85,16 @@ class LayoutManager extends Results
 
             $dataLoader = app()->HashtagCms->dataLoader();
 
+            $startTime = microtime(true);
             //load data will be initiated from controller
             if ($isExternal) {
                 $allData = $dataLoader->loadDataFromExternalApi($context, $lang, $platform, $categoryName, null);
             } else {
                 $allData = $dataLoader->loadData($context, $lang, $platform, $categoryName, null);
             }
+            $endTime = microtime(true);
+            $diff = round(($endTime - $startTime) * 1000, 2);
+            $this->infoLoader->setPerformance('loadDataTime', $diff);
 
             //check if there is an error -- && $foundController==false
             if (isset($allData['status']) && $allData['status'] != 200) {
@@ -132,7 +137,18 @@ class LayoutManager extends Results
         //Set base index
         $this->setThemePath($meta['theme']['directory']);
         $this->setBaseIndex($meta['theme']);
+
+        $startTime = microtime(true);
         $this->parseSkeletonForView($meta['theme']);
+        $endTime = microtime(true);
+        $diff = round(($endTime - $startTime) * 1000, 2);
+        
+        // Replace placeholder if exists
+        $bodyContent = $this->getBodyContent();
+        $bodyContent = str_replace('%%HTCMS_PAGE_RENDER_TIME%%', $diff, $bodyContent);
+        $this->setBodyContent($bodyContent);
+
+        $this->infoLoader->setPerformance('pageRenderTime', $diff);
 
     }
 
@@ -448,8 +464,8 @@ class LayoutManager extends Results
     private function getEssentialsElements(): string
     {
 
-        $message = session('__hashtagcms_message__');
-        $messageError = session('__hashtagcms_message_error__', false);
+        $message = session(CacheKeys::CMS_MESSAGE);
+        $messageError = session(CacheKeys::CMS_MESSAGE_ERROR, false);
 
         $message = ($messageError == false) ? $message : $messageError;
 
@@ -884,11 +900,17 @@ class LayoutManager extends Results
     /**
      * Set festival object
      */
-    public function setFestivalObject(?array $festival): void
-    {
-        $this->setData(LayoutKeys::FESTIVAL_OBJ, $festival);
-        $festival = is_array($festival) ? $festival[0] : $festival;
-        $this->setFestivalCss($festival['bodyCss'] ?? '');
+    public function setFestivalObject(?array $festivals): void
+    {        
+        // Save the raw array of festivals so lottie.blade.php can iterate over it
+        $this->setData(LayoutKeys::FESTIVAL_OBJ, $festivals);        
+        
+        // Safely extract the first festival's CSS body class
+        $firstFestival = (is_array($festivals) && count($festivals) > 0 && isset($festivals[0])) 
+            ? $festivals[0] 
+            : $festivals;
+            
+        $this->setFestivalCss($firstFestival['bodyCss'] ?? '');
     }
 
     /**
@@ -921,10 +943,14 @@ class LayoutManager extends Results
      */
     public function getBodyBackgroundImage(): string
     {
-        $festival = $this->getFestivalObject();
-        $festival = is_array($festival) ? $festival[0] : $festival;
-        if ($festival != null && isset($festival['image'])) {
-            return "background-image: url('".htcms_get_media($festival['image'])."')";
+        $festivals = $this->getFestivalObject();
+        
+        $firstFestival = (is_array($festivals) && count($festivals) > 0 && isset($festivals[0])) 
+            ? $festivals[0] 
+            : $festivals;
+
+        if ($firstFestival != null && isset($firstFestival['image'])) {
+            return "background-image: url('".htcms_get_media($firstFestival['image'])."')";
         }
 
         return '';
@@ -996,5 +1022,15 @@ class LayoutManager extends Results
         $content = $this->parseStringForPath($content);
 
         return $content;
+    }
+
+    public function isRtl()
+    {
+        $metaObject = $this->getMetaObject();
+
+        if (empty($metaObject)) {
+            return "ltr";
+        }
+        return $metaObject[LayoutKeys::SITE_LANG]['isRtl'] >0 ? "rtl" : "ltr";
     }
 }

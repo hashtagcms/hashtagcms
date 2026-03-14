@@ -15,7 +15,7 @@ class PageController extends BaseAdminController
 {
     use BlogPageCommon;
 
-    protected $dataFields = ['id', 'lang.title as title', 'lang.name as name', 'category.link_rewrite as category', 'platform.name as platform', 'link_rewrite', 'read_count', 'publish_status', 'updated_at'];
+    protected $dataFields = ['id', 'lang.name as name', 'category.link_rewrite as category', 'platform.name as platform', 'link_rewrite', 'read_count', 'publish_status', 'updated_at'];
 
     protected $dataSource = Page::class;
 

@@ -18,14 +18,6 @@ class CmsModuleModelCommand extends Command
 
     protected $currentSourceFile;
 
-    private $sourceDir = 'hashtagcms/cmsmodule/model';
-
-    private $sourceFile = 'index.ms';
-
-    private $targetTempDir = 'storage/temp';
-
-    private $targetDir = 'app/Models';
-
     private $paths = [
         'sourceDir' => 'hashtagcms/cmsmodule',
         'sourceFile' => 'index.ms',
@@ -35,6 +27,9 @@ class CmsModuleModelCommand extends Command
     ];
 
     private $hasLangScope = [];
+
+    /** @var ScaffoldGenerator */
+    protected $scaffold;
 
     /**
      * The name and signature of the console command.
@@ -75,19 +70,20 @@ class CmsModuleModelCommand extends Command
         $this->name = $this->argument('name');
         $methods = $this->argument('methods');
 
-        $this->name = Str::title($this->name);
+        $this->name = Str::studly(Str::singular($this->name));
+
+        // Initialise the ScaffoldGenerator with the resolved package base path
+        $this->scaffold = new ScaffoldGenerator($this->files, $this->packageBasePath());
 
         $this->createModel($this->name, $methods);
-
     }
 
     /**
-     * @param  string  $methods
+     * @param string $methods
      */
     private function createModel($name, $methods = '', $fixModelName = true)
     {
-
-        $name = ($fixModelName) ? Str::title($name) : $name;
+        $name = ($fixModelName) ? Str::studly(Str::singular($name)) : $name;
 
         $isExists = $this->isModelExists($name);
 
@@ -119,56 +115,29 @@ class CmsModuleModelCommand extends Command
             $this->error("$name model already exists");
 
         }
-
     }
 
     private function replaceModelContext($name, $currentFileName, $fixModelName = true)
     {
-        $model_name = $name;
+        $relationData = $this->getRelationData($name, $fixModelName);
+        $langData     = $this->getLangScope($name);
 
-        $filename = $currentFileName;
+        $replacements = [
+            'namespace'       => $this->laravel->getNamespace(),
+            'model'           => $name,
+            'relationMethods' => $relationData['useMethods'],
+            'useModels'       => $relationData['useModels'],
+            'useLangScope'    => $langData['useScope'],
+            'langScopeBoot'   => $langData['useMethod'],
+        ];
 
-        $patterns = [];
-        $patterns['namespace'] = '/{{namespace}}/';
-        $patterns['model'] = '/{{model}}/';
-        $patterns['relationMethods'] = '/{{relationMethods}}/';
-        $patterns['useModels'] = '/{{useModels}}/';
-        $patterns['useLangScope'] = '/{{useLangScope}}/';
-        $patterns['langScopeBoot'] = '/{{langScopeBoot}}/';
+        // Use ScaffoldGenerator to replace tokens in the existing temp stub file
+        $content = $this->files->get($currentFileName);
+        $content = $this->scaffold->replaceTokens($content, $replacements);
+        $this->files->put($currentFileName, $content);
 
-        $replacements = [];
-
-        $replacements['namespace'] = $this->laravel->getNamespace();
-        $replacements['model'] = $model_name;
-
-        $relationData = $this->getRelationData($model_name, $fixModelName);
-
-        $replacements['relationMethods'] = $relationData['useMethods'];
-        $replacements['useModels'] = $relationData['useModels'];
-
-        $replacements['useLangScope'] = '';
-        $replacements['langScopeBoot'] = '';
-
-        $landData = $this->getLangScope($model_name);
-
-        $replacements['useLangScope'] = $landData['useScope'];
-        $replacements['langScopeBoot'] = $landData['useMethod'];
-
-        $replaced = preg_replace(
-            $patterns,
-            $replacements,
-            file_get_contents($filename)
-        );
-
-        file_put_contents(
-            $filename,
-            $replaced,
-            FILE_BINARY
-        );
-
-        $targetFileName = $this->getValidTarget($this->paths['targetDir'].'/'.$model_name.'.php', 'app');
-        $this->files->copy($filename, $targetFileName);
-
+        $targetFileName = $this->getValidTarget($this->paths['targetDir'] . '/' . $name . '.php', 'app');
+        $this->files->copy($currentFileName, $targetFileName);
     }
 
     /**
@@ -188,9 +157,9 @@ class CmsModuleModelCommand extends Command
         if ($methods != null) {
             foreach ($methods as $key => $val) {
                 $current = explode(',', $val);
-                $method = $current[0];
-                $relation = $current[1];
-                $source = $current[2];
+                $method      = $current[0];
+                $relation    = $current[1];
+                $source      = $current[2];
                 $hasLangScope = $current[3] ?? false;
 
                 $dataSource = $source;
@@ -200,29 +169,27 @@ class CmsModuleModelCommand extends Command
         return \$this->$relation($dataSource::class);
     }\n";
 
-                $useModels .= "use $namespace\Models\\".$source.";\n";
+                $useModels .= "use $namespace\\Models\\" . $source . ";\n";
 
                 //extra models
                 $extraModels[] = $source;
 
-                //Add for relation model
+                //Add lang scope flag for relation model
                 if ($hasLangScope != false) {
                     $this->setLangScope($source);
                 }
-
             }
         }
 
-        $data['useModels'] = $useModels;
-        $data['useMethods'] = $useMethods;
-        $data['extraModels'] = $extraModels;
+        $data['useModels']    = $useModels;
+        $data['useMethods']   = $useMethods;
+        $data['extraModels']  = $extraModels;
 
         return $data;
     }
 
     private function createExtraModels($name)
     {
-
         $relationData = $this->getRelationData($name);
         $models = $relationData['extraModels'];
         if (count($models) > 0) {
@@ -231,7 +198,6 @@ class CmsModuleModelCommand extends Command
                 if (! $this->isModelExists($modelName)) {
                     $this->createModel($modelName, '', false);
                 }
-
             }
         }
     }

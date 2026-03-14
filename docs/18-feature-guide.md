@@ -1,6 +1,6 @@
 # Feature Tiers
 
-The core of HashtagCms is open-source (MIT). However, advanced features are gated via a system provided by the `hashtagcms-extended` package.
+The core of HashtagCMS is open-source (MIT). However, advanced features are gated via a system provided by the `hashtagcms-extended` package.
 
 ## Tiers
 1.  **Free**: Core CMS functionality.
@@ -9,7 +9,7 @@ The core of HashtagCms is open-source (MIT). However, advanced features are gate
 
 ## Installation
 To activate Extended or Advanced features:
-1.  **Activation**: Obtain an activation key from the [HashtagCms Website](https://www.hashtagcms.org).
+1.  **Activation**: Obtain an activation key from the [HashtagCMS Website](https://www.hashtagcms.org).
 2.  **Configure**: Add the key to your `.env` file.
     ```ini
     HASHTAGCMS_FEATURE_TOKEN="ey..."
@@ -18,7 +18,7 @@ To activate Extended or Advanced features:
 
 
 ## Logic
-The system uses `HashtagCmsExtended\Models\License` to verify features at runtime.
+The system uses `HashtagCMSExtended\Models\License` to verify features at runtime.
 ```php
 if (License::hasFeature('mongodb')) {
     // enable mongo driver

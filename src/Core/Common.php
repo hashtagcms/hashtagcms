@@ -115,7 +115,7 @@ class Common extends Results
      */
     public function useExternalApi(): bool
     {
-        return config('hashtagcms.enable_external_api');
+        return config('hashtagcms.externals.enable_external_api');
     }
 
     /**
@@ -123,7 +123,7 @@ class Common extends Results
      */
     public function getConfigApiSource(): string
     {
-        return config('hashtagcms.config_api');
+        return config('hashtagcms.externals.config_api');
     }
 
     /**
@@ -131,6 +131,6 @@ class Common extends Results
      */
     public function getLoadDataApiSource(): string
     {
-        return config('hashtagcms.data_api');
+        return config('hashtagcms.externals.data_api');
     }
 }

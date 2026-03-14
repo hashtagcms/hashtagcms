@@ -75,10 +75,10 @@ class HomepageController extends BaseAdminController
     {
 
         if (! $this->checkPolicy('read')) {
-            return htcms_admin_view('common.error', Message::getWriteError());
+            return htcms_admin_view('common.error', Message::getReadError()); 
         }
 
-        $site = Site::find(htcms_get_siteId_for_admin()); //Get Site Info
+        $site = Site::find(htcms_get_siteId_for_admin()); 
 
         $categoryInfo = Category::find($site->category_id);
 
@@ -92,11 +92,13 @@ class HomepageController extends BaseAdminController
             $viewData['allModules'] = Module::all();
             $viewData['user_rights'] = $this->getUserRights();
         }
-
-        $site_id = htcms_get_siteId_for_admin();
-        $site = Site::find($site_id); //Get Site Info
-        $category_id = (isset($site->category_id) || $site->category_id > 0) ? $site->category_id : 0;
-        $platform_id = (isset($site->platform_id) || $site->platform_id > 0) ? $site->platform_id : Platform::all()[0]->id;
+            
+        $site_id    = htcms_get_siteId_for_admin();
+        $category_id = (isset($site->category_id) && $site->category_id > 0) ? $site->category_id : 0;
+        $allPlatforms = Platform::all();
+        $platform_id = (isset($site->platform_id) && $site->platform_id > 0)
+            ? $site->platform_id
+            : ($allPlatforms->isNotEmpty() ? $allPlatforms[0]->id : 1);
 
         $params = ['category_id' => $category_id, 'platform_id' => $platform_id, 'site_id' => $site_id];
 
@@ -157,8 +159,10 @@ class HomepageController extends BaseAdminController
         $viewData['categoryModules'] = $categoryModules;
         $viewData['categoryInfo'] = (isset($categoryInfo) && ! empty($categoryInfo)) ? $categoryInfo : [];
         $viewData['themeInfo'] = $themeInfo;
+        $user = auth()->user();
+        $isAdmin = $user->isSuperAdmin() || $user->isAdmin();
         $viewData['user_rights'] = $this->getUserRights();
-        $viewData['isModuleReadonly'] = CmsPermission::isReadyOnly(request()->module_info->id, auth()->user()->id);
+        $viewData['isModuleReadonly'] = $isAdmin ? false : CmsPermission::isReadyOnly(request()->module_info->id, $user->id);
 
         return $this->viewNow('homepage.index', $viewData);
 
@@ -216,8 +220,7 @@ class HomepageController extends BaseAdminController
         } catch (\Exception $exception) {
             info($exception->getMessage());
             DB::rollBack();
-
-            return $rData['isSaved'] = $isSaved;
+            return ['isSaved' => false, 'error' => $exception->getMessage()];
         }
         DB::commit();
         $rData['isSaved'] = $isSaved;

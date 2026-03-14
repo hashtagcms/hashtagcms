@@ -22,8 +22,6 @@ class PlatformSiteTableSeeder extends Seeder
 
         if (DB::table($table_name)->get()->count() == 0) {
             DB::table($table_name)->insert($platform_site);
-        } else {
-            echo "SeedingError: `$table_name` table is not empty\n";
-        }
+        } 
     }
 }

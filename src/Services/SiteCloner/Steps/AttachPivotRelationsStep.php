@@ -3,6 +3,7 @@
 namespace HashtagCms\Services\SiteCloner\Steps;
 
 use Illuminate\Support\Str;
+use HashtagCms\Http\Controllers\Admin\SiteController;
 
 /**
  * Attach pivot relations (platforms, hooks, languages, zones, countries, currencies)
@@ -66,7 +67,7 @@ class AttachPivotRelationsStep
         ];
 
         // Use the existing saveSettings method from SiteController
-        $controller = app(\HashtagCms\Http\Controllers\Admin\SiteController::class);
+        $controller = app(SiteController::class);
         $res = $controller->saveSettings($attach);
 
         $success = !empty($res) && $res['isSaved'];

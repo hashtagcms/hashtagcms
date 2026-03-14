@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use HashtagCms\Models\User;
 use HashtagCms\Models\UserProfile;
+use HashtagCms\Core\Utils\CacheKeys;
 
 class ProfileController extends FrontendBaseController
 {
@@ -32,7 +33,7 @@ class ProfileController extends FrontendBaseController
         }
 
 
-        if (config('hashtagcms.enable_external_api')) {
+        if (config('hashtagcms.externals.enable_external_api')) {
             $user = $this->getUserFromExternalApi();
 
             $profile = $user['profile'] ?? ['fatherName' => '', 'motherName' => '', 'mobile' => '', 'dateOfBirth' => '', 'gender' => ''];
@@ -98,7 +99,7 @@ class ProfileController extends FrontendBaseController
             'gender' => 'nullable|max:20|string',
         ];
 
-        if (config('hashtagcms.enable_external_api')) {
+        if (config('hashtagcms.externals.enable_external_api')) {
             return $this->updateProfileViaExternalApi($request, $rules);
         }
 
@@ -143,8 +144,8 @@ class ProfileController extends FrontendBaseController
      */
     private function getUserFromExternalApi()
     {
-        $token = session('hashtagcms_api_token');
-        $apiUrl = config('hashtagcms.user_me_api');
+        $token = session(CacheKeys::CMS_API_TOKEN);
+        $apiUrl = config('hashtagcms.externals.user_me_api');
 
         try {
             $response = Http::withToken($token)->withHeaders(['Accept' => 'application/json'])->get($apiUrl);
@@ -178,8 +179,8 @@ class ProfileController extends FrontendBaseController
                 ->withInput();
         }
 
-        $token = session('hashtagcms_api_token');
-        $apiUrl = config('hashtagcms.user_profile_update_api');
+        $token = session(CacheKeys::CMS_API_TOKEN);
+        $apiUrl = config('hashtagcms.externals.user_profile_update_api');
 
         try {
             $response = Http::withToken($token)

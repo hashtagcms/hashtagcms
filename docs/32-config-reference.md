@@ -7,10 +7,10 @@ This document provides a comprehensive reference for all configuration keys foun
 ### Root Settings
 | Key | Type | Default | Description |
 | :--- | :--- | :--- | :--- |
-| `namespace` | string | `HashtagCms\` | The root namespace for the CMS package. |
+| `namespace` | string | `HashtagCMS\` | The root namespace for the CMS package. |
 | `context` | string | `hashtagcms` | The default Site Context (e.g., `web`, `app`). Used when domain mapping fails. |
 | `blog_per_page` | int | `10` | Number of posts per page in blog modules. |
-| `external_service_timeout` | int | `5` | Timeout (seconds) for external Service Module calls. |
+| `externals` | array | *See below* | Configuration for Headless/Microservice API loading. |
 
 ---
 
@@ -71,6 +71,29 @@ Authentication keys for Site Contexts.
     'web' => 'some-secret-key'
 ]
 ```
+
+---
+
+### `externals` Array
+Configuration for Headless mode and External API loading.
+
+| Key | Type | Default | Description |
+| :--- | :--- | :--- | :--- |
+| `enable_external_api` | bool | `false` | Master switch for External API loading. |
+| `external_api_cache_prefix` | string | `api_` | Cache prefix for public API data. |
+| `external_api_base_url` | string | `APP_URL` | Base URL for remote HashtagCMS API. |
+| `config_api` | string | URL | Endpoint for site configuration. |
+| `data_api` | string | URL | Endpoint for loading page data. |
+| `login_api` | string | URL | Endpoint for external user login. |
+| `logout_api` | string | URL | Endpoint for user logout. |
+| `user_me_api` | string | URL | Endpoint for user data. |
+| `user_profile_update_api` | string | URL | Endpoint for profile updates. |
+| `publish_api` | string | URL | Endpoint for analytics publishing. |
+| `contact_api` | string | URL | Endpoint for contact form submissions. |
+| `subscribe_api` | string | URL | Endpoint for newsletter subscriptions. |
+| `external_service_timeout` | int | `5` | Timeout (seconds) for external service calls. |
+| `external_config_cache_ttl` | int | `60` | Config cache duration (minutes). |
+| `external_data_cache_ttl` | int | `30` | Data cache duration (minutes). |
 
 ---
 

@@ -6,11 +6,15 @@ use HashtagCms\Models\Category;
 use HashtagCms\Models\Comment;
 use HashtagCms\Models\Contact;
 use HashtagCms\Models\Subscriber;
+use HashtagCms\Core\Helpers\Message;
 
 class DashboardController extends BaseAdminController
 {
     public function index($more = null)
     {
+        if (! $this->checkPolicy('read')) {
+            return htcms_admin_view('common.error', Message::getReadError());
+        }
         $cCount = Contact::today()->count();
         $contactToday = ($cCount > 0) ? " ( $cCount <span class='new'>new</span> )" : '';
 

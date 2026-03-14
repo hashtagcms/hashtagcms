@@ -29,7 +29,9 @@ use HashtagCms\Models\Theme;
 use HashtagCms\Models\User;
 use HashtagCms\Models\Zone;
 use HashtagCms\Services\SiteCloner\SiteClonerService;
-
+use HashtagCms\Core\Utils\RedisCacheManager;
+use HashtagCms\Core\Utils\CacheKeys;
+use Illuminate\Support\Facades\Cache;
 class SiteController extends BaseAdminController
 {
     protected $dataFields = ['id', 'name', 'lang.title as title', 'domain', 'context'];
@@ -49,8 +51,19 @@ class SiteController extends BaseAdminController
             'action' => 'settings',
             'action_append_field' => 'id'
         ],
+        
+        /*
+        [
+            'label' => 'Show all info',
+            'css' => 'js_ajax',
+            'icon_css' => 'fa fa-info-circle',
+            'hrefAttributes' => ['data-info' => 'site', 'data-editable' => false, 'data-excludefields' => ['lang', 'category', 'theme', 'platform']],
+            'action' => 'showinfo',
+            'action_append_field' => 'id',
+        ]
+        */
     ];
-
+    
     protected $bindDataWithAddEdit = [
         'languages' => ['dataSource' => Lang::class, 'method' => 'combo'],
         'countries' => ['dataSource' => CountryLang::class, 'method' => 'all'],
@@ -81,17 +94,12 @@ class SiteController extends BaseAdminController
             'theme_id' => 'nullable|numeric',
             'lang_id' => 'nullable|numeric',
             'under_maintenance' => 'nullable|integer',
-            'domain' => 'required|max:255|string|unique:sites,domain',
-            'context' => 'required|max:40|string|unique:sites,context',
+            'domain' => 'required|max:255|string|unique:sites,domain,' . $request->input('id', 0) . ',id',
+            'context' => 'required|max:40|string|unique:sites,context,' . $request->input('id', 0) . ',id',
             'favicon' => 'nullable|file',
             'lang_count' => 'nullable|numeric',
             'lang_title' => 'required|max:255|string',
         ];
-
-        if ($request->input('id') > 0) {
-            $rules['domain'] = 'required|max:255|string|unique:sites,domain,' . $request->input('id');
-            $rules['context'] = 'required|max:40|string|unique:sites,context,' . $request->input('id');
-        }
 
         $validator = Validator::make($request->all(), $rules);
 
@@ -155,6 +163,14 @@ class SiteController extends BaseAdminController
         $viewData['backURL'] = $data['backURL'];
         $viewData['isSaved'] = $savedData['isSaved'];
 
+        // Clear cache if saved
+        if ($savedData['isSaved']) {
+            $context = $data['context'] ?? '';
+            if (!empty($context)) {
+                Site::clearConfigCache($viewData['id']);
+            }
+        }
+
         return htcms_admin_view('site.saveinfo', $viewData);
     }
 
@@ -186,10 +202,10 @@ class SiteController extends BaseAdminController
             'Currencies',
             'Modules',
             'Static Modules',
+            'Module Properties',
             'Themes',
             'Categories',
-            'Site Properties',
-            'Module Properties'
+            'Site Properties'            
         ];
 
         $tab = str_replace(' ', '', strtolower($tab));
@@ -268,6 +284,20 @@ class SiteController extends BaseAdminController
                 ];
 
                 break;
+            case 'moduleproperties':
+                $viewName = 'copier';
+                $selectedData = ModuleProp::withoutGlobalScopes()->with(['module' => function($query) {
+                    $query->withoutGlobalScopes()->select('id', 'alias');
+                }])->where('site_id', '=', $siteInfo->id)->orderBy('module_id')->get();
+                $message = ($selectedData->count() > 0) ? 'Below properties are already available in your site.' : 'You can copy properties from desired site. Choose site option, select and click on Add Selected.';
+                //Because we are shwoing site to choose
+                $data = [
+                    'label' => 'ModuleProperties',
+                    'data' => ['allSites' => Site::with('lang')->get()],
+                    'message' => $message,
+                ];
+
+                break;
 
             case 'themes':
                 $viewName = 'copier';
@@ -298,18 +328,7 @@ class SiteController extends BaseAdminController
                 ];
                 break;
 
-            case 'moduleproperties':
-                $viewName = 'copier';
-                $selectedData = ModuleProp::withoutGlobalScopes()->where('site_id', '=', $siteInfo->id)->get();
-                $message = ($selectedData->count() > 0) ? 'Below properties are already available in your site.' : 'You can copy properties from desired site. Choose site option, select and click on Add Selected.';
-                //Because we are shwoing site to choose
-                $data = [
-                    'label' => 'SiteProperties',
-                    'data' => ['allSites' => Site::with('lang')->get()],
-                    'message' => $message,
-                ];
 
-                break;
         }
 
         $viewData['selectedData'] = $selectedData;
@@ -354,6 +373,9 @@ class SiteController extends BaseAdminController
         }
         $site->detachThings($key, $ids);
 
+        // Clear cache
+        Site::clearConfigCache($site_id);
+
         return ['isSaved' => 1, 'ids' => $ids];
     }
 
@@ -365,7 +387,7 @@ class SiteController extends BaseAdminController
      *                           $param string $compareKey - row key
      * @return bool
      */
-    private function isExist($data = [], $compare = '', $compareKey = '')
+    private function isExist($data = [], $compare = '', $compareKey = '', $identifier = '')
     {
         //if array -> comare = (value1, value2); //comparreKey = (key1, key2);
         //else -> comare = value1; //comparreKey = key1;
@@ -428,6 +450,9 @@ class SiteController extends BaseAdminController
                 break;
             case 'moduleproperties':
                 $source = ModuleProp::class;
+                $withData = ['module' => function ($query) {
+                    $query->withoutGlobalScopes()->select('id', 'alias');
+                }];
                 break;
             case 'themes':
                 $source = Theme::class;
@@ -437,21 +462,17 @@ class SiteController extends BaseAdminController
         $rData['deleted'] = $source::withoutGlobalScopes()->find($ids)->each->forceDelete();
         $rData['siteData'] = $source::with($withData)->withoutGlobalScopes()->where('site_id', '=', $site_id)->get(); //get fresh one
 
+        // Clear cache
+        Site::clearConfigCache($site_id);
+
         return $rData;
 
     }
 
-    /**
-     * @param  null  $tabs
-     * @return bool
-     */
     private function saveSettingWithLangs($data, $source, $langSource, $idField = null, $tabs = null, $toSite = null)
     {
-
         $inserted = false;
-
-        //info(json_encode($data));
-        //return false;
+        $insertedModels = [];
         $toSiteId = $toSite['site_id'];
         $idField = ($idField === null) ? '' : $idField;
         $data = ($data === null) ? [] : $data;
@@ -470,32 +491,19 @@ class SiteController extends BaseAdminController
 
             $content = new $source;
             foreach ($val as $k => $v) {
-                $content->$k = $v;
-
-                //module id - need to solve for below
                 if ($tabs === 'moduleproperties') {
-                    //change module id based on site
-                    //change module id based on site
-                    if ($k === 'module_id') {
-                        // Refator: find source alias then find target id by alias
-                        // Old SQL: select id from modules where alias=(select alias from modules where id=$v) and site_id=$toSiteId
-                        $sourceModule = DB::table('modules')->where('id', $v)->select('alias')->first();
-                        if ($sourceModule) {
-                            $targetModule = DB::table('modules')
-                                ->where('alias', $sourceModule->alias)
-                                ->where('site_id', $toSiteId)
-                                ->select('id')
-                                ->first();
-
-                            if ($targetModule) {
-                                $content->$k = $targetModule->id;
-                            }
-                        }
+                    // We already mapped this in copySettings for moduleproperties
+                    if ($k === 'module') {
+                        continue;
                     }
-                    json_encode($content);
                 }
+                $content->$k = $v;
             }
-            $inserted = $content->save();
+
+            if ($content->save()) {
+                $inserted = true;
+                $insertedModels[] = $content;
+            }
 
             //Need to copy category_sites
             if ($tabs === 'categories') {
@@ -519,15 +527,13 @@ class SiteController extends BaseAdminController
                     $inserted = CategorySite::insert($sData);
                 } catch (\Exception $e) {
                     DB::rollBack();
-
                     $inserted = false;
+                    return ['success' => false, 'models' => []];
                 }
             }
 
             foreach ($langData as $lKey => $lVal) {
-
                 $lVal[$idField] = $content->id;
-
                 $lVal['created_at'] = htcms_get_current_date();
                 $lVal['updated_at'] = htcms_get_current_date();
 
@@ -536,15 +542,13 @@ class SiteController extends BaseAdminController
                 } catch (\Exception $e) {
                     DB::rollBack();
                     $inserted = false;
+                    return ['success' => false, 'models' => []];
                 }
-
             }
-
         }
-
         DB::commit();
 
-        return $inserted;
+        return ['success' => $inserted, 'models' => $insertedModels];
     }
 
     /**
@@ -571,6 +575,7 @@ class SiteController extends BaseAdminController
 
         $resetId = true;
         $compareKey = 'alias';
+        $withData = [];
         switch (strtolower($copyWhat)) {
             case 'modules':
                 $source = Module::class;
@@ -578,7 +583,7 @@ class SiteController extends BaseAdminController
 
             case 'staticmodules':
                 $source = StaticModuleContent::class;
-                $resetId = false;
+                $resetId = true;
                 break;
 
             case 'siteproperties':
@@ -593,13 +598,17 @@ class SiteController extends BaseAdminController
             case 'categories':
                 $compareKey = 'link_rewrite';
                 $source = Category::class;
-                $resetId = false;
+                $resetId = true;
+                $withData = ['lang'];
                 break;
 
             case 'moduleproperties':
-                $compareKey = ['name', 'platform_id'];
+                $compareKey = ['name', 'platform_id', 'module_id'];
                 $source = ModuleProp::class;
-                $resetId = false;
+                $resetId = true;
+                $withData = ['module' => function ($query) {
+                    $query->withoutGlobalScopes()->select('id', 'alias');
+                }];
                 break;
             default:
                 return ['error' => true, 'message' => "Don't know what to do."];
@@ -609,6 +618,23 @@ class SiteController extends BaseAdminController
         $existing = $source::where('site_id', '=', $toSite_id)->withoutGlobalScopes()->get(); //fetch existing
 
         $data = $fromSite['data'];
+
+        // Pre-process for moduleproperties to resolve module_id before checking existence
+        if ($copyWhat === 'moduleproperties') {
+            $mappedData = [];
+            foreach ($data as $val) {
+                $sourceModuleId = $val['module_id'];
+                $moduleAlias = DB::table('modules')->where('id', $sourceModuleId)->value('alias');
+                if ($moduleAlias) {
+                    $targetModuleId = DB::table('modules')->where('alias', $moduleAlias)->where('site_id', $toSite_id)->value('id');
+                    if ($targetModuleId) {
+                        $val['module_id'] = $targetModuleId;
+                        $mappedData[] = $val;
+                    }
+                }
+            }
+            $data = $mappedData;
+        }
 
         $toBeInserted = [];
         $alreadyExist = [];
@@ -624,7 +650,7 @@ class SiteController extends BaseAdminController
                 } else {
                     $values = $val[$compareKey];
                 }
-                if ($this->isExist($existing, $values, $compareKey) === false) {
+                if ($this->isExist($existing, $values, $compareKey, $copyWhat) === false) {
                     $toBeInserted[] = $val;
                 } else {
                     $alreadyExist[] = $val;
@@ -644,9 +670,6 @@ class SiteController extends BaseAdminController
                 $finalData[$key] = $val;
                 $finalData[$key]['site_id'] = $toSite_id;
 
-                if ($resetId === true) {
-                    unset($finalData[$key]['id']);
-                }
                 unset($finalData[$key]['selected']);
                 unset($finalData[$key]['created_at']);
                 unset($finalData[$key]['updated_at']);
@@ -657,37 +680,45 @@ class SiteController extends BaseAdminController
             }
         }
         $inserted = false;
-        //return $finalData;
+        $insertedModels = [];
         $msg = '';
-        $withData = [];
         if (count($finalData) > 0) {
             DB::beginTransaction();
             try {
                 switch (strtolower($copyWhat)) {
                     case 'modules':
-                        $inserted = Module::insert($finalData);
+                    case 'siteproperties':
+                    case 'themes':
+                        $activeModel = strtolower($copyWhat) === 'modules' ? Module::class : (strtolower($copyWhat) === 'themes' ? Theme::class : SiteProp::class);
+                        foreach ($finalData as $row) {
+                            $m = new $activeModel();
+                            if ($resetId === true) {
+                                unset($row['id']);
+                            }
+                            $m->fill($row);
+                            if ($m->save()) {
+                                $inserted = true;
+                                $insertedModels[] = $m;
+                            }
+                        }
                         break;
 
                     case 'staticmodules':
-                        $inserted = $this->saveSettingWithLangs($finalData, StaticModuleContent::class, StaticModuleContentLang::class, 'static_module_content_id', 'staticmodules', $toSite);
-                        break;
-
-                    case 'siteproperties':
-                        $inserted = SiteProp::insert($finalData);
-                        break;
-
-                    case 'themes':
-                        $inserted = Theme::insert($finalData);
+                        $res = $this->saveSettingWithLangs($finalData, StaticModuleContent::class, StaticModuleContentLang::class, 'static_module_content_id', 'staticmodules', $toSite);
+                        $inserted = $res['success'];
+                        $insertedModels = $res['models'];
                         break;
 
                     case 'categories':
-                        $withData = ['lang'];
-                        $inserted = $this->saveSettingWithLangs($finalData, Category::class, CategoryLang::class, 'category_id', 'categories', $toSite);
+                        $res = $this->saveSettingWithLangs($finalData, Category::class, CategoryLang::class, 'category_id', 'categories', $toSite);
+                        $inserted = $res['success'];
+                        $insertedModels = $res['models'];
                         break;
 
                     case 'moduleproperties':
-                        $withData = ['lang'];
-                        $inserted = $this->saveSettingWithLangs($finalData, ModuleProp::class, ModulePropLang::class, 'module_prop_id', 'moduleproperties', $toSite);
+                        $res = $this->saveSettingWithLangs($finalData, ModuleProp::class, ModulePropLang::class, 'module_prop_id', 'moduleproperties', $toSite);
+                        $inserted = $res['success'];
+                        $insertedModels = $res['models'];
                         break;
                 }
             } catch (\Exception $e) {
@@ -701,9 +732,14 @@ class SiteController extends BaseAdminController
         //info("toSite_id: ".$toSite_id);
         $rData['siteData'] = $source::with($withData)->where('site_id', '=', $toSite_id)->withoutGlobalScopes()->get(); //get fresh one
         $rData['inserted'] = $inserted;
-        $rData['copied'] = $finalData;
+        $rData['copied'] = $insertedModels;
         $rData['ignored'] = $alreadyExist;
         $rData['message'] = $msg;
+
+        // Clear cache if inserted
+        if ($inserted) {
+            Site::clearConfigCache($toSite_id);
+        }
 
         return $rData;
     }
@@ -792,7 +828,9 @@ class SiteController extends BaseAdminController
                     break;
 
                 case 'moduleproperties':
-                    $data = ModuleProp::withoutGlobalScopes()->where('site_id', '=', $site_id)->get();
+                    $data = ModuleProp::withoutGlobalScopes()->with(['module' => function($query) {
+                        $query->withoutGlobalScopes()->select('id', 'alias');
+                    }])->where('site_id', '=', $site_id)->orderBy('module_id')->orderBy('platform_id')->get();
                     break;
             }
 
@@ -807,6 +845,9 @@ class SiteController extends BaseAdminController
      */
     public function copysite()
     {
+        if (!$this->checkPolicy('edit')) {
+            return htcms_admin_view('common.error', Message::getWriteError());
+        }
         $viewData['siteInfo'] = Site::with('lang')->get();
         $viewData['backURL'] = $this->getBackURL();
 
