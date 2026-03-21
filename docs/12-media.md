@@ -17,10 +17,10 @@ This makes it easy to manage reusable assets (like Logo packs, Banner sets).
 
 ## Helper Functions
 
-### `htcms_get_media($path)`
+### `htcms_get_image_resource($path)`
 Pass the relative DB path, get the full absolute URL.
 ```php
-<img src="{{ htcms_get_media($page->image) }}" />
+<img src="{{ htcms_get_image_resource($page->image) }}" />
 ```
 It automatically handles checking if the URL is local or remote (http/https).
 

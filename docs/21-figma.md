@@ -1,4 +1,7 @@
-# Figma Integration (Advanced) @todo: Coming soon
+# Figma Integration
+
+> [!NOTE]
+> **Extended Feature** — Figma integration requires an extended feature token. This feature is currently under active development and will be fully available in a future update.
 
 The "Design-to-CMS" Workflow allows you to import Figma Designs directly into HashtagCMS as Blade Templates or Static Modules.
 

@@ -28,9 +28,11 @@ trait BlogPageCommon
                 'string',
                 Rule::unique('pages')->where(function ($query) use ($request) {
                     $query->where('site_id', $request->input('site_id'))
-                        ->where('platform_id', $request->input('platform_id'))
-                        ->where('link_rewrite', $request->input('link_rewrite'));
-                }),
+                        ->where('platform_id', $request->input('platform_id'));
+                    if ($request->filled('category_id')) {
+                        $query->where('category_id', $request->input('category_id'));
+                    }
+                })->ignore($request->input('id', 0), 'id'),
             ],
             'link_navigation' => 'nullable|max:255|string',
             'menu_placement' => 'nullable|max:100|string',
@@ -53,19 +55,6 @@ trait BlogPageCommon
             'publish_at' => 'nullable|date',
             'expire_at' => 'nullable|date',
         ];
-        if ($request->input('id') > 0) {
-            $rules['link_rewrite'] = [
-                'required',
-                'max:255',
-                'string',
-                Rule::unique('pages')->where(function ($query) use ($request) {
-                    $query->where('site_id', $request->input('site_id'))
-                        ->where('platform_id', $request->input('platform_id'))
-                        ->where('link_rewrite', $request->input('link_rewrite'))
-                        ->where('id', '<>', $request->input('id'));
-                }),
-            ];
-        }
 
         return $rules;
     }

@@ -1,7 +1,7 @@
-# SSO Integration (Extended+)
+# SSO Integration
 
-> [!WARNING]
-> **COMING SOON**: Advanced SSO integration is currently in development and will be available in a future update. The documentation below reflects the planned implementation.
+> [!NOTE]
+> **Extended Feature** — SSO integration requires an extended feature token. This feature is currently under active development and will be fully available in a future update.
 
 Enable Advanced Single Sign-On (SSO) for your Admin Panel.
 

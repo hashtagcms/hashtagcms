@@ -85,6 +85,13 @@ class FestivalController extends BaseAdminController
 
         $image = $this->upload($module_name, request()->file('image'));
 
+        if ($data['lottie_deleted'] != '0') {
+            $saveData['lottie'] = '';
+        }
+        if ($data['image_deleted'] != '0') {
+            $saveData['image'] = '';
+        }
+
         if ($image != null) {
             $saveData['image'] = $image;
         }
@@ -93,13 +100,6 @@ class FestivalController extends BaseAdminController
 
         if ($lottie != null) {
             $saveData['lottie'] = $lottie;
-        }
-
-        if ($data['lottie_deleted'] != '0') {
-            $saveData['lottie'] = '';
-        }
-        if ($data['image_deleted'] != '0') {
-            $saveData['image'] = '';
         }
 
         $saveData['body_css'] = $data['body_css'];

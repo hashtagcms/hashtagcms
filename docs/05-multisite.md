@@ -1,6 +1,6 @@
 # Multi-Site & Multi-Tenancy
 
-HashtagCMS is designed from the ground up to be a true multi-tenant system. You can host 10 different websites (based on subcriptions), for different clients, on different domains, all from a single Laravel installation and a single database.
+HashtagCMS is designed from the ground up to be a true multi-tenant system. You can host unlimited different websites, for different clients, on different domains, all from a single Laravel installation and a single database. You can also create a new site by cloning an existing site.
 
 ## How it Works
 
@@ -12,8 +12,8 @@ The system identifies the "current site" by checking the incoming **Domain Name*
 
 ### Shared vs. Isolated Data
 - **Users (Authors)**: Can be shared or specific. A user can be an Admin on Site A but have no access to Site B.
-- **Modules**: You can define a module "Global" to use across all sites, or "Site Specific".
-- **Themes**: Each site can have a completely different theme folder.
+- **Modules**: Modules are always site specific. But you can update things in all sites at once if needed. 
+- **Themes**: Each site and category can have a completely different theme folder.
 
 ## Configuration
 

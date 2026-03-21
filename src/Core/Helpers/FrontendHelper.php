@@ -512,7 +512,7 @@ if (!function_exists('htcms_get_performance')) {
     {
         $val = app('HashtagCmsInfoLoader')->getPerformance($key);
         if ($key === 'pageRenderTime' && empty($val)) {
-            return '%%HTCMS_PAGE_RENDER_TIME%%';
+            return '%{cms.performance.render_time}%';
         }
         return $val;
     }

@@ -53,7 +53,7 @@ APP_NAME="My HashtagCMS Site"
 APP_ENV=local
 APP_KEY=
 APP_DEBUG=true
-APP_URL=http://localhost
+APP_URL=http://localhost:8081
 
 # Database Configuration
 DB_CONNECTION=mysql

@@ -1,14 +1,13 @@
-# Feature Tiers
+# Extended Feature Guide
 
-The core of HashtagCMS is open-source (MIT). However, advanced features are gated via a system provided by the `hashtagcms-extended` package.
+The core of HashtagCMS is open-source (MIT). Certain advanced capabilities are available as **Extended Features**, enabled by a feature token provided via the `hashtagcms-extended` integration.
 
-## Tiers
-1.  **Free**: Core CMS functionality.
-2.  **Extended**: Adds MongoDB Support & Analytics/Logging.
-3.  **Advanced**: All features + Figma Integration (later) + Community Support.
+## Feature Tiers
+1.  **Core**: Full CMS functionality. Open-source and free to use.
+2.  **Extended**: Adds MongoDB Support, Analytics/Logging, SSO, Figma integration, and more.
 
-## Installation
-To activate Extended or Advanced features:
+## Activating Extended Features
+To activate extended features:
 1.  **Activation**: Obtain an activation key from the [HashtagCMS Website](https://www.hashtagcms.org).
 2.  **Configure**: Add the key to your `.env` file.
     ```ini

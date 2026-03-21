@@ -14,7 +14,7 @@ return [
         'defaultPage' => 'dashboard',
         'site_label' => '#CMS - Admin',
         'base_path' => '/admin',
-        'version' => env('BE_RESOURCE_VERSION', '191220251047'),
+        'version' => env('BE_RESOURCE_VERSION', '210320261130'),
         'theme' => "hashtagcms::be.$activeTheme",
         'theme_assets' => "assets/hashtagcms/be/$activeTheme",
         'app_url' => env('APP_URL'),

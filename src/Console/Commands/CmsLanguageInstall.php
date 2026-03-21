@@ -13,14 +13,14 @@ class CmsLanguageInstall extends Command
      *
      * @var string
      */
-    protected $signature = 'hashtag:language-install {langs? : Languages to install (comma-separated ISO codes)} {--langs= : Languages to install (comma-separated ISO codes)}';
+    protected $signature = 'cms:language-install {langs? : Languages to install (comma-separated ISO codes)} {--langs= : Languages to install (comma-separated ISO codes)}';
 
     /**
      * The console command aliases.
      *
      * @var array
      */
-    protected $aliases = ['cms:language-install', 'hashtagcms:language-install'];
+    //protected $aliases = ['cms:language-install', 'hashtagcms:language-install'];    
 
     /**
      * The console command description.

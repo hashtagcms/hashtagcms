@@ -338,7 +338,6 @@ curl -X POST "http://your-domain.com/api/hashtagcms/public/kpi/v1/publish" \
     "message": "Analytics published"
 }
 ```
-```
 
 ### 9. Get Latest Blogs
 
@@ -548,29 +547,175 @@ All cache management endpoints are now protected and require **Sanctum Authentic
 **Base Path**: `/api/hashtagcms/private/cache/v1/`
 
 **Common Headers Required**:
-- `Authorization: Bearer <token>`
+- `Authorization: Bearer <token>` (obtain via User Login)
 - `x-site: <site-context>`
 - `x-api-secret: <api-secret>`
 
 #### 10.1 List Keys
 **Endpoint**: `GET /api/hashtagcms/private/cache/v1/keys`
-**Response**: List of active cache keys.
+
+**Parameters**:
+- `pattern` (optional): Redis key pattern filter (default: `*`)
+
+**Response**:
+```json
+{
+    "success": true,
+    "count": 3,
+    "data": ["hashtagcms_load_data_web_en_1...", "hashtagcms_site_configs_web_en_1..."]
+}
+```
 
 #### 10.2 Clear Site Config
 **Endpoint**: `GET /api/hashtagcms/private/cache/v1/clear-site-config`
-**Response**: Clears only site configuration cache.
+**Response**: `{"message": "Site config cache cleared"}`
 
 #### 10.3 Clear Load Data
 **Endpoint**: `GET /api/hashtagcms/private/cache/v1/clear-load-data`
-**Response**: Clears content/page data cache.
+**Response**: `{"message": "Load data cache cleared"}`
 
 #### 10.4 Clear All
 **Endpoint**: `GET /api/hashtagcms/private/cache/v1/clear-all`
-**Response**: Flushes all application cache.
+**Response**: `{"message": "Cache cleared successfully", "status": 200}`
 
 #### 10.5 Clear Specific Key
 **Endpoint**: `GET /api/hashtagcms/private/cache/v1/clear-key?key=KEY_NAME`
-**Response**: Clears a specific cache key.
+**Response**: `{"message": "Cache key '...' cleared successfully", "status": 200}`
+
+---
+
+### 11. User Logout
+
+**Endpoint**: `POST /api/hashtagcms/user/v1/logout`
+
+**Purpose**: Revoke the current user's Sanctum token.
+
+**Authentication**: Bearer Token (required)
+
+**Request**:
+```bash
+curl -X POST "http://your-domain.com/api/hashtagcms/user/v1/logout" \
+  -H "Authorization: Bearer YOUR_TOKEN_HERE"
+```
+
+**Response**:
+```json
+{
+    "success": true,
+    "message": "Logged out successfully"
+}
+```
+
+---
+
+### 12. Update User Profile
+
+**Endpoint**: `POST /api/hashtagcms/user/v1/profile`
+
+**Purpose**: Update the authenticated user's profile information.
+
+**Authentication**: Bearer Token (required)
+
+**Request Body**:
+```json
+{
+    "name": "John Updated",
+    "bio": "Senior developer"
+}
+```
+
+**Request**:
+```bash
+curl -X POST "http://your-domain.com/api/hashtagcms/user/v1/profile" \
+  -H "Authorization: Bearer YOUR_TOKEN_HERE" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "John Updated"}'
+```
+
+**Response**:
+```json
+{
+    "success": true,
+    "message": "Profile updated successfully",
+    "user": {
+        "id": 1,
+        "name": "John Updated",
+        "email": "john@example.com"
+    }
+}
+```
+
+---
+
+### 13. Submit Contact Form
+
+**Endpoint**: `POST /api/hashtagcms/public/common/v1/contact`
+
+**Purpose**: Submit a contact form entry.
+
+**Authentication**: None (throttled: 5 requests per minute)
+
+**Request Body**:
+```json
+{
+    "site": "htcms",
+    "name": "Jane Doe",
+    "email": "jane@example.com",
+    "message": "Hello, I have a question..."
+}
+```
+
+**Request**:
+```bash
+curl -X POST "http://your-domain.com/api/hashtagcms/public/common/v1/contact" \
+  -H "Content-Type: application/json" \
+  -d '{"site": "htcms", "name": "Jane", "email": "jane@example.com", "message": "Hello"}'
+```
+
+**Response**:
+```json
+{
+    "success": true,
+    "message": "Contact form submitted successfully"
+}
+```
+
+---
+
+### 14. Newsletter Subscribe
+
+**Endpoint**: `POST /api/hashtagcms/public/common/v1/newsletter`
+
+**Purpose**: Subscribe an email address to the newsletter.
+
+**Authentication**: None (throttled: 10 requests per minute)
+
+**Request Body**:
+```json
+{
+    "site": "htcms",
+    "email": "subscriber@example.com"
+}
+```
+
+**Request**:
+```bash
+curl -X POST "http://your-domain.com/api/hashtagcms/public/common/v1/newsletter" \
+  -H "Content-Type: application/json" \
+  -d '{"site": "htcms", "email": "subscriber@example.com"}'
+```
+
+**Response**:
+```json
+{
+    "success": true,
+    "message": "Subscribed successfully"
+}
+```
+
+> **Note**: The following are **deprecated aliases** for this endpoint (kept for backward compatibility) — use `/common/v1/newsletter` for new integrations:
+> - `POST /api/hashtagcms/public/common/v1/subscribe`
+> - `POST /api/hashtagcms/public/common/v1/configure`
 
 ## Authentication Flow
 

@@ -30,7 +30,7 @@ Welcome to the comprehensive HashtagCMS Developer Documentation. This guide will
 17. [Database & Data Structure](17-database-models.md) - Understanding the database structure
 
 ### Extended Features
-18. [Licensing System](18-licensing.md) - Understanding the licensing system
+18. [Feature Guide](18-feature-guide.md) - Understanding extended features
 19. [MongoDB Support](19-mongodb.md) - Using MongoDB as database backend
 20. [SSO Integration](20-sso.md) - Single Sign-On implementation
 21. [Figma Integration](21-figma.md) - Design to CMS workflow
@@ -45,8 +45,8 @@ Welcome to the comprehensive HashtagCMS Developer Documentation. This guide will
 26. [Configuration](26-configuration.md) - Configuration options and environment variables
 27. [Deployment Guide](27-deployment.md) - Deploying to production
 28. [Performance Optimization](28-performance.md) - Optimizing your CMS
-38. [API Caching](38-caching.md) - Redis caching strategies and API
 29. [Troubleshooting](29-troubleshooting.md) - Common issues and solutions
+30. [API Caching](38-caching.md) - Redis caching strategies and API
 
 ### Reference
 30. [API Reference](30-api-reference.md) - Complete API documentation
@@ -65,8 +65,8 @@ Welcome to the comprehensive HashtagCMS Developer Documentation. This guide will
 
 This documentation is generated from the actual HashtagCMS codebase and reflects the current state of the system. All features, classes, and methods documented here are available in your installation.
 
-**Version**: 1.6.0  
-**Last Updated**: November 2025
+**Version**: 3.0.1  
+**Last Updated**: March 2026
 
 ## 🆘 Getting Help
 
@@ -78,4 +78,4 @@ If you need additional help:
 
 ## 📝 License
 
-HashtagCMS is released under the MIT License. See the [Licensing System](18-licensing.md) documentation for information about extended features.
+HashtagCMS is released under the MIT License. See the [Feature Guide](18-feature-guide.md) documentation for information about extended features.

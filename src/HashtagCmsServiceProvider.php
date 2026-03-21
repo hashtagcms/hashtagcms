@@ -36,6 +36,7 @@ use HashtagCms\Events\CopyLangData;
 use HashtagCms\Listeners\ProcessLangCopy;
 use Illuminate\Support\Facades\Auth;
 use HashtagCms\Core\Auth\ExternalApiUserProvider;
+use HashtagCms\Console\Commands\RegisterModules;
 
 class HashtagCmsServiceProvider extends ServiceProvider
 {
@@ -225,6 +226,7 @@ class HashtagCmsServiceProvider extends ServiceProvider
             CmsInstall::class,
             CmsLanguageInstall::class,
             CmsValidatorCommand::class,
+            RegisterModules::class, //added in 3.0.1
 
                 // Code generation commands
             CmsModuleCreateCommand::class,
@@ -234,14 +236,15 @@ class HashtagCmsServiceProvider extends ServiceProvider
             CmsFrontendControllerCommand::class,
 
                 // Utility commands
-            Cmsversion::class,
+            Cmsversion::class,        
 
-                // Data management commands
+            // Data management commands
             ImportDatabaseData::class,
             ExportDatabaseData::class,
             SetupStandalone::class,
             CmsShowInstructions::class,
             CmsAdminPanelTestCommand::class
+            
         ]);
     }
 

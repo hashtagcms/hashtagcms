@@ -19,7 +19,7 @@ The admin dashboard provides:
 - **Quick Stats**: Overview of content, users, and activity
 - **Recent Activity**: Latest changes and updates
 - **Quick Actions**: Common tasks and shortcuts
-- **System Status**: Health checks (pro) and notifications
+- **System Status**: Health checks and notifications
 
 ## Creating Your First Content
 
@@ -38,11 +38,12 @@ Categories organize your content and define URL structure.
 
 ### Step 2: Assign a Theme to Category
 
-1. In the category edit page, choose the **Platform**
-2. Select your platform (e.g., "Web")
-3. Choose a theme
-4. Set the position if needed(order)
-5. Click **Save**
+1. In the category edit page, choose the **Platform** if you have more than one platforms enabled. 
+2. Choose a theme
+3. Set the position if needed(order)
+4. Click **Save**
+
+### Or Category listing page, choose settings from the action bar
 
 ### Step 3: Create a Module
 
@@ -63,7 +64,7 @@ Modules display content within categories.
 
 ### Step 4: Assign Module to Category
 
-1. Navigate to **Admin → Homepage** (or Module Assignment)
+1. Navigate to **Admin → Page Manager** (or Module Assignment)
 2. Select your **Site**, **Platform**, and **Category**
 3. Click **Add Module**
 4. Select the module you created
@@ -230,19 +231,20 @@ curl -X POST "http://your-app-url/api/hashtagcms/public/user/v1/login" \
    - **Active**: Yes
 4. Click **Save**
 
+# you can clone site using copy button from the action bar after creating a site
+
 ### Configure Domain Mapping without new installation
 
 Edit `config/hashtagcms.php`:
 
 ```php
 'domains' => [
-    'site1.com' => 'site1',
-    'site2.com' => 'site2',
+    'site1.com' => 'context',
+    'site2.com' => 'context',
 ],
 
 'api_secrets' => [
-    'site1' => 'secret_key_1',
-    'site2' => 'secret_key_2',
+    'context' => 'secret_key_1',
 ],
 ```
 
@@ -280,65 +282,109 @@ php artisan cms:module-model ModelName
 
 ## Blade Helpers in Templates
 
+These helpers are available in your Blade views. First retrieve the Layout Manager instance, then call its methods:
+
+```blade
+@php
+    $layoutManager = app('HashtagCmsLayoutManager');
+@endphp
+```
+
 ### Get Header Menu
 
 ```blade
-{!! HashtagCMS::getHeaderMenuHTML(10, 'nav-class') !!}
+{!! $layoutManager->getHeaderContent() !!}
 ```
 
 ### Get Body Content
 
 ```blade
-{!! HashtagCMS::getBodyContent() !!}
-```
-
-### Get Header Content
-
-```blade
-{!! HashtagCMS::getHeaderContent() !!}
+{!! $layoutManager->getBodyContent() !!}
 ```
 
 ### Get Footer Content
 
 ```blade
-{!! HashtagCMS::getFooterContent() !!}
+{!! $layoutManager->getFooterContent() !!}
 ```
 
 ### Get Meta Tags
 
 ```blade
-{!! HashtagCMS::getAllMetaTags() !!}
+{!! $layoutManager->getMetaContent() !!}
 ```
 
 ### Get Page Title
 
 ```blade
-<title>{{ HashtagCMS::getHeaderTitle() }}</title>
+<title>{!! $layoutManager->getTitle() !!}</title>
 ```
+
 
 ## Layout Manager in Views
 
-### Render a Stack
+All rendering in HashtagCMS themes goes through the **Layout Manager**, retrieved via:
 
 ```blade
-{!! app()->HashtagCMS->layoutManager()->renderStack('scripts') !!}
+@php
+    $layoutManager = app('HashtagCmsLayoutManager');
+@endphp
 ```
 
-### Push to Stack
+This is typically done once at the top of your `index.blade.php` layout file.
+
+### Common Layout Manager Methods
+
+```blade
+{{-- Page title --}}
+<title>{!! $layoutManager->getTitle() !!}</title>
+
+{{-- Head: CSS links, meta tags etc. --}}
+{!! $layoutManager->getHeaderContent() !!}
+
+{{-- All SEO meta tags (title, description, OG, etc.) --}}
+{!! $layoutManager->getMetaContent() !!}
+
+{{-- Rendered CSS stack (collected via @push('styles')) --}}
+{!! $layoutManager->renderStack('styles') !!}
+
+{{-- All body/module content --}}
+{!! $layoutManager->getBodyContent() !!}
+
+{{-- Footer scripts / content --}}
+{!! $layoutManager->getFooterContent() !!}
+
+{{-- Rendered JS stack (collected via @push('scripts')) --}}
+{!! $layoutManager->renderStack('scripts') !!}
+```
+
+### Additional Helpers
+
+```blade
+{{-- Festival/event CSS class for <body> --}}
+@php $bodyCss = $layoutManager->getFestivalCss(); @endphp
+<body class="{!! $bodyCss !!}">
+
+{{-- Body background image (if configured) --}}
+@php $bodyBg = $layoutManager->getBodyBackgroundImage(); @endphp
+
+{{-- RTL direction for <html> tag --}}
+<html dir="{{ $layoutManager->isRtl() }}">
+
+{{-- Current theme view folder (for @include paths) --}}
+@php $themeFolder = $layoutManager->getViewThemeFolder(); @endphp
+```
+
+### Push to a Stack
 
 ```blade
 @push('scripts')
     <script src="/js/custom.js"></script>
 @endpush
-```
 
-### Get Module Data
-
-```blade
-@php
-    $layoutManager = app()->HashtagCMS->layoutManager();
-    $data = $layoutManager->getDataForView('module-name');
-@endphp
+@push('styles')
+    <link rel="stylesheet" href="/css/custom.css">
+@endpush
 ```
 
 ## Configuration Tips

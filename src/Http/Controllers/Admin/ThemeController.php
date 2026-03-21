@@ -9,6 +9,8 @@ use Illuminate\Validation\Rule;
 use HashtagCms\Core\Helpers\Message;
 use HashtagCms\Models\Site;
 use HashtagCms\Models\Theme;
+use HashtagCms\Models\Hook;
+use HashtagCms\Models\Module;
 
 class ThemeController extends BaseAdminController
 {
@@ -69,6 +71,49 @@ class ThemeController extends BaseAdminController
         $saveData['alias'] = strtoupper($data['alias']);
         $saveData['site_id'] = $data['site_id'];
         $saveData['skeleton'] = $data['skeleton'];
+
+        // Check for spaces in %{...}% tags
+        preg_match_all('/%{(.*?)}%/', $data['skeleton'], $allMatches);
+        $invalidTags = [];
+        if (!empty($allMatches[0])) {
+            foreach ($allMatches[0] as $tag) {
+                if (str_contains($tag, ' ')) {
+                    $invalidTags[] = $tag;
+                }
+            }
+        }
+        if (!empty($invalidTags)) {
+            return redirect()->back()
+                ->withErrors(['skeleton' => "The following tags contain spaces, which are not allowed: " . implode(', ', $invalidTags)])
+                ->withInput();
+        }
+        //hooks validation
+        preg_match_all('/%{cms\.hook\.(.*?)}%/', $data['skeleton'], $matches);
+        if (!empty($matches[1])) {
+            $hooks = array_unique($matches[1]);
+            $existingHooks = Hook::whereIn('alias', $hooks)->pluck('alias')->toArray();
+            $missingHooks = array_diff($hooks, $existingHooks);
+            if (!empty($missingHooks)) {
+                return redirect()->back()
+                    ->withErrors(['skeleton' => "The following hooks are not available: " . implode(', ', $missingHooks)])
+                    ->withInput();
+            }
+        }
+        //module validation
+        preg_match_all('/%{cms\.module\.(.*?)}%/', $data['skeleton'], $moduleMatches);
+        if (!empty($moduleMatches[1])) {
+            $modules = array_unique($moduleMatches[1]);
+            $existingModules = Module::withoutGlobalScopes()
+                ->whereIn('alias', $modules)
+                ->where('site_id', $data['site_id'])
+                ->pluck('alias')->toArray();
+            $missingModules = array_diff($modules, $existingModules);
+            if (!empty($missingModules)) {
+                return redirect()->back()
+                    ->withErrors(['skeleton' => "The following modules are not available for this site: " . implode(', ', $missingModules)])
+                    ->withInput();
+            }
+        }
         $saveData['directory'] = Str::kebab(strtolower($data['directory']));
         $saveData['body_class'] = $data['body_class'];
 

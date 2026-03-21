@@ -33,7 +33,7 @@
     },
     "dependencies": {
         "@hashtagcms/admin-sdk": "^2.0.0",
-        "@hashtagcms/admin-ui-kit": "^2.0.0",
+        "@hashtagcms/admin-ui-kit": "^2.0.1",
         "@hashtagcms/web-sdk": "^2.0.0",
         "@hashtagcms/web-ui-kit": "^2.0.0",
         "axios": "^1.8.4",

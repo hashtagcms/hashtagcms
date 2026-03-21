@@ -12,7 +12,7 @@ A Category acts as a container for:
 1.  **Name**: "Services"
 2.  **Parent**: "Home" (Root) or null
 3.  **Link Rewrite**: `services` (The URL slug)
-4.  **Template/Theme**: Choose `basic` (or your custom theme).
+4.  **Template/Theme**: Choose `modern` (or your custom theme).
 
 ## Important Properties
 -   **Is New/Open in New Tab**: Menu properties.

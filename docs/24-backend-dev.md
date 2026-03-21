@@ -5,9 +5,9 @@ HashtagCMS Admin Panel is built on Laravel and VueJs or Blade (standard).
 ## Extensibility
 You can add new menus and features to the Admin Panel without hacking the core.
 
-### 1. Using the CMS Module Wizard (Recommended)
+### 1. Using the CMS Module Wizard
 
-Run the interactive wizard from the terminal:
+Run the interactive wizard from the terminal or create a new module from the admin panel:
 
 ```bash
 php artisan cms:module

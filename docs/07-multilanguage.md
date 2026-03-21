@@ -14,7 +14,7 @@ HashtagCMS treats language as a first-class citizen. Almost every primary databa
     - Code: `es`
     - ISO Code: `es_ES`
     - Direction: LTR
-3.  **Assign to Site**: Go to **Sites**, edit your site, and check "Spanish".
+3.  **Assign to Site**: Go to **Sites**, configure your site, and check "Spanish" for the languages you want to enable for that site.
 
 ## Content Translation
 When you edit a Page or Category:

@@ -40,7 +40,7 @@ php artisan cms:version
 
 **Output**:
 ```
-HashtagCMS Version: 1.6.0
+HashtagCMS Version: 3.0.1
 ```
 
 ---
@@ -184,11 +184,11 @@ Rules are derived from column types (e.g. `varchar(65)` → `max:65|string`, `ti
 
 ### cms:validation
 
-Discover and list validation rules for a specific table without generating a file.
+Discover and output validation rules for a specific table without generating a file. Implemented in `CmsValidatorCommand.php`.
 
 **Usage**:
 ```bash
-php artisan cms:validation {tableName}
+php artisan cms:validation {name?}
 ```
 
 **Example**:
@@ -197,7 +197,71 @@ php artisan cms:validation blog_posts
 ```
 
 **Output**:
-Outputs a comma-separated string of validation rules derived from the table schema, useful for manual copying into other controllers or modules.
+Outputs a formatted string of validation rules derived from the live DB table schema (and its lang table, if it exists), ready to copy into a controller or `FormRequest`.
+
+```
+["name" => "required|max:255|string", "is_active" => "nullable|integer", ...]
+```
+
+> **Note**: If no table name is provided, the command will interactively ask for one.
+
+---
+
+### cms:register-modules-from-view-folder
+
+Scan a theme directory and register all Blade template files as Frontend Modules in the database. Useful when adding a new theme with many views.
+
+**Usage**:
+```bash
+php artisan cms:register-modules-from-view-folder {--path=} {--site_id=1}
+```
+
+**Interactive Prompts**:
+- Theme folder name (under `views/vendor/hashtagcms/fe/`) — default: `sapphire`
+- Site ID — default: `1`
+
+**What it does**:
+- Recursively scans all `.blade.php` files in the specified theme folder
+- Skips folders: `auth`, `_layout_`, `_services_`, `example`
+- For each file, creates a `Module` database record with alias, name, and view name
+- Skips modules that already exist (idempotent — safe to re-run)
+
+**Example**:
+```bash
+php artisan cms:register-modules-from-view-folder
+# Prompts: Theme folder? sapphire
+# Prompts: Site Id? 1
+```
+
+---
+
+### cms:language-install
+
+Install additional language translation data into a HashtagCMS installation by running the relevant seeders for the selected languages.
+
+**Usage**:
+```bash
+php artisan cms:language-install {langs?} {--langs=}
+```
+
+**Arguments**:
+- `langs` — Comma-separated ISO language codes (e.g. `fr`, `de`, `ar`)
+
+**Example**:
+```bash
+php artisan cms:language-install fr,de
+```
+
+**What it does**:
+- Validates the provided language codes against available translation seeds in `Database/Seeds/Translations/`
+- Warns about unsupported codes and skips them
+- Runs the following seeders for valid languages:
+  - `LangsTableSeeder`
+  - `CountryLangsTableSeeder`
+  - `SitesTableSeeder`
+  - `CategoriesTableSeeder`
+  - `PagesTableSeeder`
+  - `StaticModuleContentsTableSeeder`
 
 ---
 

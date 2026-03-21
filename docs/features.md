@@ -15,7 +15,7 @@ This document provides a comprehensive list of all features available in Hashtag
 9. [Database & Data Structure](#database--data-structure)
 10. [Security Features](#security-features)
 11. [Developer Tools](#developer-tools)
-12. [Extended Features](#premium-features)
+12. [Extended Features](#extended-features)
 
 ---
 
@@ -424,32 +424,35 @@ This document provides a comprehensive list of all features available in Hashtag
 
 ---
 
-## Advanced Features
+## Extended Features
 
 ### Feature Management
 - ✅ JWT-based feature validation
 - ✅ Offline validation
-- ✅ Feature tiers (Free, Extended, Advanced)
+- ✅ Feature tiers (Free, Extended)
 - ✅ Feature checking
 - ✅ Feature caching
 - ✅ Expiration handling
 - ✅ Domain restriction
 - ✅ User limit enforcement
 
-### MongoDB Support (Extended+)
+### MongoDB Support
+> **Extended Feature** — Requires an extended feature token.
 - ✅ MongoDB database driver
 - ✅ NoSQL support
 - ✅ MongoDB models
 - ✅ Dynamic model aliasing
 - ✅ Feature-based activation
 
-### SSO Login (Extended+)
+### SSO Login
+> **Extended Feature** — Requires an extended feature token. Currently under development.
 - ✅ Single Sign-On support
 - ✅ SAML integration
 - ✅ OAuth integration
 - ✅ Advanced authentication
 
-### Figma Integration (Advanced)
+### Figma Integration
+> **Extended Feature** — Requires an extended feature token. Currently under development.
 - ✅ Figma API integration
 - ✅ Design import
 - ✅ Component generation
@@ -607,9 +610,9 @@ This document provides a comprehensive list of all features available in Hashtag
 
 ## Version Information
 
-**Current Version**: 1.6.0  
-**Release Date**: November 2025  
-**License**: MIT (Core), Advanced Tiers (Extended/Advanced)
+**Current Version**: 3.0.1  
+**Release Date**: March 2026  
+**License**: MIT (Core), Extended Features available via feature token
 
 ---
 

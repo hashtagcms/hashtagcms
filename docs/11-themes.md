@@ -41,15 +41,18 @@ The core magic in `_layout_/index.blade.php`:
 <!DOCTYPE html>
 <html>
 <head>
-    {!! app()->HashtagCMS->layoutManager()->getHeaderContent(); !!}
-    {!! app()->HashtagCMS->layoutManager()->getMetaContent(); !!}
-    <title>{!! app()->HashtagCMS->layoutManager()->getTitle(); !!}</title>
+@php
+    $layoutManager = app('HashtagCmsLayoutManager');
+@endphp
+    {!! $layoutManager->getHeaderContent(); !!}
+    {!! $layoutManager->getMetaContent(); !!}
+    <title>{!! $layoutManager->getTitle(); !!}</title>
 </head>
 <body>
     
-    {!! app()->HashtagCMS->layoutManager()->getBodyContent(); !!}
+    {!! $layoutManager->getBodyContent(); !!}
 
-    {!! app()->HashtagCMS->layoutManager()->getFooterContent(); !!}
+    {!! $layoutManager->getFooterContent(); !!}
 </body>
 </html>
 ```
@@ -61,10 +64,10 @@ The CMS looks for this file in `resources/views/fe/{current_theme}/hero.blade.ph
 
 This means you can have the **same module** assigned in Backend, but render it completely differently by just switching the Theme.
 
-## Asset Compilation (Optional)
+## Asset Compilation for reference:
 To help you manage stylesheets and scripts (SCSS/JS), we provide sample configuration files.
 You can find a sample `webpack.config.js` and `package.json` in:
-`hashtagcms-git/resources/support`
+`resources/support`
 
 You can copy these to your project root to set up a build pipeline.
 
@@ -79,7 +82,7 @@ The sample config is designed to handle multiple themes efficiently. It uses a c
 ```javascript
 let themesForFrontend = [
     {
-        theme: { source: 'basic', type: 'theme' }, 
+        theme: { source: 'modern', type: 'theme' }, 
         assets: [
             { source: 'js/app.js', target: 'js/app', type: 'js' }, // Builds /js/app.js
             { source: 'sass/app.scss', target: 'css/app', type: 'css' }, // Compiles SCSS to CSS

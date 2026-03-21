@@ -1,6 +1,6 @@
 {
   "name": "hashtagcms",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "Hashtag CMS, Use it as Headless CMS or Bundled, API enabled, Admin Panel, Multisite, Multi-platform, Multilingual.",
   "main": "app.js",
   "directories": {
@@ -38,7 +38,7 @@
   },
   "dependencies": {
     "@hashtagcms/admin-sdk": "^2.0.0",
-    "@hashtagcms/admin-ui-kit": "^2.0.0",
+    "@hashtagcms/admin-ui-kit": "^2.0.1",
     "@hashtagcms/web-sdk": "^2.0.0",
     "@hashtagcms/web-ui-kit": "^2.0.0",
     "axios": "^1.8.4",
@@ -59,7 +59,7 @@
     "autoprefixer": "^10.4.24",
     "babel-loader": "^10.0.0",
     "case-sensitive-paths-webpack-plugin": "^2.4.0",
-    "copy-webpack-plugin": "^13.0.0",
+    "copy-webpack-plugin": "^14.0.0",
     "cross-env": "^7.0.3",
     "css-loader": "^7.1.2",
     "cssnano": "^7.0.6",

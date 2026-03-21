@@ -1,6 +1,6 @@
 # CMS Conventions and Placeholders
 
-Hashtag CMS uses a set of special placeholders and conventions to handle dynamic path resolution and content injection within themes, modules, and configurations.
+HashtagCMS uses a set of special placeholders and conventions to handle dynamic path resolution and content injection within themes, modules, and configurations.
 
 ## 1. Asset & Resource Path Conventions
 These placeholders are used to link assets (CSS, JS, Images) within your themes without hardcoding the paths. They are dynamically resolved based on the active theme's directory.

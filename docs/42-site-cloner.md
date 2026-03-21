@@ -12,7 +12,7 @@ The cloning process is orchestrated through a series of discrete steps, ensuring
 
 ## 🚀 Usage
 
-Currently, site cloning is orchestrated programmatically via the `SiteClonerService`. An Artisan command is planned for a future release.
+Site cloning is orchestrated programmatically via the `SiteClonerService`.
 
 ### Programmatic Invocation
 

@@ -13,10 +13,6 @@ HashtagCMS uses a predefined set of roles to manage administrative access:
 - **Approver**: Focused on the publication workflow; has Read, Approve, and Publish permissions.
 - **ReadOnly**: Has view-only (Read) access to the cms modules they are authorized to see.
 
-## Permissions (`roles_rights`)
-You can define granular permissions.
--   `category_view`, `category_add`, `category_edit`, `category_delete`
--   `module_publish`
 
 ## Managing Users
 1.  **Users** (table `users`): The authentication record.

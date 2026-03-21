@@ -129,13 +129,12 @@ class SiteController extends BaseAdminController
 
         $icon = $this->upload($module_name, request()->file('favicon'));
 
-        if ($icon != null) {
-            $saveData['favicon'] = $icon;
-        }
-
-        //it will have some value if user has clicked on delete
         if ($data['favicon_deleted'] != '0') {
             $saveData['favicon'] = '';
+        }
+
+        if ($icon != null) {
+            $saveData['favicon'] = $icon;
         }
 
         $arrLangData = ['data' => $langData];

@@ -48,15 +48,16 @@ class CmsShowInstructions extends Command
                                   |___/                     
 ");
         $this->line("");
-        $this->comment("Welcome to HashtagCms Starter Kit!");
+        $this->comment("Welcome to HashtagCMS Starter Kit!");
         $this->line("");
         $this->info("To complete the installation, please follow these steps:");
         $this->line("");
         $this->table(
             ['Step', 'Action', 'Command'],
             [
-                ['1', 'Configure Database', 'Edit .env file and set DB_CONNECTION=mysql'],
-                ['2', 'Install CMS', 'php artisan cms:install'],
+                ['1', 'Go to your project folder', 'cd project_folder'],
+                ['2', 'Configure Database', 'Edit .env file and update DB_* info'],
+                ['3', 'Install CMS', 'php artisan cms:install'],
             ]
         );
         $this->line("");

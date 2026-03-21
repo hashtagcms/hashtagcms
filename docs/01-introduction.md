@@ -58,6 +58,7 @@ It decouples content management (Admin) from presentation (Frontend), enabling y
 - **Custom Modules**: Your own module logic
 - **QueryService**: Combine query and service data
 - **UrlService**: Dynamic service calls with parameters
+- **ServiceLater**: For lazy load modules
 
 ### 🎭 Themes & Templates
 
@@ -111,8 +112,8 @@ HashtagCMS offers advanced features through a tier-based system:
 
 | Tier | Features | Max Users |
 |------|----------|-----------|
-| **Free** | Core CMS functionality | 5 |
-| **Extended** | + MongoDB Support | 100 |
+| **Free** | Core CMS functionality | Unlimited |
+| **Extended** | + MongoDB Support | Unlimited |
 | **Advanced** | + SSO Login, Figma Integration | Unlimited |
 
 ### Advanced Capabilities
@@ -144,9 +145,10 @@ HashtagCMS offers advanced features through a tier-based system:
 - **ModuleLoader**: Loads and processes modules
 - **DataLoader**: Fetches and processes data
 
+
 ### Database Design
 - **Normalized Structure**: Efficient relational design
-- **Pivot Tables**: Many-to-many relationships
+- **Pivot Tables**: Many-to-many relationship
 - **Language Tables**: Separate tables for translations
 - **Site Scopes**: Global scopes for multi-tenancy
 
@@ -190,11 +192,12 @@ HashtagCMS offers advanced features through a tier-based system:
 
 1. **True Multi-Tenancy**: Not just multi-site, but true isolation with shared infrastructure
 2. **Platform Agnostic**: Built for web, mobile, and any platform from day one
-3. **Flexible Module System**: Six different module types for any use case
+3. **Flexible Module System**: Seven different module types for any use case
 4. **API-First Design**: Every feature available via API
 5. **Laravel Foundation**: Built on a solid, modern framework
 6. **Production Ready**: Used in real-world applications
 7. **Developer Friendly**: Clean code, well-documented, extensible
+8. **Feature Tiers**: Free, Extended, Advanced
 
 ## Next Steps
 
@@ -204,8 +207,8 @@ HashtagCMS offers advanced features through a tier-based system:
 
 ## Version Information
 
-**Current Version**: 1.6.0  
-**Release Date**: November 2025  
+**Current Version**: 3.0.x
+**Release Date**: March 2026  
 **Minimum PHP**: 8.2  
 **Minimum Laravel**: 10.0
 

@@ -18,7 +18,7 @@ class CmsAdminPanelTestCommand extends Command
      *
      * @var string
      */
-    protected $description = '[#CMS] Run HashtagCMS Admin Panel browser-based tests';
+    protected $description = '[#CMS]: Run HashtagCMS Admin Panel browser-based tests';
 
     /**
      * Execute the console command.

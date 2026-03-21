@@ -145,7 +145,7 @@ class LayoutManager extends Results
         
         // Replace placeholder if exists
         $bodyContent = $this->getBodyContent();
-        $bodyContent = str_replace('%%HTCMS_PAGE_RENDER_TIME%%', $diff, $bodyContent);
+        $bodyContent = str_replace('%{cms.performance.render_time}%', $diff, $bodyContent);
         $this->setBodyContent($bodyContent);
 
         $this->infoLoader->setPerformance('pageRenderTime', $diff);
@@ -1024,6 +1024,10 @@ class LayoutManager extends Results
         return $content;
     }
 
+    /**
+     * Is left to right 
+     * @return string
+     */
     public function isRtl()
     {
         $metaObject = $this->getMetaObject();
@@ -1032,5 +1036,15 @@ class LayoutManager extends Results
             return "ltr";
         }
         return $metaObject[LayoutKeys::SITE_LANG]['isRtl'] >0 ? "rtl" : "ltr";
+    }
+
+    /**
+     * Get Body Css from theme and festival
+     * @return string
+     */
+    public function getBodyCss():string {
+        $css = $this->getFestivalCss();
+        $theme = $this->getThemeObj();
+        return (string)$css." ".$theme['bodyClass'];
     }
 }
