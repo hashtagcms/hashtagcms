@@ -180,8 +180,8 @@ HashtagCMS offers advanced features through a tier-based system:
 
 ## Technology Stack
 
-- **Framework**: Laravel 10+
-- **PHP**: 8.2+
+- **Framework**: Laravel 13+
+- **PHP**: 8.3+
 - **Database**: MySQL/MariaDB (MongoDB with Extended tier)
 - **Authentication**: Laravel Sanctum
 - **Frontend**: Blade templates, Vue.js support
@@ -209,8 +209,8 @@ HashtagCMS offers advanced features through a tier-based system:
 
 **Current Version**: 3.0.x
 **Release Date**: March 2026  
-**Minimum PHP**: 8.2  
-**Minimum Laravel**: 10.0
+**Minimum PHP**: 8.3  
+**Minimum Laravel**: 13.0
 
 ## Support & Community
 

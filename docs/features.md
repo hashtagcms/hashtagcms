@@ -22,8 +22,8 @@ This document provides a comprehensive list of all features available in Hashtag
 ## Core Features
 
 ### Framework & Architecture
-- ✅ Built on Laravel 10+
-- ✅ PHP 8.2+ support
+- ✅ Built on Laravel 13+
+- ✅ PHP 8.3+ support
 - ✅ MVC architecture
 - ✅ Service-oriented design
 - ✅ Dependency injection

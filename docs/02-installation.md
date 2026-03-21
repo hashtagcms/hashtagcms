@@ -8,7 +8,7 @@ Before installing HashtagCMS, ensure your system meets these requirements:
 
 ### System Requirements
 
-- **PHP**: 8.2 or higher
+- **PHP**: 8.3 or higher
 - **Database**: MySQL 5.7+ or MariaDB 10.3+
 - **Web Server**: Apache or Nginx
 - **Composer**: Latest version
@@ -256,7 +256,7 @@ server {
     error_page 404 /index.php;
 
     location ~ \.php$ {
-        fastcgi_pass unix:/var/run/php/php8.2-fpm.sock;
+        fastcgi_pass unix:/var/run/php/php8.3-fpm.sock;
         fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
         include fastcgi_params;
     }

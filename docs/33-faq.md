@@ -12,10 +12,9 @@ Yes, the core HashtagCMS is free and open-source under the MIT license. Extended
 
 ### What are the system requirements?
 
-- PHP 8.2 or higher
-- MySQL 5.7+ or MariaDB 10.3+
-- Composer
-- Laravel 10+
+- Laravel 13+
+- PHP 8.3+
+- MySQL 5.7+ / MariaDB 10.3+ / MongoDB (Extended)
 - Node.js 16+ (for asset compilation)
 
 ### Can I use HashtagCMS for commercial projects?
