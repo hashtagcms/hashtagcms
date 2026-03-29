@@ -51,6 +51,7 @@
         <site-installer
             data-site-info="{{json_encode($siteInfo)}}"
             data-is-installed="{{$isInstalled}}"
+            data-needs-db-setup="{{isset($needsDbSetup) && $needsDbSetup ? '1' : '0'}}"
         ></site-installer>
     </div>
     <script async src="/assets/hashtagcms/installer/js/installer.js"></script>

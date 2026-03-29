@@ -11,6 +11,14 @@ use HashtagCms\Facades\HashtagCms;
 if (HashtagCms::isInstallationRoutesEnabled()) {
     Route::get('/install', config('hashtagcms.namespace') . "Http\Controllers\Installer\InstallController@index");
     Route::post('/install/save', config('hashtagcms.namespace') . "Http\Controllers\Installer\InstallController@save");
+    // Status check – safe before migrations have run
+    Route::get('/install/status', config('hashtagcms.namespace') . "Http\Controllers\Installer\InstallController@status");
+    // Trigger migrate + seed + publish from the browser (pre-auth, uses CSRF token from meta tag)
+    Route::post('/install/run', config('hashtagcms.namespace') . "Http\Controllers\Installer\InstallController@runInstall");
+    // Granular steps
+    Route::post('/install/migrate', config('hashtagcms.namespace') . "Http\Controllers\Installer\InstallController@runMigrate");
+    Route::post('/install/seed',    config('hashtagcms.namespace') . "Http\Controllers\Installer\InstallController@runSeed");
+    Route::post('/install/publish', config('hashtagcms.namespace') . "Http\Controllers\Installer\InstallController@runPublish");
 }
 // Get configuration values once outside the route to avoid calling on each request
 $namespace = config('hashtagcms.namespace');

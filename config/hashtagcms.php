@@ -95,8 +95,13 @@ return [
     ),
     /** Internal Cache */
     'enable_cache' => env('HASHTAGCMS_ENABLE_CACHE', true),
+    // Namespace isolates all cache keys per project on a shared Redis server.
+    // Defaults to APP_NAME if HASHTAGCMS_CACHE_NAMESPACE is not set.
+    // Keys become "{namespace}:{source_type}:{key}" instead of "{source_type}_{key}".
+    // Example: APP_NAME=MyProject  ->  myproject:cms:site_config_main
+    'cache_namespace' => env('HASHTAGCMS_CACHE_NAMESPACE', env('APP_NAME', '')),
     'internal_cache_prefix' => env('HASHTAGCMS_INTERNAL_CACHE_PREFIX', 'cms_'),
     'database_cache_prefix' => env('HASHTAGCMS_DATABASE_CACHE_PREFIX', 'db_'),
     'external_source_cache_prefix' => env('HASHTAGCMS_EXTERNAL_SOURCE_CACHE_PREFIX', 'ex_'),
-    'cache_site_config_ttl' => env('HASHTAGCMS_CACHE_SITE_CONFIG_TTL', 30), // In minutes. Determines how often site config is loaded from DB/API. Use ?clear_cache=true to purge. 
+    'cache_site_config_ttl' => env('HASHTAGCMS_CACHE_SITE_CONFIG_TTL', 30), // In minutes. Determines how often site config is loaded from DB/API. Use ?clear_cache=true to purge.
 ];

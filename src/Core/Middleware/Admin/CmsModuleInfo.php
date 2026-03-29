@@ -51,10 +51,20 @@ class CmsModuleInfo
         } else {
             // Tier 1: URL-to-Module Global Cache
             if ($ttl > 0) {
+                // Ensure class is known to PHP before unserialization in Cache::remember
+                class_exists(CmsModule::class);
+                
                 $cacheKey = RedisCacheManager::getInternalPrefix() . CacheKeys::MODULE_PATH_CACHE . '_' . md5($path);
                 $moduleInfo = Cache::remember($cacheKey, $ttl, function () use ($path) {
                     return $this->adminModule::getModuleFromUrl($path);
                 });
+
+                // Robustness: If the cache somehow returned an incomplete object, clear it and retry
+                if ($moduleInfo instanceof \__PHP_Incomplete_Class) {
+                    Log::warning("[CmsModuleInfo] Detected incomplete object in cache for: $cacheKey. Clearing and refetching.");
+                    Cache::forget($cacheKey);
+                    $moduleInfo = $this->adminModule::getModuleFromUrl($path);
+                }
             } else {
                 $moduleInfo = $this->adminModule::getModuleFromUrl($path);
             }

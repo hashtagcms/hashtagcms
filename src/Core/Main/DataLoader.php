@@ -524,7 +524,7 @@ class DataLoader
             // Cache Key
             $paramHash = md5(json_encode($requestParams));
             $prefix = RedisCacheManager::getExternalSourcePrefix();
-            $cacheKey = "{$prefix}" . CacheKeys::EXTERNAL_CONFIG . "_{$context}_{$lang}_{$platform}_{$category}_{$microsite}_{$paramHash}";
+            $cacheKey = "{$prefix}" . CacheKeys::EXTERNAL_DATA . "_{$context}_{$lang}_{$platform}_{$category}_{$microsite}_{$paramHash}";
             $cacheTTL = config('hashtagcms.externals.external_data_cache_ttl', 30); // Default 30 minutes
 
             $callback = function () use ($apiUrl, $payload, $apiSecret) {

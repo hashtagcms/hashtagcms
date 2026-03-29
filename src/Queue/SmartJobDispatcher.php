@@ -5,6 +5,8 @@ namespace HashtagCms\Queue;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
 use HashtagCms\Jobs\CloneSiteJob;
+use HashtagCms\Core\Utils\CacheKeys;
+use HashtagCms\Core\Utils\RedisCacheManager;
 
 /**
  * Smart job dispatcher that automatically uses queue or sync buffer
@@ -127,22 +129,24 @@ class SmartJobDispatcher
     {
         $queueConnection = Config::get('queue.default', 'sync');
 
+        $cacheKey = RedisCacheManager::getInternalPrefix() . CacheKeys::CLONE_JOB . "_{$jobId}";
+
         if (self::isRealQueueConfigured($queueConnection)) {
             // For real queue, check cache (set by event listeners)
-            return cache()->get("clone_job_{$jobId}");
+            return cache()->get($cacheKey);
         } else {
             // For sync buffer, check buffer status
             $bufferStatus = SyncQueueBuffer::getJobStatus($jobId);
 
             if ($bufferStatus) {
                 // Also check cache for event-based status
-                $cacheStatus = cache()->get("clone_job_{$jobId}");
+                $cacheStatus = cache()->get($cacheKey);
 
                 // Merge both sources
                 return array_merge($bufferStatus, $cacheStatus ?? []);
             }
 
-            return cache()->get("clone_job_{$jobId}");
+            return cache()->get($cacheKey);
         }
     }
 

@@ -37,7 +37,7 @@ class CmsModule extends AdminBaseModel
      */
     public static function getAdminModules($user_id = null)
     {
-        return Cache::rememberForever(CacheKeys::CMS_ADMIN_MODULES_MASTER_LIST, function() {
+        return Cache::rememberForever(RedisCacheManager::getInternalPrefix() . CacheKeys::CMS_ADMIN_MODULES_MASTER_LIST, function() {
             return static::with(['child'])->orderBy('position', 'asc')->get();
         });
     }
