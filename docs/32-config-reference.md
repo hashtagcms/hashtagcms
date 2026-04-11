@@ -7,7 +7,7 @@ This document provides a comprehensive reference for all configuration keys foun
 ### Root Settings
 | Key | Type | Default | Description |
 | :--- | :--- | :--- | :--- |
-| `namespace` | string | `HashtagCMS\` | The root namespace for the CMS package. |
+| `namespace` | string | `HashtagCms\` | The root namespace for the CMS package. |
 | `context` | string | `hashtagcms` | The default Site Context (e.g., `web`, `app`). Used when domain mapping fails. |
 | `blog_per_page` | int | `10` | Number of posts per page in blog modules. |
 | `externals` | array | *See below* | Configuration for Headless/Microservice API loading. |
@@ -116,8 +116,9 @@ Backend configuration.
 | `resource_dir` | `be/neo` | Resource directory relative to assets. |
 | `base_context` | `admin` | Helper context. |
 | `base_path` | `/admin` | URL prefix for admin routes. |
-| `module_types` | `['Static', 'Query', ...]` | Allowed module types in Module Builder. |
+| `module_types` | ~~`['Static', 'Query', ...]`~~ | **Removed from config.** Module types are now managed via Admin → Settings → Module Types in the database. |
 | `action_as_ajax` | `['delete', ...]` | Actions that trigger AJAX instead of Page Load. |
+| `debug_logging` | `false` | Enable verbose request/permission logging. Set `CMS_DEBUG_LOGGING=true` in `.env` to activate. |
 
 ### Other Keys
 | Key | Type | Description |

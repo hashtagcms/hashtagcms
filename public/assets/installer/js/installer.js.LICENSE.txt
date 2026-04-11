@@ -1,7 +1,9 @@
+/*! #__NO_SIDE_EFFECTS__ */
+
 /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/babel/babel/blob/main/packages/babel-helpers/LICENSE */
 
 /**
-* @vue/compiler-dom v3.5.30
+* @vue/compiler-dom v3.5.13
 * (c) 2018-present Yuxi (Evan) You and Vue contributors
 * @license MIT
 **/
@@ -19,7 +21,7 @@
 **/
 
 /**
-* @vue/shared v3.5.30
+* @vue/shared v3.5.13
 * (c) 2018-present Yuxi (Evan) You and Vue contributors
 * @license MIT
 **/

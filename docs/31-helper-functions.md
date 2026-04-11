@@ -163,8 +163,8 @@ Set current language ID in admin.
 
 ### Utilities
 
-#### `htcms_get_current_date(): string`
-Get current date (Y-m-d H:i:s).
+#### `htcms_get_current_date(): \Carbon\Carbon`
+Get current date/time as a Carbon instance (timezone-aware).
 
 #### `htcms_get_module_name($module_info): string`
 Get singular module name.

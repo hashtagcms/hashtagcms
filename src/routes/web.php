@@ -52,6 +52,9 @@ Route::prefix($adminBasePath)->group(function () use ($namespace, $appNamespace,
 
             $callable = $controllerName . '@' . $method;
             $values = explode('/', $params);
+            if (!method_exists($controllerName, $method)) {
+                abort(404, "Method '{$method}' not found in {$controllerName}.");
+            }
             $ref = new ReflectionMethod($controllerName, $method);
             $params = $ref->getParameters();
             $args = [];

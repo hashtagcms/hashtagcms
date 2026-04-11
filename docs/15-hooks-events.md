@@ -21,9 +21,9 @@ HashtagCMS fires standard Laravel events during its execution lifecycle. You can
 
 | Event Class | Description | Payload Data |
 | :--- | :--- | :--- |
-| `HashtagCMS\Events\ModuleLoaded` | Fired immediately after a module's data is loaded/processed. | `$module` (Module Object), `$data` (Processed Data) |
-| `HashtagCMS\Events\PageLoaded` | Fired after the entire page content (all modules) is resolved and ready. | `$data` (Full API Response Array) |
-| `HashtagCMS\Events\UserVisit` | Fired when a user visits a page (useful for tracking). | `$data` (Request Info, IP, etc.) |
+| `HashtagCms\Events\ModuleLoaded` | Fired immediately after a module's data is loaded/processed. | `$module` (Module Object), `$data` (Processed Data) |
+| `HashtagCms\Events\PageLoaded` | Fired after the entire page content (all modules) is resolved and ready. | `$data` (Full API Response Array) |
+| `HashtagCms\Events\UserVisit` | Fired when a user visits a page (useful for tracking). | `$type` (string: e.g. `'page'`, `'category'`), `$id` (int: the visited record ID) |
 
 ### Example: Listening to ModuleLoaded
 
@@ -36,7 +36,7 @@ HashtagCMS fires standard Laravel events during its execution lifecycle. You can
     ```php
     namespace App\Listeners;
     
-    use HashtagCMS\Events\ModuleLoaded;
+    use HashtagCms\Events\ModuleLoaded;
     use Illuminate\Support\Facades\Log;
     
     class LogModuleData
@@ -55,7 +55,7 @@ HashtagCMS fires standard Laravel events during its execution lifecycle. You can
 3.  **Register Listener**:
     In `app/Providers/EventServiceProvider.php`:
     ```php
-    use HashtagCMS\Events\ModuleLoaded;
+    use HashtagCms\Events\ModuleLoaded;
     use App\Listeners\LogModuleData;
     
     protected $listen = [

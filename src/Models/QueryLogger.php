@@ -4,7 +4,7 @@ namespace HashtagCms\Models;
 
 use Illuminate\Support\Facades\DB;
 
-class QueryLogger extends AdminBaseModel
+class QueryLogger extends BaseModel
 {
     protected $table = 'logs';
 
@@ -103,7 +103,7 @@ class QueryLogger extends AdminBaseModel
      * Summary of enableQueryLog
      * @return void
      */
-    protected static function enableQueryLog()
+    public static function enableQueryLog()
     {
         if (self::$queryLogging == true) {
             DB::enableQueryLog();
@@ -114,7 +114,7 @@ class QueryLogger extends AdminBaseModel
      * Summary of getQueryLog
      * @return array
      */
-    protected static function getQueryLog()
+    public static function getQueryLog()
     {
         return DB::getQueryLog();
     }

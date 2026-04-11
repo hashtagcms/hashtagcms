@@ -34,7 +34,7 @@ trait HasCrudOperations
         }
 
         //This is in Trait
-        return $this->pouplate($data);
+        return $this->populate($data);
     }
 
     /**

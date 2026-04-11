@@ -5,7 +5,7 @@ namespace HashtagCms\Core\Traits\Admin;
 trait Populator
 {
     /*
-     * Popluate paginator data
+     * Populate paginator data
      *
      * @param:
         $data["dataSource"] = $dataSource;
@@ -13,7 +13,7 @@ trait Populator
         $data["lang_id"] = 1;
         $data["actionFields"] = $actionFields;
      */
-    public function pouplate($data = [])
+    public function populate($data = [])
     {
 
         $source = $data['dataSource'];

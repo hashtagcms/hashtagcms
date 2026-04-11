@@ -30,6 +30,8 @@
  *  2. lz-string - ^1.5.0
  */
 
+/*! #__NO_SIDE_EFFECTS__ */
+
 /*! ./Base64 */
 
 /*! ./SecureLS */
@@ -163,13 +165,13 @@
   \**************************************************/
 
 /**
-* @vue/compiler-core v3.5.30
+* @vue/compiler-core v3.5.13
 * (c) 2018-present Yuxi (Evan) You and Vue contributors
 * @license MIT
 **/
 
 /**
-* @vue/compiler-dom v3.5.30
+* @vue/compiler-dom v3.5.13
 * (c) 2018-present Yuxi (Evan) You and Vue contributors
 * @license MIT
 **/
@@ -193,7 +195,7 @@
 **/
 
 /**
-* @vue/shared v3.5.30
+* @vue/shared v3.5.13
 * (c) 2018-present Yuxi (Evan) You and Vue contributors
 * @license MIT
 **/

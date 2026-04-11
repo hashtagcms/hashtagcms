@@ -13,7 +13,6 @@ use HashtagCms\Models\CategorySite;
 use HashtagCms\Models\Platform;
 use HashtagCms\Models\Site;
 use HashtagCms\Models\Theme;
-use Mockery\Exception;
 
 class CategoryController extends BaseAdminController
 {
@@ -26,9 +25,11 @@ class CategoryController extends BaseAdminController
     //protected $minResults = 2;
 
     protected $moreActionBarItems = [
-        ['label' => 'Category Site Settings',
+        [
+            'label' => 'Category Site Settings',
             'as' => 'icon',
-            'icon_css' => 'fa fa-cogs', 'action' => 'category/settings',
+            'icon_css' => 'fa fa-cogs',
+            'action' => 'category/settings',
         ],
     ];
 
@@ -36,7 +37,8 @@ class CategoryController extends BaseAdminController
 
     protected $actionFields = ['edit', 'delete']; //This is last column of the row
 
-    protected $bindDataWithAddEdit = ['themes' => ['dataSource' => Theme::class, 'method' => 'all'],
+    protected $bindDataWithAddEdit = [
+        'themes' => ['dataSource' => Theme::class, 'method' => 'all'],
         'sites' => ['dataSource' => Site::class, 'method' => 'all'],
         'siteDefaults' => ['dataSource' => Site::class, 'method' => 'getDefaults'],
         'categories' => ['dataSource' => Category::class, 'method' => 'parentOnly'],
@@ -69,7 +71,7 @@ class CategoryController extends BaseAdminController
 
         $module_name = $request->module_info->controller_name;
 
-        if (! $this->checkPolicy('edit')) {
+        if (!$this->checkPolicy('edit')) {
             return htcms_admin_view('common.error', Message::getWriteError());
         }
 
@@ -105,9 +107,9 @@ class CategoryController extends BaseAdminController
                 ->withInput();
         }
 
-        //
+
         $data = $request->all();
-        //dd($data);
+
         $saveData['parent_id'] = $data['parent_id'];
         $saveData['site_id'] = $data['site_id'];
         $saveData['is_site_default'] = $data['is_site_default'] ?? 0;
@@ -164,7 +166,7 @@ class CategoryController extends BaseAdminController
         //update Image
         $icon = $this->upload($module_name, request()->file('icon'));
 
-         //it will have some value if user has clicked on delete
+        //it will have some value if user has clicked on delete
         if ($data['icon_deleted'] != '0') {
             $siteData['icon'] = '';
         }
@@ -174,7 +176,7 @@ class CategoryController extends BaseAdminController
             $siteData['icon'] = $icon;
         }
 
-       
+
         $siteData['icon_css'] = $data['icon_css'];
         $siteData['header_content'] = $data['header_content'];
         $siteData['footer_content'] = $data['footer_content'];
@@ -199,7 +201,7 @@ class CategoryController extends BaseAdminController
 
         $siteData['cache_category'] = $data['cache_category'];
 
-        $arrSaveData = ['model' => $this->dataSource,  'data' => $saveData];
+        $arrSaveData = ['model' => $this->dataSource, 'data' => $saveData];
         $arrLangData = ['data' => $langData];
         $arrSiteData = ['data' => $siteData, 'site_id' => $siteData['site_id']];
 
@@ -222,7 +224,7 @@ class CategoryController extends BaseAdminController
             $savedData = $this->saveDataWithLangAndSiteAndPlatform($arrSaveData, $arrLangData, $arrSiteData, $arrPlatformData);
 
         }
-        
+
         $siteCount = $this->dataSource::where('site_id', $data['site_id'])->count();
         if ($siteCount == 1 || $saveData['is_root_category'] == 1) {
             Site::where('id', '=', $data['site_id'])->update(['category_id' => $savedData['id']]);
@@ -244,7 +246,7 @@ class CategoryController extends BaseAdminController
     public function settings()
     {
 
-        if (! $this->checkPolicy('read')) {
+        if (!$this->checkPolicy('read')) {
             return htcms_admin_view('common.error', Message::getReadError());
         }
 
@@ -253,10 +255,12 @@ class CategoryController extends BaseAdminController
         $site_id = $request['site_id'] ?? htcms_get_siteId_for_admin();
         $microsite_id = $request['microsite_id'] ?? 0;
 
-        $sites = Site::with(['microsite:site_id,id,name',
+        $sites = Site::with([
+            'microsite:site_id,id,name',
             'platform:id,name',
             'theme:site_id,id,name',
-            'category:site_id,category_id,name'])->find($site_id)->toArray();
+            'category:site_id,category_id,name'
+        ])->find($site_id)->toArray();
 
         $categories = CategorySite::with('lang')->where([['site_id', '=', $site_id], ['platform_id', '=', $platform_id]])->orderBy('position', 'asc')->get();
 
@@ -279,7 +283,7 @@ class CategoryController extends BaseAdminController
      */
     public function updateThemeAndEtc()
     {
-        if (! $this->checkPolicy('edit')) {
+        if (!$this->checkPolicy('edit')) {
             return htcms_admin_view('common.error', Message::getWriteError(), \request()->ajax());
         }
         $request = request()->all();
@@ -301,7 +305,7 @@ class CategoryController extends BaseAdminController
     public function insertCategory()
     {
 
-        if (! $this->checkPolicy('edit')) {
+        if (!$this->checkPolicy('edit')) {
             return htcms_admin_view('common.error', Message::getWriteError(), \request()->ajax());
         }
 
@@ -319,8 +323,8 @@ class CategoryController extends BaseAdminController
                     $d['platform_id'] = $platform->id;
                     $inserted[] = ['isSaved' => $this->rawInsert('category_site', $d), 'platform_id' => $platform->id];
 
-                } catch (Exception $exception) {
-                    $isSaved = false;
+                } catch (\Exception $exception) {
+                    $inserted[] = ['isSaved' => false, 'platform_id' => $platform->id, 'error' => $exception->getMessage()];
                 }
             }
         } else {
@@ -337,7 +341,7 @@ class CategoryController extends BaseAdminController
      */
     public function deleteCategory()
     {
-        if (! $this->checkPolicy('delete')) {
+        if (!$this->checkPolicy('delete')) {
             return htcms_admin_view('common.error', Message::getDeleteError(), \request()->ajax());
         }
         $request = request()->all();
@@ -358,19 +362,19 @@ class CategoryController extends BaseAdminController
      */
     public function updateIndex()
     {
-        if (! $this->checkPolicy('edit')) {
+        if (!$this->checkPolicy('edit')) {
             return htcms_admin_view('common.error', Message::getWriteError(), \request()->ajax());
         }
 
         $request = request()->all();
-        $datas   = $request['data'];
-        $siteId  = htcms_get_siteId_for_admin();
+        $datas = $request['data'];
+        $siteId = htcms_get_siteId_for_admin();
 
         // Build normalised items: each has a composite WHERE (category_id + site_id) and data
         $items = array_map(function ($value) use ($siteId) {
             return [
                 'where' => array_merge($value['where'], ['site_id' => $siteId]),
-                'data'  => $value['data'],
+                'data' => $value['data'],
             ];
         }, $datas);
 
@@ -391,7 +395,7 @@ class CategoryController extends BaseAdminController
      */
     public function updateThemeForAllCategories()
     {
-        if (! $this->checkPolicy('edit')) {
+        if (!$this->checkPolicy('edit')) {
             return htcms_admin_view('common.error', Message::getWriteError(), \request()->ajax());
         }
         $request = request()->all();

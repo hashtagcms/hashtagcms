@@ -9,18 +9,45 @@ namespace HashtagCms\Models;
  */
 
 use HashtagCms\Models\BaseModel;
+use HashtagCms\Models\QueryLogger;
+use Illuminate\Database\Eloquent\Attributes\CollectedBy;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 use HashtagCms\Core\Utils\CacheKeys;
+use InvalidArgumentException;
+use ReflectionClass;
 
 abstract class AdminBaseModel extends BaseModel
 {
     public function __construct(array $attributes = [])
     {
-        parent::__construct($attributes);       
+        parent::__construct($attributes);
         $this->perPage = session(CacheKeys::CMS_RECORDS_PER_PAGE, config('hashtagcmsadmin.cmsInfo.records_per_page'));
+    }
+
+    /**
+     * Override to prevent Laravel 13's HasCollection trait from trying to
+     * instantiate this abstract class when walking the inheritance chain.
+     */
+    public function resolveCollectionFromAttribute(): ?string
+    {
+        try {
+            $reflectionClass = new ReflectionClass(static::class);
+            $attributes = $reflectionClass->getAttributes(CollectedBy::class);
+
+            if (!empty($attributes[0])) {
+                $args = $attributes[0]->getArguments();
+                if (!empty($args[0])) {
+                    return $args[0];
+                }
+            }
+        } catch (\Throwable $e) {
+            // Silently fail — returning null falls back to the default collection.
+        }
+
+        return null;
     }
 
     /**
@@ -33,7 +60,6 @@ abstract class AdminBaseModel extends BaseModel
     public static function getData($with = '', $searchParams = [], $where = [])
     {
 
-        //DB::enableQueryLog();
         $obj = ($with != '') ? static::with($with) : new static;
 
         // Apply Contributor filter: Only show their own content
@@ -41,15 +67,15 @@ abstract class AdminBaseModel extends BaseModel
         if ($user && $user->isContributor() && !$user->isAdmin()) {
             $tableName = $obj->getModel()->getTable();
             if (Schema::hasColumn($tableName, 'insert_by')) {
-                $obj = $obj->where($tableName.'.insert_by', $user->id);
+                $obj = $obj->where($tableName . '.insert_by', $user->id);
             } else if (Schema::hasColumn($tableName, 'user_id')) {
-                $obj = $obj->where($tableName.'.user_id', $user->id);
+                $obj = $obj->where($tableName . '.user_id', $user->id);
             }
         }
 
         //add where condition
         if (count($searchParams) > 0) {
-          
+
 
             foreach ($searchParams as $key => $searchParam) {
 
@@ -76,7 +102,6 @@ abstract class AdminBaseModel extends BaseModel
         $perPage = session(CacheKeys::CMS_RECORDS_PER_PAGE, config('hashtagcmsadmin.cmsInfo.records_per_page'));
         $res = $obj->paginate($perPage);
 
-        //dd(DB::getQueryLog());
         return $res;
     }
 
@@ -89,9 +114,8 @@ abstract class AdminBaseModel extends BaseModel
      */
     public static function searchData($with = '', $field = null, $opr = null, $val = null, $where = [])
     {
-        
+
         $arr = null;
-        //echo "$field, $opr, $val";
 
         if ($field !== null && $opr != null && $val != null) {
 
@@ -104,20 +128,15 @@ abstract class AdminBaseModel extends BaseModel
                     break;
             }
 
-            $opr = (Str::contains($opr, 'like') == 1) ? 'like' : $opr;
+            $opr = Str::contains($opr, 'like') ? 'like' : $opr;
 
         }
 
-        if (Str::contains($field, '.') == 1) {
+        if (Str::contains($field, '.')) {
 
             $field = explode('.', $field);
             $relationWhere = $field[0];
             $field = $field[1];
-
-            //in case $source with (relation) is not defined but you have this in relationship
-            if (empty($relationWhere)) {
-                $with = $relationWhere;
-            }
 
             $perPage = session(CacheKeys::CMS_RECORDS_PER_PAGE, config('hashtagcmsadmin.cmsInfo.records_per_page'));
 
@@ -125,7 +144,7 @@ abstract class AdminBaseModel extends BaseModel
 
                 $query->where($field, $opr, $val);
 
-            })->orderBy(self::getModel()->getKeyName(), 'DESC')->paginate($perPage);
+            })->orderBy((new static)->getKeyName(), 'DESC')->paginate($perPage);
 
             return $data;
 
@@ -161,7 +180,7 @@ abstract class AdminBaseModel extends BaseModel
 
         try {
 
-            QueryLogger::log('editStart', $queryLog, $data, (int)$id);
+            QueryLogger::log('editStart', $queryLog, $data, (int) $id);
 
         } catch (\Exception $exception) {
 
@@ -239,32 +258,47 @@ abstract class AdminBaseModel extends BaseModel
     }
 
     /**
-     * Get Enum Values from any table
+     * Get Enum Values from any table.
+     *
+     * Table and field names are validated against the live schema before use
+     * (PDO cannot parameterize SQL identifiers, so whitelist validation is the
+     * correct defence). Backtick-quoting is applied as a second layer.
+     *
+     * @throws InvalidArgumentException if table or field cannot be found in the schema.
      */
     public static function getEnumValues(?string $table = null, ?string $field = null): array
     {
-
         $enum = [];
-        // Check if connection is mysql, as SHOW COLUMNS is mysql specific
-        $connection = config('database.default');
-        if ($connection !== 'mysql') {
+
+        if (empty($table) || empty($field)) {
             return $enum;
         }
 
-        if ($table != '' && $field != '') {
-            $type = DB::select("SHOW COLUMNS FROM {$table} WHERE Field = '{$field}'");
-            if (count($type) > 0) {
-                $type = $type[0]->Type;
-                preg_match('/^enum\((.*)\)$/', $type, $matches);
-                foreach (explode(',', $matches[1]) as $value) {
-                    $enum[] = trim($value, "'");
-                }
+        // SHOW COLUMNS is MySQL-specific.
+        if (config('database.default') !== 'mysql') {
+            return $enum;
+        }
 
-                return $enum;
+        // Whitelist: confirm the table exists in the current schema.
+        if (!Schema::hasTable($table)) {
+            throw new InvalidArgumentException("getEnumValues: table '{$table}' does not exist.");
+        }
+
+        // Whitelist: confirm the column exists in that table.
+        if (!Schema::hasColumn($table, $field)) {
+            throw new InvalidArgumentException("getEnumValues: column '{$field}' does not exist in table '{$table}'.");
+        }
+
+        // Backtick-quote the validated identifier; use a binding for the field value.
+        $type = DB::select('SHOW COLUMNS FROM `' . $table . '` WHERE Field = ?', [$field]);
+
+        if (!empty($type)) {
+            preg_match('/^enum\((.*)\)$/', $type[0]->Type, $matches);
+            foreach (explode(',', $matches[1] ?? '') as $value) {
+                $enum[] = trim($value, "'");
             }
         }
 
         return $enum;
-
     }
 }

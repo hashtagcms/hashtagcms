@@ -223,14 +223,30 @@ php artisan cms:register-modules-from-view-folder {--path=} {--site_id=1}
 **What it does**:
 - Recursively scans all `.blade.php` files in the specified theme folder
 - Skips folders: `auth`, `_layout_`, `_services_`, `example`
-- For each file, creates a `Module` database record with alias, name, and view name
-- Skips modules that already exist (idempotent — safe to re-run)
+- For each file, derives and creates a `Module` database record:
+  - **`alias`** — `MODULE_` prefix + uppercase path with `/` and `-` replaced by `_`
+    - e.g. `home/hero.blade.php` → `MODULE_HOME_HERO`
+  - **`name`** — Title-cased from path separators
+    - e.g. `home/hero.blade.php` → `Home Hero`
+  - **`view_name`** — Relative path without `.blade.php`
+    - e.g. `home/hero`
+  - **Fixed defaults**: `data_type: Custom`, `method_type: GET`, `live_edit: 1`, `shared: 0`, `is_mandatory: 0`, `individual_cache: 0`, `is_seo_module: 0`
+- Duplicate check is idempotent — checks both the prefixed alias (`MODULE_HOME_HERO`) and the legacy unprefixed form (`HOME_HERO`), so it is safe to re-run even after upgrades
 
 **Example**:
 ```bash
 php artisan cms:register-modules-from-view-folder
 # Prompts: Theme folder? sapphire
 # Prompts: Site Id? 1
+```
+
+**Example output**:
+```
+Scanning directory: .../resources/views/vendor/hashtagcms/fe/sapphire
+Registering Module: Home Hero [MODULE_HOME_HERO] -> home/hero
+Registering Module: Blog Listing [MODULE_BLOG_LISTING] -> blog/listing
+Module MODULE_HOME_HERO already exists. Skipping...
+Successfully registered 12 modules.
 ```
 
 ---
@@ -479,7 +495,7 @@ php artisan vendor:publish --tag=hashtagcms.assets
  #### Publish All
 
 ```bash
-php artisan vendor:publish --provider="HashtagCMS\HashtagCMSServiceProvider"
+php artisan vendor:publish --provider="HashtagCms\HashtagCmsServiceProvider"
 ```
 
 Publishes everything at once.
@@ -537,7 +553,7 @@ php artisan cms:exportdata
 php artisan migrate:fresh
 
 # Seed data
-php artisan db:seed --class=HashtagCMS\\Database\\Seeds\\HashtagCMSDatabaseSeeder
+php artisan db:seed --class=HashtagCms\\Database\\Seeds\\HashtagCmsDatabaseSeeder
 
 # Import backed up data
 php artisan cms:importdata

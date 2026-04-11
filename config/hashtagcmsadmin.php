@@ -23,6 +23,15 @@ return [
         'show_delete_popup' => true,
         'show_download_button' => true,
         'records_per_page' => 20,
+        /**
+         * Enable verbose debug logging for the CmsModuleInfo middleware.
+         * When enabled, every admin request logs module resolution, user permission
+         * checks, and access denials to the Laravel log.
+         *
+         * Leave OFF in production to avoid flooding logs.
+         * Enable via .env: CMS_DEBUG_LOGGING=true
+         */
+        'debug_logging' => env('CMS_DEBUG_LOGGING', false),
         'action_field_title' => ['label' => 'Action', 'key' => 'action'],
         'action_as_ajax' => ['delete', 'approve', 'publish_status'],
         'make_field_as_link' => [

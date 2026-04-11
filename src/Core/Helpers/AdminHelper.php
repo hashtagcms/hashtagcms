@@ -299,13 +299,15 @@ if (! function_exists('htcms_get_module_name')) {
 if (! function_exists('htcms_get_current_date')) {
 
     /**
-     * Get current date for db insert
+     * Get current date for db insert.
+     * Returns a Carbon instance which respects the app timezone (config('app.timezone'))
+     * and is automatically cast to the correct datetime format by Laravel's DB layer.
      *
-     * @return false|string
+     * @return \Carbon\Carbon
      */
-    function htcms_get_current_date()
+    function htcms_get_current_date(): \Carbon\Carbon
     {
-        return date('Y-m-d H:i:s');
+        return \Carbon\Carbon::now();
     }
 }
 

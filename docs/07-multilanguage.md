@@ -28,7 +28,7 @@ When you edit a Page or Category:
 ### Getting Current Language
 ```php
 $lang = htcms_get_language(); // Returns array with id, code, iso...
-$code = htcms_get_language_code(); // 'en'
+$isoCode = htcms_get_lang_info('isoCode'); // e.g. 'en_US'
 ```
 
 ### Translation Helper

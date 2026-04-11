@@ -22,7 +22,7 @@ Controls the Backend behavior.
 -   `cmsInfo`:
     -   `theme`: The active Admin Theme (e.g., `hashtagcms::be.neo`).
     -   `resource_dir`: Path to admin views.
-    -   `module_types`: Allowed types (`Static`, `Query`, `Service`, etc.).
+    -   `module_types`: ~~Allowed types (`Static`, `Query`, `Service`, etc.)~~ — **Moved to database.** Manage via Admin → Settings → Module Types.
 -   `imageSupportedByBrowsers`: List of allowed image extensions.
 -   `chartPages`: Pagination limits for charts.
 -   `json_query_in_query_module`: Enable/Disable JSON syntax for Query Modules.

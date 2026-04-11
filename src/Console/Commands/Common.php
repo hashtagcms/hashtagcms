@@ -143,10 +143,10 @@ trait Common
         }
 
         $sourceFile = $this->getValidSourceFileName($this->paths['sourceDir'] . "/$what/" . $this->paths['sourceFile']);
-        $this->currentSourceFile = $tagetTempFile = $targetTemp . '/' . md5($sourceFile . '' . date('YY-DD-M H:i:s')) . '.ms';
-        $this->files->copy($sourceFile, $tagetTempFile);
+        $this->currentSourceFile = $targetTempFile = $targetTemp . '/' . md5($sourceFile . '' . date('YY-DD-M H:i:s')) . '.ms';
+        $this->files->copy($sourceFile, $targetTempFile);
 
-        return $tagetTempFile;
+        return $targetTempFile;
     }
 
     /******* Validator Fields ***********/
@@ -228,22 +228,17 @@ trait Common
 
         $lang = Str::endsWith($table_name, '_langs') ? 'lang_' : '';
 
-        $isLang = ($lang == '') ? false : true;
-
         if (DB::connection()->getDriverName() !== 'mysql') {
             // SHOW COLUMNS is MySQL specific.
             // For now, we cannot auto-generate validation rules for other drivers without doctrine/dbal.
             return [];
         }
 
-        $data = DB::select('SHOW COLUMNS FROM ' . Str::plural($table_name));
+        // Schema::hasTable() already confirmed the table exists above (line ~225).
+        // Backtick-quote the validated identifier — PDO cannot parameterize table names.
+        $data = DB::select('SHOW COLUMNS FROM `' . Str::plural($table_name) . '`');
 
         $allFields = [];
-
-        // echo $this->getDataType("int(10) unsigned");
-        // echo $this->getDataType("varchar(255)");
-
-        //dd($data);
 
         foreach ($data as $key => $fields) {
 
@@ -275,7 +270,7 @@ trait Common
                     $allFields[$lang . $fields->Field] = "$nullable" . $fields_value;
                 }
 
-                if ($isLang) {
+                if ($lang !== '') {
                     //Dont need parent table id: ie. country_id if table is coutry_langs
                     $table_name_main = Str::singular(str_replace('_langs', '', $table_name));
                     unset($allFields[$lang . $table_name_main . '_id']);
@@ -285,7 +280,6 @@ trait Common
             }
         }
 
-        //var_dump($allFields);
         return $allFields;
     }
 
@@ -569,7 +563,9 @@ trait Common
         $driver = DB::connection()->getDriverName();
 
         if ($driver === 'mysql') {
-            $rows = DB::select('SHOW COLUMNS FROM ' . $tableName);
+            // Schema::hasTable() already whitelisted $tableName above.
+            // Backtick-quote the validated identifier — PDO cannot parameterize table names.
+            $rows = DB::select('SHOW COLUMNS FROM `' . $tableName . '`');
             return array_map(fn($r) => [
                 'name'     => $r->Field,
                 'type'     => strtolower($r->Type),
@@ -579,7 +575,9 @@ trait Common
         }
 
         if ($driver === 'sqlite') {
-            $rows = DB::select("PRAGMA table_info({$tableName})");
+            // Schema::hasTable() already whitelisted $tableName above.
+            // Double-quote the validated identifier for SQLite.
+            $rows = DB::select('PRAGMA table_info("' . $tableName . '")');
             return array_map(fn($r) => [
                 'name'     => $r->name,
                 'type'     => strtolower($r->type),

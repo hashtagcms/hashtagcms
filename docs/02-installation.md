@@ -81,7 +81,7 @@ Open `app/Models/User.php` and make the following changes:
 
 **Add:**
 ```php
-use HashtagCMS\User as Authenticatable;
+use HashtagCms\User as Authenticatable;
 ```
 
 Your User model should look like this:
@@ -92,7 +92,7 @@ Your User model should look like this:
 namespace App\Models;
 
 // use Illuminate\Foundation\Auth\User as Authenticatable;
-use HashtagCMS\User as Authenticatable;
+use HashtagCms\User as Authenticatable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Notifications\Notifiable;
 
@@ -332,7 +332,7 @@ php artisan tinker
 Then run:
 ```php
 DB::connection()->getPdo();
-\HashtagCMS\Models\Site::first();
+\HashtagCms\Models\Site::first();
 ```
 
 ### Check Version
@@ -391,7 +391,7 @@ sudo chmod -R 775 storage bootstrap/cache
 ```bash
 # Fresh installation (WARNING: This will delete all data)
 php artisan migrate:fresh
-php artisan db:seed --class=HashtagCMS\\Database\\Seeds\\HashtagCMSDatabaseSeeder
+php artisan db:seed --class=HashtagCms\\Database\\Seeds\\HashtagCmsDatabaseSeeder
 ```
 
 ## Next Steps
