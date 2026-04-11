@@ -3,9 +3,6 @@
 namespace HashtagCms\Models;
 
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Cache;
-use HashtagCms\Core\Utils\CacheKeys;
-use HashtagCms\Core\Utils\RedisCacheManager;
 
 class CmsModule extends AdminBaseModel
 {
@@ -13,20 +10,7 @@ class CmsModule extends AdminBaseModel
 
     protected static function booted()
     {
-        static::saved(function () {
-            RedisCacheManager::flush();
-        });
-        static::deleted(function () {
-            RedisCacheManager::flush();
-        });
-    }
-
-    /**
-     * Clear all module related caches
-     */
-    public static function clearModuleCaches()
-    {
-        RedisCacheManager::flush();
+        // Cache removed — no cache flush needed on save/delete.
     }
 
     /**
@@ -37,9 +21,7 @@ class CmsModule extends AdminBaseModel
      */
     public static function getAdminModules($user_id = null)
     {
-        return Cache::rememberForever(RedisCacheManager::getInternalPrefix() . CacheKeys::CMS_ADMIN_MODULES_MASTER_LIST, function() {
-            return static::with(['child'])->orderBy('position', 'asc')->get();
-        });
+        return static::with(['child'])->orderBy('position', 'asc')->get();
     }
 
     /**
@@ -88,7 +70,7 @@ class CmsModule extends AdminBaseModel
 
         // Generate all possible paths from longest to shortest
         // e.g. pro/audit-logs/edit/1 -> pro/audit-logs/edit/1, pro/audit-logs/edit, pro/audit-logs, pro
-        while(count($segments) > 0) {
+        while (count($segments) > 0) {
             $candidates[] = implode('/', $segments);
             array_pop($segments);
         }
