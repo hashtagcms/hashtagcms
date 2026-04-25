@@ -3,6 +3,7 @@
 namespace HashtagCms\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
@@ -10,15 +11,21 @@ use HashtagCms\Core\Helpers\Message;
 use HashtagCms\Models\CmsModule;
 use HashtagCms\Models\QueryLogger;
 use HashtagCms\Core\Utils\RedisCacheManager;
+
 class CmsmoduleController extends BaseAdminController
 {
     protected $dataFields = ['id', 'name', 'sub_title', 'controller_name', 'updated_at'];
 
     protected $actionFields = ['edit', 'delete'];
 
-    protected $moreActionBarItems = [['label' => 'Sort Modules',
-        'as' => 'icon', 'icon_css' => 'fa fa-sort',
-        'action' => 'cmsmodule/sort']];
+    protected $moreActionBarItems = [
+        [
+            'label' => 'Sort Modules',
+            'as' => 'icon',
+            'icon_css' => 'fa fa-sort',
+            'action' => 'cmsmodule/sort'
+        ]
+    ];
 
     protected $dataSource = CmsModule::class;
 
@@ -29,7 +36,7 @@ class CmsmoduleController extends BaseAdminController
      */
     public function store(Request $request)
     {
-        if (! $this->checkPolicy('edit')) {
+        if (!$this->checkPolicy('edit')) {
             return htcms_admin_view('common.error', Message::getWriteError());
         }
 
@@ -65,7 +72,7 @@ class CmsmoduleController extends BaseAdminController
 
         //date
         $saveData['updated_at'] = htcms_get_current_date();
-        
+
         if ($data['actionPerformed'] !== 'edit') {
             $saveData['created_at'] = htcms_get_current_date();
         }
@@ -115,12 +122,12 @@ class CmsmoduleController extends BaseAdminController
      */
     public function updateIndex()
     {
-        if (! $this->checkPolicy('edit')) {
+        if (!$this->checkPolicy('edit')) {
             return htcms_admin_view('common.error', Message::getWriteError(), \request()->ajax());
         }
 
         $payload = request()->all();
-        $datas   = $payload['data'] ?? $payload;
+        $datas = $payload['data'] ?? $payload;
 
         if (!is_array($datas)) {
             return ['isSaved' => 0, 'indexUpdated' => 0, 'error' => 'Invalid data format'];
@@ -132,14 +139,14 @@ class CmsmoduleController extends BaseAdminController
                 $id = $posData['id'] ?? ($posData['where']['id'] ?? null);
                 if ($id !== null) {
                     $rows[] = [
-                        'id'       => (int) $id,
+                        'id' => (int) $id,
                         'position' => (int) ($posData['position'] ?? 0),
                     ];
                 }
             }
         }
 
-        $table    = (new $this->dataSource)->getTable();
+        $table = (new $this->dataSource)->getTable();
         try {
             $affected = $this->bulkUpdateIndex($table, $rows);
             // Clear caches so the new order is reflected immediately
@@ -182,7 +189,7 @@ class CmsmoduleController extends BaseAdminController
     public function createModule(Request $request)
     {
 
-        if (! $this->checkPolicy('edit')) {
+        if (!$this->checkPolicy('edit')) {
             return htcms_admin_view('common.error', Message::getWriteError());
         }
 
@@ -219,12 +226,12 @@ class CmsmoduleController extends BaseAdminController
         $dataSource = str_replace('::class', '', $dataSource);
         $dataSource = Str::studly(Str::singular($dataSource));
 
-        $dataFields = (! empty($data['selectedFields'])) ? implode(',', $data['selectedFields']) : '*';
-        $dataWith = (! empty($data['dataWith']) && count($data['relationModels']['models'] ?? []) > 0) ? implode(',', $data['dataWith']) : '[]';
+        $dataFields = (!empty($data['selectedFields'])) ? implode(',', $data['selectedFields']) : '*';
+        $dataWith = (!empty($data['dataWith']) && count($data['relationModels']['models'] ?? []) > 0) ? implode(',', $data['dataWith']) : '[]';
 
         $createFiles = (isset($data['createFiles']) && $data['createFiles'] == false) ? false : true;
 
-        
+
         try {
 
             if ($createFiles == true) {
@@ -241,12 +248,12 @@ class CmsmoduleController extends BaseAdminController
 
                 foreach ($relationModels as $key => $model) {
 
-                    $current       = $model;
-                    $model_name    = str_replace('::class', '', $current['model']);
+                    $current = $model;
+                    $model_name = str_replace('::class', '', $current['model']);
                     $relationAlias = $current['relationAlias'];
-                    $relationType  = $current['relationType'];
+                    $relationType = $current['relationType'];
                     // isLanguage flag (4th segment) — tells cms:model to add LangScope to the related model
-                    $isLanguage    = (!empty($current['isLanguage']) && $current['isLanguage']) ? '1' : '0';
+                    $isLanguage = (!empty($current['isLanguage']) && $current['isLanguage']) ? '1' : '0';
                     $methods .= "$relationAlias,$relationType,$model_name,$isLanguage~";
                 }
 
@@ -256,13 +263,13 @@ class CmsmoduleController extends BaseAdminController
                 }
 
                 Artisan::call('cms:model', [
-                    'name'    => $dataSource,
+                    'name' => $dataSource,
                     'methods' => $methods,
                 ]);
 
                 // Scaffold FormRequest validator class from DB table schema
                 Artisan::call('cms:validator', [
-                    'name'          => $dataSource,
+                    'name' => $dataSource,
                     'validatorName' => $controller_name . 'Request',
                 ]);
 
@@ -335,11 +342,11 @@ class CmsmoduleController extends BaseAdminController
 
         if ($isController == true) {
 
-            $file_name = $namespace.'/Http/Controllers/Admin/'.ucfirst($name).'Controller.php';
+            $file_name = $namespace . '/Http/Controllers/Admin/' . ucfirst($name) . 'Controller.php';
 
         } else {
 
-            $file_name = $namespace.'/Models/'.ucfirst($name).'.php';
+            $file_name = $namespace . '/Models/' . ucfirst($name) . '.php';
         }
 
         return file_exists(base_path($file_name));

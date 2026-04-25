@@ -3,6 +3,7 @@
 namespace HashtagCms\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Validator;
 use HashtagCms\Core\Helpers\Message;
 use HashtagCms\Models\CmsModule;
