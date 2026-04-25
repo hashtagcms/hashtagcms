@@ -100,7 +100,7 @@ class AuthorController extends BaseAdminController
         }
 
         $rules = [
-            'email' => 'required|email|max:255|unique:users,email,' . $request->input('id', 0) . ',id',
+            'email' => ['required', 'email', 'max:255', Rule::unique('users')->whereNull('deleted_at')->ignore($request->input('id', 0))],
             'name' => 'required|max:255|string',
             'password' => 'nullable|max:255|string',
             'facebook_user_id' => 'nullable|max:255|string',

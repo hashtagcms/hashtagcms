@@ -92,7 +92,8 @@ class CategoryController extends BaseAdminController
                 'max:255',
                 'string',
                 Rule::unique('categories')->where(function ($query) use ($request) {
-                    $query->where('site_id', $request->input('site_id'));
+                    $query->where('site_id', $request->input('site_id'))
+                        ->whereNull('deleted_at');
                 })->ignore($request->input('id', 0), 'id'),
             ],
             'controller_name' => 'nullable|max:255',

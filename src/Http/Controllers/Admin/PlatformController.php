@@ -37,7 +37,7 @@ class PlatformController extends BaseAdminController
                 'max:100',
                 'string',
                 "regex:/^\w{1,}$/",
-                'unique:platforms,link_rewrite,'.$request->input('id', 0).',id'],
+                Rule::unique('platforms')->whereNull('deleted_at')->ignore($request->input('id', 0))],
         ];
 
         $validator = Validator::make($request->all(), $rules);

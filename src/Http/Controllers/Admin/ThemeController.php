@@ -46,7 +46,8 @@ class ThemeController extends BaseAdminController
             'name' => 'required|max:60|string',
             'alias' => ['required', 'max:60', 'string',
                 Rule::unique('themes')->where(function ($query) use ($request) {
-                    $query->where('site_id', $request->input('site_id'));
+                    $query->where('site_id', $request->input('site_id'))
+                        ->whereNull('deleted_at');
                 })->ignore($request->input('id', 0), 'id')],
             'directory' => 'required|max:60|string',
             'body_class' => 'nullable|max:255|string',

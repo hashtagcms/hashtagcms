@@ -1,6 +1,6 @@
 {
   "name": "hashtagcms",
-  "version": "3.0.3",
+  "version": "3.0.4",
   "description": "Hashtag CMS, Use it as Headless CMS or Bundled, API enabled, Admin Panel, Multisite, Multi-platform, Multilingual.",
   "main": "app.js",
   "directories": {

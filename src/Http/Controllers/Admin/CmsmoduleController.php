@@ -35,7 +35,7 @@ class CmsmoduleController extends BaseAdminController
 
         $rules = [
             'name' => 'required|max:255',
-            'controller_name' => 'required|max:255|unique:cms_modules,controller_name,'.$request->input('id', 0).',id',
+            'controller_name' => ['required', 'max:255', Rule::unique('cms_modules')->whereNull('deleted_at')->ignore($request->input('id', 0))],
             'sub_title' => 'required|max:100',
             'icon_css' => 'max:255',
             'parent_id' => 'nullable|numeric',
@@ -188,7 +188,7 @@ class CmsmoduleController extends BaseAdminController
 
         $rules = [
             'name' => 'required|max:255',
-            'controller_name' => 'required|max:255|unique:cms_modules,controller_name,'.$request->input('id', 0).',id',
+            'controller_name' => ['required', 'max:255', Rule::unique('cms_modules')->whereNull('deleted_at')->ignore($request->input('id', 0))],
             'sub_title' => 'required|max:100',
             'icon_css' => 'max:255',
             'parent_id' => 'nullable|numeric',

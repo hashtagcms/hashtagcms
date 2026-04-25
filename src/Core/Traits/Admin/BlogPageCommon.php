@@ -28,7 +28,8 @@ trait BlogPageCommon
                 'string',
                 Rule::unique('pages')->where(function ($query) use ($request) {
                     $query->where('site_id', $request->input('site_id'))
-                        ->where('platform_id', $request->input('platform_id'));
+                        ->where('platform_id', $request->input('platform_id'))
+                        ->whereNull('deleted_at');
                     if ($request->filled('category_id')) {
                         $query->where('category_id', $request->input('category_id'));
                     }
