@@ -27,29 +27,21 @@ class StaticmoduleController extends BaseAdminController
     public function store(Request $request)
     {
 
-        if (! $this->checkPolicy('edit')) {
+        if (!$this->checkPolicy('edit')) {
             return htcms_admin_view('common.error', Message::getWriteError());
         }
-        /*
-         *  "alias" => [
-                'required',
-                'max:60',
-                'string',
-                Rule::unique('modules')->where(function ($query) use ($request) {
-                    $query->where('site_id', $request->input("site_id"))
-                        ->where('alias', $request->input("alias"));
-                })
-            ],
-         */
 
         $rules = [
             'site_id' => 'required|numeric',
-            'alias' => ['required',
+            'alias' => [
+                'required',
                 'max:60',
                 'string',
                 Rule::unique('static_module_contents')->where(function ($query) use ($request) {
-                    $query->where('site_id', $request->input('site_id'));
-                })->ignore($request->input('id', 0), 'id')],
+                    $query->where('site_id', $request->input('site_id'))
+                        ->whereNull('deleted_at');
+                })->ignore($request->input('id', 0), 'id')
+            ],
             'update_by' => 'required|numeric',
             'lang_title' => 'required|max:255|string',
             'lang_content' => 'required',
@@ -76,7 +68,7 @@ class StaticmoduleController extends BaseAdminController
         $saveData['update_by'] = $data['update_by'];
         $saveData['updated_at'] = htcms_get_current_date();
 
-        if (! isset($data['id']) || $data['id'] == 0) {
+        if (!isset($data['id']) || $data['id'] == 0) {
             $saveData['insert_by'] = $data['insert_by'];
         }
 
@@ -85,7 +77,7 @@ class StaticmoduleController extends BaseAdminController
         $langData['title'] = $data['lang_title'];
         $langData['content'] = $data['lang_content'];
 
-        $arrSaveData = ['model' => $this->dataSource,  'data' => $saveData];
+        $arrSaveData = ['model' => $this->dataSource, 'data' => $saveData];
 
         $arrLangData = ['data' => $langData];
 

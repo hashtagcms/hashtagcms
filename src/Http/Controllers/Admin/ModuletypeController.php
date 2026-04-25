@@ -59,7 +59,7 @@ class ModuletypeController extends BaseAdminController
         $data = $request->all();
 
         $rules = [
-            'name' => ['required', 'string', 'max:60', Rule::unique('module_types')->ignore($data['id'] ?? null)],
+            'name' => ['required', 'string', 'max:60', Rule::unique('module_types')->whereNull('deleted_at')->ignore($data['id'] ?? null)],
             'label' => ['nullable', 'string', 'max:100'],
             'icon' => ['nullable', 'string', 'max:60'],
             'description' => ['nullable', 'string'],

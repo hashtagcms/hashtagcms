@@ -33,7 +33,7 @@ class HookController extends BaseAdminController
 
         $rules = [
             'name' => 'required|max:64|string',
-            'alias' => 'required|max:64|string|unique:hooks,alias,'.$request->input('id', 0).',id',
+            'alias' => ['required', 'max:64', 'string', Rule::unique('hooks')->whereNull('deleted_at')->ignore($request->input('id', 0))],
         ];
 
         $validator = Validator::make($request->all(), $rules);

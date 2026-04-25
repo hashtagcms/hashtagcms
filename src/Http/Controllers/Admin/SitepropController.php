@@ -69,7 +69,8 @@ class SitepropController extends BaseAdminController
                 ->where('site_id',     $siteId)
                 ->where('platform_id', $platformId)
                 ->where('name',        $name)
-                ->where('group_name',  $groupName);
+                ->where('group_name',  $groupName)
+                ->whereNull('deleted_at');
 
             if ($isEdit && $editId) {
                 $uniqueRule = $uniqueRule->ignore($editId);
@@ -134,10 +135,16 @@ class SitepropController extends BaseAdminController
      */
     private function toCamelCase(string $value): string
     {
+        // If it's already camelCase (has both uppercase and lowercase, and no delimiters)
+        if (preg_match('/[A-Z]/', $value) && preg_match('/[a-z]/', $value) && ! preg_match('/[\s\-_]/', $value)) {
+            return lcfirst($value);
+        }
+
         // Split on spaces, hyphens, underscores, or any non-alphanumeric boundary
         $words = preg_split('/[\s\-_]+/', trim($value));
         $first = strtolower(array_shift($words));
-        $rest  = array_map('ucfirst', array_map('strtolower', $words));
+        $rest = array_map('ucfirst', array_map('strtolower', $words));
+
         return $first . implode('', $rest);
     }
 

@@ -17,7 +17,7 @@ return [
         'version' => env('BE_RESOURCE_VERSION', '210320261130'),
         'theme' => "hashtagcms::be.$activeTheme",
         'theme_assets' => "assets/hashtagcms/be/$activeTheme",
-        'app_url' => env('APP_URL'),
+        'app_url' => env('ADMIN_APP_URL', env('APP_URL')),
         'resource_dir' => "be/$activeTheme",
         'media_path' => '/storage/media', //media path
         'show_delete_popup' => true,

@@ -44,7 +44,8 @@ class ModuleController extends BaseAdminController
                 'max:60',
                 'string',
                 Rule::unique('modules')->where(function ($query) use ($request) {
-                    $query->where('site_id', $request->input('site_id'));
+                    $query->where('site_id', $request->input('site_id'))
+                        ->whereNull('deleted_at');
                 })->ignore($request->input('id', 0), 'id'),
             ],
             'linked_module' => 'nullable|max:60|string',
