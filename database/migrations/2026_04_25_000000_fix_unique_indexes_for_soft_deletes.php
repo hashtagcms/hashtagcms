@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 return new class extends Migration
 {
@@ -22,11 +23,24 @@ return new class extends Migration
 
         // Fix site_props
         Schema::table('site_props', function (Blueprint $table) {
+            // Drop FK first because MySQL uses the unique index to support the FK
+            if (DB::getDriverName() !== 'sqlite') {
+                $table->dropForeign(['site_id']);
+            }
+
             $table->dropUnique('site_props_site_platform_name_group_unique');
             $table->unique(
                 ['site_id', 'platform_id', 'name', 'group_name', 'deleted_at'],
                 'site_props_site_platform_name_group_unique'
             );
+
+            // Re-add FK
+            if (DB::getDriverName() !== 'sqlite') {
+                $table->foreign('site_id')
+                    ->references('id')
+                    ->on('sites')
+                    ->onDelete('cascade');
+            }
         });
 
         // Fix tags
@@ -77,11 +91,22 @@ return new class extends Migration
         });
 
         Schema::table('site_props', function (Blueprint $table) {
+            if (DB::getDriverName() !== 'sqlite') {
+                $table->dropForeign(['site_id']);
+            }
+
             $table->dropUnique('site_props_site_platform_name_group_unique');
             $table->unique(
                 ['site_id', 'platform_id', 'name', 'group_name'],
                 'site_props_site_platform_name_group_unique'
             );
+
+            if (DB::getDriverName() !== 'sqlite') {
+                $table->foreign('site_id')
+                    ->references('id')
+                    ->on('sites')
+                    ->onDelete('cascade');
+            }
         });
     }
 };
