@@ -19,7 +19,10 @@
             <!-- Main Nav (Desktop) -->
             <nav class="hidden lg:flex items-center space-x-8 text-slate-600 text-sm font-medium">
                 @foreach ($data as $item)
-                    <a href="{{htcms_get_path($item['link_rewrite'])}}"
+                    @php
+                        $url = !empty($item['link_navigation']) ? $item['link_navigation'] : $item['link_rewrite'];
+                    @endphp
+                    <a href="{{htcms_get_path($url)}}"
                         class="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">
                         {{ $item['name'] }}
                     </a>
