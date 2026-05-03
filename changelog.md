@@ -1,5 +1,26 @@
 # Changelog
 
+#v3.0.5 Changes (after 3.0.0 release)
+- **Backend**: Preserve camelCase in toCamelCase and add soft-delete checks to unique validations
+- **Frontend**: Add breadcrumb helper.
+- Refactored  for better attribute handling and improved security for file input displays.
+- Optimized  by replacing base64 encoded generator tags with literal HTML5 meta tags.
+- Improved HTML5 compliance by updating meta and link tag closing styles in .
+- Performed general code style cleanup and indentation fixes in Modern admin views (category and page) and core helpers.
+- Make QueryLogger::enableQueryLog() and getQueryLog() public (were protected but called externally)
+- Fix self::getModel() static misuse in searchData() → (new static)->getKeyName()
+- Handle ReflectionException in web.php dynamic router with clean 404 when method not found
+- Remove unreachable dead code block in searchData() relational branch
+- Fix wrong Mockery\Exception import in CategoryController → \Exception
+- Replace unescaped {clear clear} with @json() for rolePermissionsMap in addedit.blade.php
+- Use injected  instead of request() helper in CmsModuleInfo middleware
+- htcms_get_current_date() now returns Carbon::now() for timezone-aware timestamps
+- Fix loose Str::contains() == 1 comparisons → proper boolean checks
+- Rename pouplate() → populate() in Populator trait and HasCrudOperations
+- Fix typo  →  in Common::init()
+- Remove redundant  boolean in getFormattedFieldsValue()
+- Remove commented-out debug statements across multiple files
+
 #v3.0.0 Changes
 - **Design & Frontend**:
     - Migrated entire frontend to **Tailwind CSS**.
