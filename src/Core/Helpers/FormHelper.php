@@ -24,8 +24,20 @@ class FormHelper
      * Standard HTML5 void elements that must be self-closing.
      */
     protected static array $voidElements = [
-        'area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 
-        'link', 'meta', 'param', 'source', 'track', 'wbr'
+        'area',
+        'base',
+        'br',
+        'col',
+        'embed',
+        'hr',
+        'img',
+        'input',
+        'link',
+        'meta',
+        'param',
+        'source',
+        'track',
+        'wbr'
     ];
 
     /**
@@ -43,7 +55,7 @@ class FormHelper
         // otherwise it uses 'value' for backward compatibility with label/textarea.
         // To ensure $content is used as inner HTML, passes it as 'text' attribute key to makeTag 
         // which we will handle in makeTag logic.
-        
+
         if ($content !== null) {
             $attributes['text'] = $content;
         }
@@ -67,23 +79,19 @@ class FormHelper
         $arr['id'] = $attributes['id'] ?? $name;
         $arr['type'] = $type;
 
-        try {
-            $arr['value'] = htmlentities((string) $value, ENT_QUOTES, 'UTF-8');
-        } catch (\Exception $e) {
-            $arr['value'] = $value;
-        }
+        $arr['value'] = $value;
 
         switch ($type) {
             case 'checkbox':
                 // Check if value equals 1 (loose comparison for backward compatibility or strict if desired)
-                if ($value == 1) { 
+                if ($value == 1) {
                     $arr['checked'] = self::$supportedTag['checkbox']['selected'];
                 }
                 // Inline JS for backward compatibility
                 $arr['onClick'] = 'this.value = (this.checked==true) ? 1 : 0';
                 break;
             case 'radio':
-                if ((string)$value === (string)$selected) {
+                if ((string) $value === (string) $selected) {
                     $arr['checked'] = self::$supportedTag['radio']['selected'];
                 }
                 break;
@@ -154,7 +162,7 @@ class FormHelper
         $html[] = self::input('file', $name, '', $attributes);
         $originalFileName = $value;
 
-        if ($showPreview && !empty(trim((string)$value))) {
+        if ($showPreview && !empty(trim((string) $value))) {
 
             $value = (filter_var($value, FILTER_VALIDATE_URL)) ? $value : htcms_get_media($value);
 
@@ -181,7 +189,7 @@ class FormHelper
             if ($isDeletable) {
                 // Escaping variables in onclick for safety
                 $safeName = htmlspecialchars($name, ENT_QUOTES);
-                $safeFileName = htmlspecialchars((string)$originalFileName, ENT_QUOTES);
+                $safeFileName = htmlspecialchars((string) $originalFileName, ENT_QUOTES);
                 $deleteIcon = "&nbsp;<i style='float:left; margin-right: 10px;' title='Delete' class='fa fa-trash-o cursor-pointer hand' onclick='document.getElementById(\"__hashtagcms_{$safeName}__\").style.display=\"none\";document.getElementById(\"{$safeName}_deleted\").value=\"{$safeFileName}\"'></i>";
             }
 
@@ -257,10 +265,10 @@ class FormHelper
         }
 
         $html[] = "<select name='{$name}'";
-        
+
         foreach ($attributes as $key => $attribute) {
-             $attribute = htmlspecialchars((string)$attribute, ENT_QUOTES, 'UTF-8');
-             $html[] = " {$key}='{$attribute}'";
+            $attribute = htmlspecialchars((string) $attribute, ENT_QUOTES, 'UTF-8');
+            $html[] = " {$key}='{$attribute}'";
         }
         $html[] = '>';
 
@@ -277,12 +285,12 @@ class FormHelper
 
             if ($keyValue === 'plain_array') {
                 $optValue = $row;
-                $optLabel = ucfirst((string)$row);
+                $optLabel = ucfirst((string) $row);
             } else {
                 // Handle objects
-                $rowArray = (is_array($row)) ? $row : (method_exists($row, 'toArray') ? $row->toArray() : (array)$row);
+                $rowArray = (is_array($row)) ? $row : (method_exists($row, 'toArray') ? $row->toArray() : (array) $row);
 
-                $optValue = addslashes((string)($rowArray[$keyValue['value']] ?? ''));
+                $optValue = addslashes((string) ($rowArray[$keyValue['value']] ?? ''));
                 $parentStr = (isset($rowArray['parent_id']) && $rowArray['parent_id'] > 0) ? '&nbsp;&nbsp;&nbsp;&nbsp;' : '';
 
                 if (strpos($keyValue['label'], '.') > 0) {
@@ -293,17 +301,17 @@ class FormHelper
                     $optLabel = $parentStr . ($rowArray[$keyValue['label']] ?? '');
                 }
             }
-            
+
             // Check selection
             $isSelected = '';
             if (!$isMultiple) {
                 // Loose comparison might be needed if IDs are string vs int
-                if ((string)$optValue === (string)$selected && (string)$selected !== '') {
+                if ((string) $optValue === (string) $selected && (string) $selected !== '') {
                     $isSelected = "selected='selected' ";
                 }
             } else {
                 $selectedArray = is_array($selected) ? $selected : [];
-                 if (in_array($optValue, $selectedArray)) {
+                if (in_array($optValue, $selectedArray)) {
                     $isSelected = "selected='selected' ";
                 }
             }
@@ -328,9 +336,9 @@ class FormHelper
     {
         $mergedAttributes = array_merge($requiredAttributes, $attributes);
         $attrList = [];
-        
+
         $value = '';
-        
+
         // Determine self-closing status:
         // 1. Check strict config
         // 2. Check void elements list
@@ -347,7 +355,7 @@ class FormHelper
         // 1. 'text' attribute (explicit usage)
         // 2. 'value' attribute (legacy usage for textarea/label)
         if (!$isSelfClosed) {
-            
+
             if (isset($mergedAttributes['text'])) {
                 $value = $mergedAttributes['text'];
                 unset($mergedAttributes['text']);
@@ -361,22 +369,22 @@ class FormHelper
             // But we must remove 'text' if validation is strict, though HTML ignores extra attrs.
             // We should remove 'text' anyway as it's not a valid HTML attribute usually.
             if (isset($mergedAttributes['text'])) {
-                 unset($mergedAttributes['text']);
+                unset($mergedAttributes['text']);
             }
             // 'value' remains as attribute for inputs
         }
-        
+
 
         foreach ($mergedAttributes as $key => $val) {
             // Encode attribute values
-            $val = htmlspecialchars((string)$val, ENT_QUOTES, 'UTF-8');
+            $val = htmlspecialchars((string) $val, ENT_QUOTES, 'UTF-8');
             $attrList[] = "{$key}='{$val}'";
         }
-        
+
         $attributesString = implode(' ', $attrList);
-        
+
         if (!$isSelfClosed) {
-             return "<{$tagName} {$attributesString}>{$value}</{$tagName}>";
+            return "<{$tagName} {$attributesString}>{$value}</{$tagName}>";
         }
 
         return "<{$tagName} {$attributesString} />";

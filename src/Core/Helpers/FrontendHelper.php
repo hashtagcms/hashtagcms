@@ -310,6 +310,54 @@ if (!function_exists('htcms_get_page_info')) {
     }
 }
 
+if (!function_exists('htcms_get_breadcrumb')) {
+
+    /**
+     * Get breadcrumb info
+     *
+     * @return array
+     */
+    function htcms_get_breadcrumb(): array
+    {
+        $breadcrumb = [];
+
+        // 1. Home
+        $breadcrumb[] = [
+            'label' => 'Home',
+            'path' => htcms_get_path('/'),
+            'active' => false
+        ];
+
+        $categoryName = htcms_get_category_info('name');
+        $categoryLinkRewrite = htcms_get_category_info('linkRewrite');
+        
+        if (!empty($categoryName)) {
+            $breadcrumb[] = [
+                'label' => $categoryName,
+                'path' => htcms_get_path($categoryLinkRewrite),
+                'active' => false
+            ];
+        }
+
+        $pageName = htcms_get_page_info('name');
+        
+        if (!empty($pageName)) {
+            $breadcrumb[] = [
+                'label' => $pageName,
+                // The active page doesn't usually need a path, but we can provide it
+                'path' => '#', 
+                'active' => false
+            ];
+        }
+
+        // Mark the last item as active
+        if (count($breadcrumb) > 0) {
+            $breadcrumb[count($breadcrumb) - 1]['active'] = true;
+        }
+
+        return $breadcrumb;
+    }
+}
 if (!function_exists('htcms_get_theme_info')) {
 
     /**

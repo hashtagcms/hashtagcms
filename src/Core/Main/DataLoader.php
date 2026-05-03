@@ -143,7 +143,7 @@ class DataLoader
         $categoriesInfo = CategoryResource::collection($siteData->categoryLang)->toArray(request());
         $propsInfo = SitePropResource::collection($propsData)->toArray(request());
         $festivalInfo = FestivalResource::collection($siteData->festival)->toArray(request());
-        
+
         $data['site'] = $siteInfo;
         $data['defaultData'] = $defaultData;
         $data['platforms'] = $platformsInfo;
@@ -685,7 +685,7 @@ class DataLoader
 
         $theme_dir = $themeData->directory;
 
-        $neg = base64_decode('PG1ldGEgbmFtZT0iZ2VuZXJhdG9yIiBuYW1lPSIjQ01TIChodHRwczovL3d3dy5oYXNodGFnY21zLm9yZy8pIj4=');
+        $neg = '<meta name="generator" content="#CMS (https://www.hashtagcms.org/)">';
 
         $categoryHeaderContent = $this->parseStringForPath($categoryData->siteWise->header_content, $theme_dir);
         $categoryFooterContent = $this->parseStringForPath($categoryData->siteWise->footer_content, $theme_dir);
@@ -757,11 +757,11 @@ class DataLoader
         $metaContent = '';
         if (count($metaLinks) > 0) {
             foreach ($metaLinks as $link) {
-                $metaContent .= "<link rel='$link[rel]' href='$link[href]' />";
+                $metaContent .= "<link rel='$link[rel]' href='$link[href]' >";
             }
         }
         foreach ($headerMeta as $mKey => $hMeta) {
-            $metaContent .= '<meta name="' . $mKey . '" content="' . $hMeta . '" />';
+            $metaContent .= '<meta name="' . $mKey . '" content="' . htmlentities($hMeta) . '">';
         }
         //Making header data
 

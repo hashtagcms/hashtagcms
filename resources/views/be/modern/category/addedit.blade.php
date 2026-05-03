@@ -286,13 +286,13 @@
                                 <div class="space-y-6">
                                     <div class="flex items-center gap-3">
                                         {!! FormHelper::input('checkbox', 'has_some_special_module', $has_some_special_module) !!}
-                                        {!! FormHelper::label('has_some_special_module', 'Has Special Module?', array('class' => 'text-sm font-medium text-slate-700')) !!}                                        
+                                        {!! FormHelper::label('has_some_special_module', 'Has Special Module?', array('class' => 'text-sm font-medium text-slate-700')) !!}
                                     </div>
-                                    <div class="space-y-2">                                        
-                                        <hc-auto-suggest value="{{ $special_module_alias }}" name="special_module_alias" label="Linked Module Alias"
-                                            placeholder="Module Alias"
-                                            endpoint="{{ htcms_admin_path('module/getModuleAlias') }}"
-                                            display-field="alias" :min-chars="2">
+                                    <div class="space-y-2">
+                                        <hc-auto-suggest value="{{ $special_module_alias }}" name="special_module_alias"
+                                            label="Linked Module Alias" placeholder="Module Alias"
+                                            endpoint="{{ htcms_admin_path('module/getModuleAlias') }}" display-field="alias"
+                                            :min-chars="2">
                                             <template #icon-left>
                                                 <i class="fa fa-link"></i>
                                             </template>
@@ -337,7 +337,7 @@
                 </section>
 
                 <!-- Section 4: Governance & Advanced -->
-                <section data-collapsible="cat-governance" data-collapsed="true"
+                <section data-collapsible="cat-governance" data-collapsed="false"
                     class="rounded-2xl border border-slate-100 overflow-hidden">
                     <div data-collapsible-trigger
                         class="flex items-center gap-4 px-6 py-4 bg-slate-50/60 hover:bg-slate-100/60 cursor-pointer select-none transition-colors">
