@@ -52,7 +52,7 @@ class SiteController extends BaseAdminController
             'action' => 'settings',
             'action_append_field' => 'id'
         ],
-        
+
         /*
         [
             'label' => 'Show all info',
@@ -64,10 +64,11 @@ class SiteController extends BaseAdminController
         ]
         */
     ];
-    
+
     protected $bindDataWithAddEdit = [
         'languages' => ['dataSource' => Lang::class, 'method' => 'combo'],
         'countries' => ['dataSource' => CountryLang::class, 'method' => 'all'],
+        'currencies' => ['dataSource' => Currency::class, 'method' => 'all'],
     ];
 
     protected $moreActionBarItems = [
@@ -125,6 +126,7 @@ class SiteController extends BaseAdminController
         $saveData['lang_id'] = $data['lang_id'] ?? 0;
         $saveData['platform_id'] = $data['platform_id'] ?? 0;
         $saveData['country_id'] = $data['country_id'] ?? 0;
+        $saveData['currency_id'] = $data['currency_id'] ?? 0;
 
         $langData['title'] = $data['lang_title'];
 
@@ -205,7 +207,7 @@ class SiteController extends BaseAdminController
             'Module Properties',
             'Themes',
             'Categories',
-            'Site Properties'            
+            'Site Properties'
         ];
 
         $tab = str_replace(' ', '', strtolower($tab));
@@ -286,9 +288,11 @@ class SiteController extends BaseAdminController
                 break;
             case 'moduleproperties':
                 $viewName = 'copier';
-                $selectedData = ModuleProp::withoutGlobalScopes()->with(['module' => function($query) {
-                    $query->withoutGlobalScopes()->select('id', 'alias');
-                }])->where('site_id', '=', $siteInfo->id)->orderBy('module_id')->get();
+                $selectedData = ModuleProp::withoutGlobalScopes()->with([
+                    'module' => function ($query) {
+                        $query->withoutGlobalScopes()->select('id', 'alias');
+                    }
+                ])->where('site_id', '=', $siteInfo->id)->orderBy('module_id')->get();
                 $message = ($selectedData->count() > 0) ? 'Below properties are already available in your site.' : 'You can copy properties from desired site. Choose site option, select and click on Add Selected.';
                 //Because we are shwoing site to choose
                 $data = [
@@ -450,9 +454,11 @@ class SiteController extends BaseAdminController
                 break;
             case 'moduleproperties':
                 $source = ModuleProp::class;
-                $withData = ['module' => function ($query) {
-                    $query->withoutGlobalScopes()->select('id', 'alias');
-                }];
+                $withData = [
+                    'module' => function ($query) {
+                        $query->withoutGlobalScopes()->select('id', 'alias');
+                    }
+                ];
                 break;
             case 'themes':
                 $source = Theme::class;
@@ -606,9 +612,11 @@ class SiteController extends BaseAdminController
                 $compareKey = ['name', 'platform_id', 'module_id'];
                 $source = ModuleProp::class;
                 $resetId = true;
-                $withData = ['module' => function ($query) {
-                    $query->withoutGlobalScopes()->select('id', 'alias');
-                }];
+                $withData = [
+                    'module' => function ($query) {
+                        $query->withoutGlobalScopes()->select('id', 'alias');
+                    }
+                ];
                 break;
             default:
                 return ['error' => true, 'message' => "Don't know what to do."];
@@ -828,9 +836,11 @@ class SiteController extends BaseAdminController
                     break;
 
                 case 'moduleproperties':
-                    $data = ModuleProp::withoutGlobalScopes()->with(['module' => function($query) {
-                        $query->withoutGlobalScopes()->select('id', 'alias');
-                    }])->where('site_id', '=', $site_id)->orderBy('module_id')->orderBy('platform_id')->get();
+                    $data = ModuleProp::withoutGlobalScopes()->with([
+                        'module' => function ($query) {
+                            $query->withoutGlobalScopes()->select('id', 'alias');
+                        }
+                    ])->where('site_id', '=', $site_id)->orderBy('module_id')->orderBy('platform_id')->get();
                     break;
             }
 

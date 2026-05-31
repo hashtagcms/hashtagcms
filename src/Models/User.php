@@ -15,7 +15,8 @@ class User extends AdminBaseModel
     protected $guarded = [];
 
     protected $hidden = [
-        'password', 'remember_token',
+        'password',
+        'remember_token',
     ];
 
     //@override
@@ -67,5 +68,10 @@ class User extends AdminBaseModel
     public function profile()
     {
         return $this->hasOne(UserProfile::class);
+    }
+
+    public function getUserTypes()
+    {
+        return $this->getEnumValues('users', 'user_type');
     }
 }

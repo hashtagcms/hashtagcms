@@ -72,6 +72,9 @@ class LoginController extends FrontendBaseController
     {
 
         if (Auth::id() > 0) {
+            if ($request->filled('redirect')) {
+                return redirect($request->input('redirect'));
+            }
             return redirect()->intended(URL::previous());
         } else {
 
@@ -211,8 +214,16 @@ class LoginController extends FrontendBaseController
             return new JsonResponse(['message' => 'Login successful', 'redirect' => $this->redirectPath()], 200);
         }
 
-        return $this->authenticated($request, $this->guard()->user())
-            ?: redirect()->intended($this->redirectPath()); //URL::previous()
+        $authenticatedResponse = $this->authenticated($request, $this->guard()->user());
+        if ($authenticatedResponse) {
+            return $authenticatedResponse;
+        }
+
+        if ($request->filled('redirect')) {
+            return redirect($this->redirectPath());
+        }
+
+        return redirect()->intended($this->redirectPath()); //URL::previous()
     }
 
     /**

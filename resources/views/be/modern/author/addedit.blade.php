@@ -14,11 +14,12 @@
         $email = old('email');
         $roles = old('roles', []);
         $sites = old('sites', []);
-
+        $user_type = old('user_type', 'Staff');
 
         if (isset($results)) {
             extract($results);
         }
+
 
     @endphp
 
@@ -120,7 +121,13 @@
                         {!! FormHelper::input('text', 'password', $password, array('class' => 'form-control w-full bg-white border transition-all duration-300 outline-none font-bold text-sm tracking-tight py-3.5 rounded-xl px-4 pl-3 hover:border-gray-300 border-gray-300 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 text-gray-900', 'placeholder' => 'Enter Password')) !!}
                     @endif
                 </div>
+
+                <div class="space-y-2">
+                    {!! FormHelper::label('user_type', 'Author Type', array('class' => 'text-sm font-medium text-slate-700 block')) !!}
+                    {!! FormHelper::select('user_type', $userTypes, array('class' => 'form-control w-full bg-white border transition-all duration-300 outline-none font-bold text-sm tracking-tight py-3.5 rounded-xl px-4 pl-3 hover:border-gray-300 border-gray-300 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 text-gray-900', 'required' => 'required'), $user_type, "plain_array") !!}
+                </div>
             </div>
+
 
             <!-- Card Footer -->
             <div

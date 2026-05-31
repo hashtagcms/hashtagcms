@@ -1,5 +1,11 @@
 # Changelog
 
+#v3.0.6 Changes
+- Backend: Updated design and layout. Added collapsible sections for module add/edit forms
+- Backend: Site edit default currency selection issue is fixed.
+- Frontend: Restricted pages crash issue fix after new laravel update.
+
+
 #v3.0.5 Changes (after 3.0.0 release)
 - **Backend**: Preserve camelCase in toCamelCase and add soft-delete checks to unique validations
 - **Frontend**: Add breadcrumb helper.

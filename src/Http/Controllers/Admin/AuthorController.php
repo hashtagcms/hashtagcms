@@ -45,6 +45,7 @@ class AuthorController extends BaseAdminController
     protected $bindDataWithAddEdit = [
         'allRoles' => ['dataSource' => Role::class, 'method' => 'all'],
         'allSites' => ['dataSource' => Site::class, 'method' => 'all'],
+        'userTypes' => ['dataSource' => User::class, 'method' => 'getUserTypes'],
     ];
 
     /**
@@ -66,18 +67,18 @@ class AuthorController extends BaseAdminController
             $isSuperAdmin = in_array(strtolower($role->name), $superAdminSlugs);
 
             $rolePermissionsMap[$role->id] = [
-                'name'          => $role->name,
-                'description'   => $role->description ?? '',
-                'is_super_admin'=> $isSuperAdmin,
+                'name' => $role->name,
+                'description' => $role->description ?? '',
+                'is_super_admin' => $isSuperAdmin,
                 // site_access tells the view what to display for the Sites field
-                'site_access'   => $isSuperAdmin
+                'site_access' => $isSuperAdmin
                     ? 'all'        // super-admin: all sites automatically
                     : 'manual',    // admin/others: must be assigned specific sites
                 'site_access_label' => $isSuperAdmin
                     ? 'All sites (automatic — no site assignment needed)'
                     : 'Specific sites only — must be manually assigned below',
-                'permissions'   => $role->permissions->map(fn($p) => [
-                    'id'   => $p->id,
+                'permissions' => $role->permissions->map(fn($p) => [
+                    'id' => $p->id,
                     'name' => $p->name,
                 ])->values()->toArray(),
             ];
@@ -121,12 +122,12 @@ class AuthorController extends BaseAdminController
 
         $saveData['name'] = $data['name'];
         $saveData['email'] = $data['email'];
-        $saveData['user_type'] = 'Staff';
+        $saveData['user_type'] = $data['user_type'] ?? 'Staff';
 
-        $roles = $data['roles'] ?? [];  
+        $roles = $data['roles'] ?? [];
         $updateRoles = ($data['updateRoles'] ?? 0) == 1;
 
-        $sites = $data['sites'] ?? []; 
+        $sites = $data['sites'] ?? [];
         $updateSites = ($data['updateSites'] ?? 0) == 1;
 
         if (!empty($data['password'])) {
@@ -159,7 +160,7 @@ class AuthorController extends BaseAdminController
         $user = User::find($id);
 
         //Insert/Update Roles
-        if (!empty($roles) && $updateRoles == true) {            
+        if (!empty($roles) && $updateRoles == true) {
             $superAdminSlugs = ['super-admin', 'super-duper-admin'];
             $requestingRoles = Role::whereIn('id', $roles)->pluck('name')->map(fn($n) => strtolower($n))->toArray();
             $isAssigningSuperAdmin = !empty(array_intersect($requestingRoles, $superAdminSlugs));
@@ -203,7 +204,7 @@ class AuthorController extends BaseAdminController
     {
 
         if (!$this->checkPolicy('edit')) {
-            return htcms_admin_view('common.error', Message::getWriteError(), \request()->ajax()); 
+            return htcms_admin_view('common.error', Message::getWriteError(), \request()->ajax());
         }
 
         if ($user_id == 0) {

@@ -176,7 +176,7 @@
                 </section>
 
                 <!-- Section 2: Rich Content -->
-                <section data-collapsible="cat-rich-content" data-collapsed="true"
+                <section data-collapsible="cat-rich-content" data-collapsed="false"
                     class="rounded-2xl border border-slate-100 overflow-hidden">
                     <div data-collapsible-trigger
                         class="flex items-center gap-4 px-6 py-4 bg-slate-50/60 hover:bg-slate-100/60 cursor-pointer select-none transition-colors">
@@ -220,7 +220,7 @@
                 </section>
 
                 <!-- Section 3: Specialized Settings -->
-                <section data-collapsible="cat-specialized" data-collapsed="true"
+                <section data-collapsible="cat-specialized" data-collapsed="false"
                     class="rounded-2xl border border-slate-100 overflow-hidden">
                     <div data-collapsible-trigger
                         class="flex items-center gap-4 px-6 py-4 bg-slate-50/60 hover:bg-slate-100/60 cursor-pointer select-none transition-colors">

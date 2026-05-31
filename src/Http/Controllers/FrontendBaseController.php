@@ -57,12 +57,10 @@ class FrontendBaseController extends Controller
                 abort(Response::HTTP_NOT_FOUND, 'Content not found!');
             }
 
-            if (isset($data['isLoginRequired']) && $data['isLoginRequired'] && auth()->user()->id == null) {
-                $category = $infoLoader->getCategoryData();
-                $category = $category['linkRewrite'];
-                $reqParams = request()->all();
+            if (isset($data['isLoginRequired']) && $data['isLoginRequired'] && auth()->guest()) {
+                $redirectUrl = request()->getRequestUri();
 
-                return Redirect::to("/login?redirect=/$category?".http_build_query($reqParams, '', '&'));
+                return redirect("/login?redirect=" . urlencode($redirectUrl));
             }
 
         } catch (NotFoundExceptionInterface|ContainerExceptionInterface $e) {
