@@ -66,6 +66,18 @@
             $lang["name"] = "";
         }
 
+        // Template/dynamic page content (Blade/PHP, JSP, Twig, Handlebars…) must be edited
+        // as raw source — a WYSIWYG rich editor corrupts the tokens (smart-quotes,
+        // <p>-wrapping, entity re-escaping on save). This is only the DEFAULT for the
+        // raw-source toggle below; the author can flip it either way. Language-agnostic on
+        // purpose — see htcms_is_raw_source_content().
+        $isRawSource = function_exists('htcms_is_raw_source_content')
+            && htcms_is_raw_source_content($lang["page_content"] ?? '');
+
+        // Same treatment for the teaser/abstract — it can also carry template tokens.
+        $isRawSourceDesc = function_exists('htcms_is_raw_source_content')
+            && htcms_is_raw_source_content($lang["description"] ?? '');
+
     @endphp
 
 
@@ -170,14 +182,42 @@
                     <div data-collapsible-body style="transition: max-height 0.35s ease, overflow 0s 0.35s;">
                         <div class="p-6 space-y-8">
                             <div class="space-y-2">
-                                {!! FormHelper::label('lang_description', 'Teaser / Abstract (Short Summary)', array('class' => 'text-sm font-medium text-slate-700 block')) !!}
-                                {!! FormHelper::textarea('lang_description', htmlentities($lang["description"]), array('class' => 'form-control w-full bg-white border transition-all duration-300 outline-none font-bold text-xs tracking-tight py-3.5 rounded-xl px-4 pl-3 hover:border-gray-300 border-gray-300 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 text-gray-900', 'id' => 'lang_description', 'rows' => 10)) !!}
+                                <div class="flex items-center justify-between gap-3">
+                                    {!! FormHelper::label('lang_description', 'Teaser / Abstract (Short Summary)', array('class' => 'text-sm font-medium text-slate-700 block')) !!}
+                                    {{-- Editor-only toggle (not submitted/persisted). Default comes from
+                                         server-side auto-detection; the author always has the final say. --}}
+                                    <label for="raw_source_toggle_desc" class="flex items-center gap-2 text-xs font-semibold text-slate-500 cursor-pointer select-none">
+                                        <input type="checkbox" id="raw_source_toggle_desc" class="rounded border-slate-300 text-blue-600 focus:ring-blue-500/20" @checked($isRawSourceDesc) />
+                                        <span>Edit as raw source (disable rich text editor)</span>
+                                    </label>
+                                </div>
+                                <p id="raw_source_notice_desc" class="text-xs font-semibold text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 mb-2 {{ $isRawSourceDesc ? '' : 'hidden' }}">
+                                    <i class="fa fa-code"></i> Editing raw source &mdash; the rich text editor is disabled so template tokens (Blade, JSP, Twig, helper calls, etc.) are not corrupted on save.
+                                </p>
+                                {{-- v-pre / x-ignore: keep any client-side templating engine from trying to
+                                     interpret template tokens (e.g. {{ ... }}) sitting inside the raw source. --}}
+                                <div class="rounded-xl overflow-hidden border border-slate-200 shadow-sm" @if($isRawSourceDesc) v-pre x-ignore @endif>
+                                    {!! FormHelper::textarea('lang_description', htmlentities($lang["description"]), array_merge(array('class' => 'form-control w-full bg-white border transition-all duration-300 outline-none font-bold text-xs tracking-tight py-3.5 rounded-xl px-4 pl-3 hover:border-gray-300 border-gray-300 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 text-gray-900', 'id' => 'lang_description', 'rows' => 10), $isRawSourceDesc ? array('style' => 'font-family: ui-monospace, SFMono-Regular, Menlo, monospace; white-space: pre;') : array())) !!}
+                                </div>
                             </div>
 
                             <div class="space-y-2">
-                                {!! FormHelper::label('lang_page_content', 'Full Page Body Content', array('class' => 'text-sm font-medium text-slate-700 block')) !!}
-                                <div class="rounded-xl overflow-hidden border border-slate-200 shadow-sm">
-                                    {!! FormHelper::textarea('lang_page_content', htmlentities($lang["page_content"]), array('class' => 'form-control w-full bg-white border transition-all duration-300 outline-none font-bold text-xs tracking-tight py-3.5 rounded-xl px-4 pl-3 hover:border-gray-300 border-gray-300 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 text-gray-900', 'id' => 'lang_page_content', 'rows' => 20)) !!}
+                                <div class="flex items-center justify-between gap-3">
+                                    {!! FormHelper::label('lang_page_content', 'Full Page Body Content', array('class' => 'text-sm font-medium text-slate-700 block')) !!}
+                                    {{-- Editor-only toggle (not submitted/persisted). Default comes from
+                                         server-side auto-detection; the author always has the final say. --}}
+                                    <label for="raw_source_toggle" class="flex items-center gap-2 text-xs font-semibold text-slate-500 cursor-pointer select-none">
+                                        <input type="checkbox" id="raw_source_toggle" class="rounded border-slate-300 text-blue-600 focus:ring-blue-500/20" @checked($isRawSource) />
+                                        <span>Edit as raw source (disable rich text editor)</span>
+                                    </label>
+                                </div>
+                                <p id="raw_source_notice" class="text-xs font-semibold text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 mb-2 {{ $isRawSource ? '' : 'hidden' }}">
+                                    <i class="fa fa-code"></i> Editing raw source &mdash; the rich text editor is disabled so template tokens (Blade, JSP, Twig, helper calls, etc.) are not corrupted on save.
+                                </p>
+                                {{-- v-pre / x-ignore: keep any client-side templating engine from trying to
+                                     interpret template tokens (e.g. {{ ... }}) sitting inside the raw source. --}}
+                                <div class="rounded-xl overflow-hidden border border-slate-200 shadow-sm" @if($isRawSource) v-pre x-ignore @endif>
+                                    {!! FormHelper::textarea('lang_page_content', htmlentities($lang["page_content"]), array_merge(array('class' => 'form-control w-full bg-white border transition-all duration-300 outline-none font-bold text-xs tracking-tight py-3.5 rounded-xl px-4 pl-3 hover:border-gray-300 border-gray-300 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 text-gray-900', 'id' => 'lang_page_content', 'rows' => 20), $isRawSource ? array('style' => 'font-family: ui-monospace, SFMono-Regular, Menlo, monospace; white-space: pre;') : array())) !!}
                                 </div>
                             </div>
 
@@ -356,8 +396,48 @@
     <script>
         window.addEventListener("load", function () {
             try {
+                @if(!$isRawSource)
                 EditorHelper.makeRichEditor("#lang_page_content");
+                @endif
+                @if(!$isRawSourceDesc)
                 EditorHelper.makeRichEditor("#lang_description", { height: 300 });
+                @endif
+
+                // Raw-source toggle: swap between the TinyMCE rich editor and a plain
+                // monospace textarea so template tokens (Blade/JSP/Twig/…) aren't corrupted.
+                // Shared by the page body and the teaser/abstract fields.
+                function setupRawSourceToggle(toggleId, textareaId, noticeId, editorOpts) {
+                    var toggle = document.getElementById(toggleId);
+                    var textarea = document.getElementById(textareaId);
+                    var notice = document.getElementById(noticeId);
+                    if (!toggle || !textarea) return;
+
+                    function applyRawMode(isRaw) {
+                        if (isRaw) {
+                            // Tear down TinyMCE via the global (Route B). TODO: replace with
+                            // EditorHelper.destroyRichEditor() once added to @hashtagcms/admin-ui-kit.
+                            if (window.tinymce) {
+                                var ed = tinymce.get(textareaId);
+                                if (ed) ed.remove();
+                            }
+                            textarea.style.fontFamily = "ui-monospace, SFMono-Regular, Menlo, monospace";
+                            textarea.style.whiteSpace = "pre";
+                            if (notice) notice.classList.remove("hidden");
+                        } else {
+                            textarea.style.fontFamily = "";
+                            textarea.style.whiteSpace = "";
+                            if (notice) notice.classList.add("hidden");
+                            EditorHelper.makeRichEditor("#" + textareaId, editorOpts || {});
+                        }
+                    }
+
+                    toggle.addEventListener("change", function (e) {
+                        applyRawMode(e.target.checked);
+                    });
+                }
+
+                setupRawSourceToggle("raw_source_toggle", "lang_page_content", "raw_source_notice");
+                setupRawSourceToggle("raw_source_toggle_desc", "lang_description", "raw_source_notice_desc", { height: 300 });
                 PageManager.init("<?php echo $actionPerformed; ?>", "<?php echo $content_type ?>", "<?php echo $id ?>", {
                     dependencies: [
                         {

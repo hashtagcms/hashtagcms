@@ -1,5 +1,10 @@
 # Changelog
 
+#v3.0.7 Changes
+- Frontend: Page content and story teaser/abstract can now contain Blade/PHP template tokens, which are compiled at render time via the new `htcms_render_content()` helper (with a safe fallback to raw content on error). Applies to page body (story view) and story listings.
+- Backend: Page add/edit editor now auto-detects template/dynamic content (Blade/PHP, JSP, Twig, Handlebars) and offers an "Edit as raw source" toggle that disables the rich text editor so template tokens are not corrupted on save. Available for both the Full Page Body Content and the Teaser/Abstract fields.
+- Core: Added `htcms_is_dynamic_content()` (Blade/PHP detection) and `htcms_render_content()` in FrontendHelper, and `htcms_is_raw_source_content()` (language-agnostic editor default) in AdminHelper.
+
 #v3.0.6 Changes
 - Backend: Updated design and layout. Added collapsible sections for module add/edit forms
 - Backend: Site edit default currency selection issue is fixed.

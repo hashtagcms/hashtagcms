@@ -319,3 +319,36 @@ if(!function_exists('htcms_get_admin_theme')){
         return config('hashtagcmsadmin.cmsInfo.theme');
     }
 }
+
+if (!function_exists('htcms_is_raw_source_content')) {
+
+    /**
+     * True when page content should be edited as raw source (rich WYSIWYG disabled),
+     * because a WYSIWYG editor corrupts template tokens on save — smart-quoting strings,
+     * <p>-wrapping, and re-escaping entities.
+     *
+     * This is deliberately LANGUAGE-AGNOSTIC: HashtagCMS delivers raw `pageContent` over
+     * the API to whatever frontend the integrator builds, so content may target Blade/PHP
+     * OR a non-PHP engine (JSP `<% %>` / EL `${}` / JSTL `<c:...>`, Twig `{% %}` / `{# #}`,
+     * Handlebars/Vue `{{ }}`). Any of those must skip the rich editor.
+     *
+     * It is only a DEFAULT for the editor's raw-source toggle — the author can always
+     * override it. It is NOT the signal for Blade compilation; that stays strictly
+     * Blade/PHP-specific in htcms_is_dynamic_content() (FrontendHelper), so JSP/Twig
+     * content is never accidentally run through Blade::render().
+     */
+    function htcms_is_raw_source_content(?string $content): bool
+    {
+        if ($content === null || $content === '') {
+            return false;
+        }
+
+        // Blade/PHP (reuse the canonical Blade detector) …
+        if (function_exists('htcms_is_dynamic_content') && htcms_is_dynamic_content($content)) {
+            return true;
+        }
+
+        // … or non-PHP template markers: JSP scriptlets/EL, JSTL tags, Twig blocks/comments.
+        return (bool) preg_match('/<%|%>|\$\{|#\{|\{%|\{#|<\/?c:/', $content);
+    }
+}

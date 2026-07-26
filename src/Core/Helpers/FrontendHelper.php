@@ -565,3 +565,74 @@ if (!function_exists('htcms_get_performance')) {
         return $val;
     }
 }
+
+if (!function_exists('htcms_is_dynamic_content')) {
+
+    /**
+     * True when a content string contains Blade/PHP that the bundled Blade frontend must
+     * compile (see htcms_render_content). Detects Blade echoes (`{{`, `{!!`), raw `<?php`,
+     * and a whitelist of Blade directives — but NOT a bare `@word`, so emails like
+     * `name@host` don't trigger a false positive.
+     *
+     * This is intentionally Blade/PHP-specific: it decides whether to run `Blade::render()`.
+     * It must NOT match non-PHP templating (JSP `<% %>`, EL `${}`, etc.) — that content is
+     * consumed raw by an external frontend and must never be Blade-compiled. For the admin
+     * editor's "edit as raw source" decision (which IS language-agnostic) see
+     * htcms_is_raw_source_content() in AdminHelper.
+     */
+    function htcms_is_dynamic_content(?string $content): bool
+    {
+        if ($content === null || $content === '') {
+            return false;
+        }
+
+        return (bool) preg_match(
+            '/\{\{|\{!!|<\?php|@(php|if|else|elseif|endif|unless|foreach|for|forelse|while|switch|isset|empty|auth|guest|can|cannot|include|includeIf|component|each|section|yield|extends|csrf|method|error|class|style|checked|selected|disabled|json|lang|props|vite|once|env|production)\b/i',
+            $content
+        );
+    }
+}
+
+if (!function_exists('htcms_render_content')) {
+
+    /**
+     * Render CMS-authored content that may contain Blade/PHP directives.
+     *
+     * Content stored in the database (e.g. a page's `page_content`) and printed with
+     * `{!! $content !!}` is NOT compiled by Blade — so any `{{ }}`, `@if`, `@foreach`,
+     * `@php`, or `<?php ?>` inside it shows up as literal text. This helper runs the
+     * string through `Blade::render()` so those directives are actually evaluated.
+     *
+     * SECURITY: this executes arbitrary PHP embedded in the content. Use it ONLY for
+     * content authored by trusted admin/staff. Never pass user-submitted content to it.
+     *
+     * Resilient by design: content with no Blade/PHP tokens is returned untouched, and
+     * any compile/runtime error logs a warning and falls back to the raw content so a
+     * single bad snippet can never white-screen the page.
+     *
+     * @param  string|null  $content  Raw content, typically from the CMS.
+     * @param  array<string, mixed>  $data  Variables exposed to the content.
+     */
+    function htcms_render_content(?string $content, array $data = []): string
+    {
+        if (blank($content)) {
+            return '';
+        }
+
+        // Nothing dynamic to compile → return as-is (avoids Blade compilation overhead
+        // and temp-file creation for the common case of plain HTML content). Uses the
+        // same Blade detector the admin editor consults, so "editor treated it as raw
+        // Blade" and "frontend compiled it as Blade" always agree.
+        if (!htcms_is_dynamic_content($content)) {
+            return $content;
+        }
+
+        try {
+            return \Illuminate\Support\Facades\Blade::render($content, $data);
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning('htcms_render_content: failed to render dynamic content — ' . $e->getMessage());
+
+            return $content;
+        }
+    }
+}

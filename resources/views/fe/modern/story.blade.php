@@ -33,7 +33,7 @@
                     
                     <div class="p-10 lg:p-16">
                         <div class="prose prose-slate max-w-none text-slate-600 leading-relaxed italic-quote">
-                            {!! $data['page_content'] !!}
+                            {!! htcms_render_content($data['page_content'], ['data' => $data]) !!}
                         </div>
                     </div>
                 </article>

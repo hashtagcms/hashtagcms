@@ -38,7 +38,7 @@
                         </h2>
                         
                         <div class="prose prose-xl text-ocean-deep/80 mb-12 line-clamp-3">
-                            {!! $firstStory['description'] !!}
+                            {!! htcms_render_content($firstStory['description'], ['data' => $firstStory]) !!}
                         </div>
 
                         <div class="flex flex-col sm:flex-row items-center justify-between pt-8 border-t border-ocean-light/30 gap-6">
@@ -90,7 +90,7 @@
                                 </h3>
                                 
                                 <div class="prose prose-md text-ocean-navy/70 mb-8 line-clamp-3 flex-1 font-light">
-                                    {!!  $story['description'] !!}
+                                    {!! htcms_render_content($story['description'], ['data' => $story]) !!}
                                 </div>
 
                                 <div class="flex items-center justify-between pt-6 border-t border-ocean-surf mt-auto">
