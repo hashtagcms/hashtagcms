@@ -2,7 +2,7 @@
 <html lang="{{ app()->getLocale() }}" dir="{{ app('HashtagCmsLayoutManager')->isRtl() }}">
 
 <head>
-    <meta charset="utf-8">    
+    <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -45,13 +45,16 @@
         <input type="submit" value="Logout">
     </form>
     <div class="small" style="padding:10px; text-align: center;">
-        <a title="#CMS" href="https://www.hashtagcms.org/">{{ htcms_trans('hashtagcms::links.powered_by') }} HashtagCMS</a>
+        <a title="#CMS" href="https://www.hashtagcms.org/">{{ htcms_trans('hashtagcms::links.powered_by') }}
+            HashtagCMS</a>
     </div>
 
     {!! $layoutManager->getFooterContent() !!}
-    <div class="text-[10px] text-slate-400 py-5 text-center">        
-        <span class="hidden">{{ htcms_trans('hashtagcms::links.config_loader') }}: {{ htcms_get_performance('configLoadTime') }}ms |</span>
-        <span class="hidden">{{ htcms_trans('hashtagcms::links.data_loader') }}: {{ htcms_get_performance('loadDataTime') }}ms |</span>
+    <div class="text-[10px] text-slate-400 py-5 text-center">
+        <span class="hidden">{{ htcms_trans('hashtagcms::links.config_loader') }}:
+            {{ htcms_get_performance('configLoadTime') }}ms |</span>
+        <span class="hidden">{{ htcms_trans('hashtagcms::links.data_loader') }}:
+            {{ htcms_get_performance('loadDataTime') }}ms |</span>
         <span>{{ htcms_trans('hashtagcms::links.page_render') }}: {{ htcms_get_performance('pageRenderTime') }}ms</span>
     </div>
 
@@ -80,7 +83,13 @@
     @endif
     <script>
         try {
-            HashtagCms.Analytics.trackCmsPage({ categoryId: _siteProps_.categoryId, pageId: _siteProps_.pageId })
+            // A page or category can opt out of read-count tracking by placing
+            // window.__disable_tracking__ = 1 (inside a script tag) in its
+            // header_content. When present, we skip the analytics API call so
+            // the read_count is not incremented for this view.
+            if (typeof window.__disable_tracking__ === 'undefined' || window.__disable_tracking__ === 0) {
+                HashtagCms.Analytics.trackCmsPage({ categoryId: _siteProps_.categoryId, pageId: _siteProps_.pageId })
+            }
         } catch (e) {
             console.error(e.message, "@", e.fileName);
         }

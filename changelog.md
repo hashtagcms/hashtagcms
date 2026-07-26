@@ -4,6 +4,8 @@
 - Frontend: Page content and story teaser/abstract can now contain Blade/PHP template tokens, which are compiled at render time via the new `htcms_render_content()` helper (with a safe fallback to raw content on error). Applies to page body (story view) and story listings.
 - Backend: Page add/edit editor now auto-detects template/dynamic content (Blade/PHP, JSP, Twig, Handlebars) and offers an "Edit as raw source" toggle that disables the rich text editor so template tokens are not corrupted on save. Available for both the Full Page Body Content and the Teaser/Abstract fields.
 - Core: Added `htcms_is_dynamic_content()` (Blade/PHP detection) and `htcms_render_content()` in FrontendHelper, and `htcms_is_raw_source_content()` (language-agnostic editor default) in AdminHelper.
+- Core: Page-read count (`read_count`) increment no longer updates the record's `updated_at`. `AnalyticsLogger::flush()` now increments via the base query builder (`toBase()`) so a page view does not bump the modified timestamp of the page/category.
+- Frontend: Pages and categories can now opt out of read-count tracking. Placing `<script>window.__disable_tracking__ = 1;</script>` in a page's or category's `header_content` skips the KPI publish API call for that view, so its `read_count` is not incremented. No migration required — controlled entirely from `header_content`.
 
 #v3.0.6 Changes
 - Backend: Updated design and layout. Added collapsible sections for module add/edit forms

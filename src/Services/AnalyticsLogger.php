@@ -42,9 +42,13 @@ class AnalyticsLogger
 
             if ($modelClass) {
                 foreach ($ids as $id => $count) {
-                    // Update read_count
+                    // Update read_count only.
+                    // Use the base query builder (toBase) so Eloquent does NOT
+                    // touch updated_at: a page-read bump must not change the
+                    // record's modified timestamp.
                     // We can optimise this later to use raw update case when... but for now simple loop is fine as it runs on terminate
-                    $modelClass::withoutGlobalScopes()->where('id', $id)->increment('read_count', $count);
+                    $modelClass::withoutGlobalScopes()->where('id', $id)
+                        ->toBase()->increment('read_count', $count);
                 }
             }
         }
