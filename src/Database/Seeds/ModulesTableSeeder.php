@@ -84,8 +84,8 @@ and pl.lang_id=:lang_id
 and p.publish_status=1 
 and c.id=:category_id 
 and p.deleted_at is null
-and (p.publish_at IS NULL OR p.publish_at <= NOW()) 
-and (p.expire_at IS NULL OR p.expire_at >= NOW())',
+and (p.publish_at IS NULL OR p.publish_at <= CURRENT_TIMESTAMP)
+and (p.expire_at IS NULL OR p.expire_at >= CURRENT_TIMESTAMP)',
                 'data_key_map' => 'link_rewrite,site_id,lang_id,category_id',
                 'description' => NULL,
                 'is_mandatory' => '1',
