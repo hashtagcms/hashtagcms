@@ -31,7 +31,6 @@ Route::prefix($adminBasePath)->group(function () use ($namespace, $appNamespace,
         return response()->json(['status' => 'alive']);
     })->middleware(['web', 'auth:sanctum'])->name('admin.heartbeat');
 
-
     Route::match(['get', 'post', 'delete'], '{controller?}/{method?}/{params?}', function (Request $request, $controller = '', $method = '', $params = null) use ($namespace, $appNamespace, $defaultPage) {
 
         // Set controller only once

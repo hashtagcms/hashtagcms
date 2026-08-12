@@ -89,6 +89,24 @@ let themesForFrontend = [
     }
 ];
 
+// Dynamically merge AI-generated theme manifest if present
+const manifestPath = path.resolve(__dirname, 'config/webpack.themes.json');
+if (fs.existsSync(manifestPath)) {
+    try {
+        const extraThemes = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+        if (Array.isArray(extraThemes)) {
+            extraThemes.forEach(t => {
+                if (!themesForFrontend.some(existing => existing.theme.source === t.theme.source)) {
+                    themesForFrontend.push(t);
+                }
+            });
+        }
+    } catch (e) {
+        console.warn("HashtagCms: Error reading config/webpack.themes.json", e);
+    }
+}
+
+
 let themesForBackend = [
     {
         theme: { source: 'modern', type: 'theme' }, //folder

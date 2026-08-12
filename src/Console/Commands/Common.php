@@ -414,9 +414,12 @@ trait Common
             if (!Str::endsWith($name, '_id')) {
                 continue;
             }
-            $relation      = str_replace('_id', '', $name);               // zone
-            $relationPlural = Str::plural($relation);                      // zones
-            $modelClass    = Str::studly($relation);                       // Zone
+            $relation      = str_replace('_id', '', $name);               // zone / tpl_winery
+            // Key must match the view variable generateViewFormFields() emits:
+            //   $rel = Str::camel(Str::plural(base)) — camelCase so multi-word
+            //   FKs (tpl_winery_id → $tplWineries) resolve, not just single words.
+            $relationPlural = Str::camel(Str::plural($relation));         // zones / tplWineries
+            $modelClass    = Str::studly($relation);                       // Zone / TplWinery
             $bindings[]    = "        '{$relationPlural}' => ['dataSource' => {$modelClass}::class, 'method' => 'all']";
         }
 
