@@ -220,7 +220,7 @@ trait HasCrudHelpers
             $backURL_arr = explode('?', $backURL);
             $backURL_Base = $backURL_arr[0];
 
-            parse_str(parse_url(html_entity_decode($backURL), PHP_URL_QUERY), $queryParams_arr);
+            parse_str(parse_url(html_entity_decode($backURL), PHP_URL_QUERY) ?? '', $queryParams_arr);
             $queryParams_arr['id'] = $id;
             $params = http_build_query($queryParams_arr);
 
@@ -259,7 +259,7 @@ trait HasCrudHelpers
 
     protected function getSearchButtonStatus()
     {
-        return $this->showSearch ?? true;
+        return $this->showSearchButton ?? true;
     }
 
     /**
@@ -306,26 +306,16 @@ trait HasCrudHelpers
         }
 
         $targetView = ltrim($targetView, '.');
+        $rawView = str_replace('/', '.', $targetView);
 
         // Handle Package Prefix
         if($moduleInfo->package != null && !str_contains($targetView, '::')) {
             $targetView = $moduleInfo->package.'::'.$targetView;
         }
 
-        // Normalize path
-        // Ensure we don't have leading dots if it's just a path, unless expected by helper
-        // But previously we added leading dot for list_view_name? 
-        // AdminHelper::htcms_admin_get_view_path handles ltrim('.', $name).
-        // So we can be clean here.
-        
         $targetView = str_replace('/', '.', $targetView);
         
-        // If explicitly defined view starts with dot, preserve it? 
-        // Actually, cleaner to rely on AdminHelper to prepend Theme if no :: exists.
-        // example for below line 
-        // [0] => "hashtagcms-extended::admin.users.listing"
-        // [1] => "common.listing"
-        return [$targetView, $fallback];
+        return array_values(array_unique(array_filter([$targetView, $rawView, $fallback])));
     }
     
 }

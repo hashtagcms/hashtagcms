@@ -17,10 +17,13 @@ if (! function_exists('htcms_admin_view')) {
     {
 
         if (is_array($name)) {
-            $name = array_map(
-                function ($arg) {
-                    return htcms_admin_get_view_path($arg);
-                }, $name);
+            $viewCandidates = [];
+            foreach ($name as $arg) {
+                $viewCandidates[] = htcms_admin_get_view_path($arg);
+                $viewCandidates[] = ltrim($arg, '.');
+            }
+            $viewCandidates[] = htcms_admin_get_view_path('common.error');
+            $name = array_values(array_unique($viewCandidates));
 
         } else {
 
@@ -29,7 +32,7 @@ if (! function_exists('htcms_admin_view')) {
                 $data['title'] = 'Whooops!';
                 $data['message'] = 'View not found! '.htcms_admin_get_view_path($name);
             }
-            $name = [htcms_admin_get_view_path($name), htcms_admin_get_view_path('common.error')]; //if there is no view defined
+            $name = [htcms_admin_get_view_path($name), ltrim($name, '.'), htcms_admin_get_view_path('common.error')]; //if there is no view defined
         }
 
         // Standardize Back Link Case Sensitivity and provide default
