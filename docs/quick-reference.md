@@ -124,15 +124,15 @@ GET /api/hashtagcms/health-check
 
 # Site config
 GET /api/hashtagcms/public/configs/v1/site-configs
-    ?site=htcms&api_secret=your_secret
+    ?site=htcms
 
 # Load data
 GET /api/hashtagcms/public/sites/v1/load-data
-    ?site=htcms&link_rewrite=page&api_secret=your_secret
+    ?site=htcms&link_rewrite=page
 
 # Mobile data
 GET /api/hashtagcms/public/sites/v1/load-data-mobile
-    ?site=htcms&link_rewrite=page&api_secret=your_secret
+    ?site=htcms&link_rewrite=page
 
 # Register
 POST /api/hashtagcms/public/user/v1/register
@@ -216,9 +216,6 @@ HASHTAGCMS_FEATURE_TOKEN=your_token
 'domains' => [
     'site1.com' => 'site1',
     'site2.com' => 'site2',
-],
-'api_secrets' => [
-    'site1' => env('API_SECRET', 'secret1'),
 ],
 ```
 
@@ -307,7 +304,7 @@ php artisan storage:link
 ### JavaScript/Fetch
 ```javascript
 // Get page data
-fetch('http://api.example.com/api/hashtagcms/public/sites/v1/load-data?site=htcms&link_rewrite=about&api_secret=secret')
+fetch('http://api.example.com/api/hashtagcms/public/sites/v1/load-data?site=htcms&link_rewrite=about')
     .then(r => r.json())
     .then(data => console.log(data));
 

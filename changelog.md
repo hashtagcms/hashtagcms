@@ -1,5 +1,11 @@
 # Changelog
 
+#v3.0.8 Changes
+- **Core / API**: The base API route prefix is now fully configurable via `config/hashtagcmsapi.php` and `.env` (`HASHTAGCMS_API_PREFIX`), allowing custom API endpoint route prefixes.
+- **Core / API**: Completely removed `api_secret` requirement across HashtagCMS. Public API endpoints (`/configs/v1/site-configs`, `/sites/v1/load-data`) are now publicly accessible without requiring an `api_secret` parameter or header.
+- **Cache Controller**: Removed `api_secret` validation on cache management endpoints; cache clearing actions rely on standard `auth:sanctum` middleware authorization.
+- **Config & External Loading**: Removed `api_secrets` array from `config/hashtagcms.php` and removed `api_secret` parameters/headers when loading data from external HashtagCMS instances.
+
 #v3.0.7 Changes
 - Frontend: Page content and story teaser/abstract can now contain Blade/PHP template tokens, which are compiled at render time via the new `htcms_render_content()` helper (with a safe fallback to raw content on error). Applies to page body (story view) and story listings.
 - Backend: Page add/edit editor now auto-detects template/dynamic content (Blade/PHP, JSP, Twig, Handlebars) and offers an "Edit as raw source" toggle that disables the rich text editor so template tokens are not corrupted on save. Available for both the Full Page Body Content and the Teaser/Abstract fields.

@@ -24,18 +24,8 @@ class ServiceController extends ApiBaseController
         $lang = $query['lang'] ?? $request->header('x-lang');
         $platform = $query['platform'] ?? $request->header('x-platform');
 
-        //Basic level of api check -
-        // site context and api secret should be there in config/hashtagcms.php
-        //Basic level of api check -
-        // site context and api secret should be there in config/hashtagcms.php
-        $api_secret = $query['api_secret'] ?? $request->header('x-api-secret');
-        if (empty($api_secret)) {
-            return response()->json(['message' => 'Api secret is missing.', 'status' => Response::HTTP_BAD_REQUEST], Response::HTTP_BAD_REQUEST);
-        }
-
-        $secrets = config('hashtagcms.api_secrets');
-        if (!isset($secrets[$context]) || $secrets[$context] !== $api_secret) {
-            return response()->json(['message' => 'API secret or site context is not valid', 'status' => Response::HTTP_BAD_REQUEST], Response::HTTP_BAD_REQUEST);
+        if (empty($context)) {
+            return response()->json(['message' => 'Site context is missing.', 'status' => Response::HTTP_BAD_REQUEST], Response::HTTP_BAD_REQUEST);
         }
 
         $loader = new ServiceLoader();

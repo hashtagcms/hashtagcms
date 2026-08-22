@@ -78,7 +78,6 @@ class BlogController extends FrontendBaseController
     private function fetchBlogsFromExternalApi($category, $limit)
     {
         $context = config('hashtagcms.context');
-        $apiSecret = config('hashtagcms.api_secrets.' . $context);
         $apiUrl = config('hashtagcms.blog_latests_api') ?? str_replace('/load-data', '/blog/latests', config('hashtagcms.externals.data_api'));
 
         // Cache Key
@@ -87,7 +86,7 @@ class BlogController extends FrontendBaseController
         $cacheKey = "{$prefix}" . CacheKeys::EXTERNAL_BLOG . "_{$context}_{$catKey}_{$limit}";
         $cacheTTL = config('hashtagcms.externals.external_data_cache_ttl', 30);
 
-        $callback = function () use ($apiUrl, $apiSecret, $context, $category, $limit) {
+        $callback = function () use ($apiUrl, $context, $category, $limit) {
 
             $payload = [
                 'site' => $context,
@@ -109,7 +108,6 @@ class BlogController extends FrontendBaseController
             try {
                 $response = Http::withHeaders([
                     'Content-Type' => 'application/json',
-                    'api_key' => $apiSecret
                 ])->get($apiUrl, $payload);
 
                 if ($response->successful()) {

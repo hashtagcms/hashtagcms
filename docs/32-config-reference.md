@@ -62,18 +62,6 @@ Maps Domain Names (Host) to Site Contexts.
 
 ---
 
-### `api_secrets` Array
-Authentication keys for Site Contexts.
-**Critical**: Key must match Context.
-```php
-'api_secrets' => [
-    'hashtagcms' => env('API_SECRET', '...'),
-    'web' => 'some-secret-key'
-]
-```
-
----
-
 ### `externals` Array
 Configuration for Headless mode and External API loading.
 

@@ -27,7 +27,6 @@
 ### "404 on API" or "Site Not Found"
 -   **Domain Mapping**: Check `config/hashtagcms.php`. Your request domain (e.g., `localhost`) must map to a `context` (e.g., `web`).
 -   **Headers**: APIs often require `x-site` or `site` parameter if domain detection fails.
--   **Secrets**: Public APIs need `api_secret` or `x-api-secret`.
 
 ## Permissions & Server
 ### "Permission Denied" (Logs/Storage)

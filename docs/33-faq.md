@@ -122,15 +122,9 @@ See [Multi-Site Guide](05-multisite.md).
 
 Yes! HashtagCMS has a complete RESTful API. See [API & Headless CMS Guide](13-api-headless.md).
 
-### How do I get an API secret?
+### Do public APIs require an API secret?
 
-API secrets are configured in `config/hashtagcms.php`:
-
-```php
-'api_secrets' => [
-    'htcms' => env('API_SECRET', 'your_secret_key'),
-],
-```
+No. Public APIs (like `/configs/v1/site-configs` and `/sites/v1/load-data`) do not require an API secret key. Access is open and resolved via the site context parameter (`site`).
 
 ### What authentication method does the API use?
 

@@ -17,21 +17,13 @@ http://your-domain.com/api/hashtagcms/
 
 ### Authentication
 
-HashtagCMS uses Laravel Sanctum for API authentication.
-
-### 1. API Secret (Public Endpoints)
-Most "Public" endpoints (like fetching site data) still require a basic security check to prevent unauthorized cross-origin use or scraping.
--   **Header**: `api_key: YOUR_SECRET`
--   **Query Param**: `?api_secret=YOUR_SECRET`
-
-This secret is defined in your `.env` as `API_SECRET` and mapped in `config/hashtagcms.php`. The system validates that the provided secret matches the one configured for the current **Site Context**.
-
-### 2. Sanctum Token (User Endpoints)
-Protected endpoints (User Profile, Orders) require a standard Bearer Token.
+HashtagCMS uses Laravel Sanctum for API authentication. Public endpoints (such as site configs and load-data) do not require authentication.
 
 #### Public Endpoints
 No authentication required:
 - Health check
+- Site configuration (`/api/hashtagcms/public/configs/v1/site-configs`)
+- Load page data (`/api/hashtagcms/public/sites/v1/load-data`)
 - User registration
 - User login
 
@@ -69,17 +61,16 @@ curl -X GET "http://your-domain.com/api/hashtagcms/health-check"
 
 **Purpose**: Get site configuration and metadata
 
-**Authentication**: API Secret **Site Context** (query parameter)
+**Authentication**: None (Requires valid `site` context parameter)
 
 **Parameters**:
 - `site` (required): Site context key
-- `api_secret` (required): API secret key
 - `lang_id` (optional): Language ID (default: 1)
 - `platform_id` (optional): Platform ID (default: 1)
 
 **Request**:
 ```bash
-curl -X GET "http://your-domain.com/api/hashtagcms/public/configs/v1/site-configs?site=htcms&api_secret=your_secret"
+curl -X GET "http://your-domain.com/api/hashtagcms/public/configs/v1/site-configs?site=htcms"
 ```
 
 **Response**:
@@ -124,11 +115,10 @@ curl -X GET "http://your-domain.com/api/hashtagcms/public/configs/v1/site-config
 
 **Purpose**: Load complete page data including modules and content
 
-**Authentication**: API Secret
+**Authentication**: None
 
 **Parameters**:
 - `site` (required): Site context
-- `api_secret` (required): API secret
 - `link_rewrite` (optional): Page URL slug
 - `lang_id` (optional): Language ID
 - `platform_id` (optional): Platform ID
@@ -136,7 +126,7 @@ curl -X GET "http://your-domain.com/api/hashtagcms/public/configs/v1/site-config
 
 **Request**:
 ```bash
-curl -X GET "http://your-domain.com/api/hashtagcms/public/sites/v1/load-data?site=htcms&link_rewrite=about&api_secret=your_secret"
+curl -X GET "http://your-domain.com/api/hashtagcms/public/sites/v1/load-data?site=htcms&link_rewrite=about"
 ```
 
 **Response**:
@@ -179,13 +169,13 @@ curl -X GET "http://your-domain.com/api/hashtagcms/public/sites/v1/load-data?sit
 
 **Purpose**: Optimized endpoint for mobile applications
 
-**Authentication**: API Secret
+**Authentication**: None
 
 **Parameters**: Same as load-data
 
 **Request**:
 ```bash
-curl -X GET "http://your-domain.com/api/hashtagcms/public/sites/v1/load-data-mobile?site=htcms&link_rewrite=blog&api_secret=your_secret"
+curl -X GET "http://your-domain.com/api/hashtagcms/public/sites/v1/load-data-mobile?site=htcms&link_rewrite=blog"
 ```
 
 **Response**: Optimized JSON structure for mobile apps
@@ -380,23 +370,6 @@ curl -X GET "http://your-domain.com/api/hashtagcms/public/sites/v1/blog/latests?
 
 ## API Configuration
 
-### Setting Up API Secrets
-
-Edit `config/hashtagcms.php`:
-
-```php
-'api_secrets' => [
-    'htcms' => env('API_SECRET', 'your_random_secret_key'),
-    'site2' => env('API_SECRET_SITE2', 'another_secret_key'),
-],
-```
-
-In `.env`:
-```env
-API_SECRET=your_random_secret_key_here
-API_SECRET_SITE2=another_secret_key_here
-```
-
 ### Endpoint Configuration
 
 HashtagCMS allows you to define custom endpoints for external API calls in your `.env` file (or `config/hashtagcms.php`). These settings are nested under the `externals` key in the configuration file.
@@ -438,7 +411,7 @@ function Page({ slug }) {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        fetch(`http://api.example.com/api/hashtagcms/public/sites/v1/load-data?site=htcms&link_rewrite=${slug}&api_secret=your_secret`)
+        fetch(`http://api.example.com/api/hashtagcms/public/sites/v1/load-data?site=htcms&link_rewrite=${slug}`)
             .then(response => response.json())
             .then(data => {
                 setData(data);
@@ -485,7 +458,7 @@ export default {
         }
     },
     mounted() {
-        fetch(`http://api.example.com/api/hashtagcms/public/sites/v1/load-data?site=htcms&link_rewrite=${this.$route.params.slug}&api_secret=your_secret`)
+        fetch(`http://api.example.com/api/hashtagcms/public/sites/v1/load-data?site=htcms&link_rewrite=${this.$route.params.slug}`)
             .then(response => response.json())
             .then(data => {
                 this.data = data;
@@ -503,7 +476,6 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, ActivityIndicator } from 'react-native';
 
 const API_BASE = 'http://api.example.com/api/hashtagcms/public';
-const API_SECRET = 'your_secret';
 const SITE = 'htcms';
 
 function PageScreen({ route }) {
@@ -512,7 +484,7 @@ function PageScreen({ route }) {
     const { slug } = route.params;
 
     useEffect(() => {
-        fetch(`${API_BASE}/sites/v1/load-data-mobile?site=${SITE}&link_rewrite=${slug}&api_secret=${API_SECRET}`)
+        fetch(`${API_BASE}/sites/v1/load-data-mobile?site=${SITE}&link_rewrite=${slug}`)
             .then(response => response.json())
             .then(data => {
                 setData(data);

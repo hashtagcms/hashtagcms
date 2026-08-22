@@ -186,13 +186,13 @@ php artisan view:clear
 ### Getting Site Configuration
 
 ```bash
-curl -X GET "http://your-app-url/api/hashtagcms/public/configs/v1/site-configs?site=htcms&api_secret=your_api_secret"
+curl -X GET "http://your-app-url/api/hashtagcms/public/configs/v1/site-configs?site=htcms"
 ```
 
 ### Loading Page Data
 
 ```bash
-curl -X GET "http://your-app-url/api/hashtagcms/public/sites/v1/load-data?site=htcms&link_rewrite=blog&api_secret=your_api_secret"
+curl -X GET "http://your-app-url/api/hashtagcms/public/sites/v1/load-data?site=htcms&link_rewrite=blog"
 ```
 
 ### User Registration
@@ -241,10 +241,6 @@ Edit `config/hashtagcms.php`:
 'domains' => [
     'site1.com' => 'context',
     'site2.com' => 'context',
-],
-
-'api_secrets' => [
-    'context' => 'secret_key_1',
 ],
 ```
 

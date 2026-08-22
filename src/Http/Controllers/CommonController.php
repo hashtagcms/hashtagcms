@@ -92,7 +92,6 @@ class CommonController extends FrontendBaseController
     private function postToExternalApi($type)
     {
         $context = config('hashtagcms.context');
-        $apiSecret = config('hashtagcms.api_secrets.' . $context);
 
         // Fetch specific API URL from config based on type (contact or newsletter)
         $apiUrl = config("hashtagcms.externals.{$type}_api");
@@ -102,17 +101,11 @@ class CommonController extends FrontendBaseController
             $apiUrl = $baseUrl . '/api/hashtagcms/public/common/v1/' . $type;
         }
 
-        if (empty($apiUrl) || empty($apiSecret)) {
-            $missing = [];
-            if (empty($apiUrl))
-                $missing[] = "API URL ($type)";
-            if (empty($apiSecret))
-                $missing[] = "API Secret ($context)";
-
-            $msg = "CommonController: Missing configuration: " . implode(', ', $missing);
+        if (empty($apiUrl)) {
+            $msg = "CommonController: Missing API URL configuration for $type";
             logger()->error($msg);
 
-            return ['success' => false, 'message' => 'Configuration Error: ' . implode(', ', $missing), 'status' => 500];
+            return ['success' => false, 'message' => 'Configuration Error: Missing API URL', 'status' => 500];
         }
 
         try {
@@ -120,7 +113,6 @@ class CommonController extends FrontendBaseController
 
             $response = Http::withHeaders([
                 'Content-Type' => 'application/json',
-                'api_key' => $apiSecret,
             ])->post($apiUrl, array_merge(request()->all(), ['site' => $context]));
 
             if ($response->successful()) {

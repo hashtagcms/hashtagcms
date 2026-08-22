@@ -176,18 +176,8 @@ class DataLoader
         try {
             $apiUrl = app()->HashtagCms->getConfigApiSource();
 
-            $apiSecretList = config('hashtagcms.api_secrets');
-            $apiSecret = $apiSecretList[$context] ?? null;
-
-            if (empty($apiSecret)) {
-                $msg = "Unable to find api secret key in config for context: $context";
-                logger()->error($msg);
-                return $this->getErrorMessage($msg, Response::HTTP_FORBIDDEN);
-            }
-
             $queryParams = [
                 'site' => $context,
-                'api_secret' => $apiSecret
             ];
 
             if ($lang) {
@@ -202,10 +192,9 @@ class DataLoader
             $cacheKey = "{$prefix}" . CacheKeys::EXTERNAL_CONFIG . "_{$context}_{$lang}_{$platform}";
             $cacheTTL = config('hashtagcms.externals.external_config_cache_ttl', 60); // Default 60 minutes
 
-            $callback = function () use ($apiUrl, $apiSecret, $queryParams) {
+            $callback = function () use ($apiUrl, $queryParams) {
                 $response = Http::withHeaders([
                     'Content-Type' => 'application/json',
-                    'x-api-secret' => $apiSecret
                 ])->get($apiUrl, $queryParams);
 
                 if ($response->successful()) {
@@ -502,13 +491,6 @@ class DataLoader
         try {
             $apiUrl = app()->HashtagCms->getLoadDataApiSource();
 
-            $apiSecretList = config('hashtagcms.api_secrets');
-            $apiSecret = $apiSecretList[$context] ?? null;
-
-            if (empty($apiSecret)) {
-                throw new \Exception("Unable to find api secret key in config for context: $context", Response::HTTP_FORBIDDEN);
-            }
-
             $requestParams = request()->query();
             // Sort to ensure cache consistency
             ksort($requestParams);
@@ -518,7 +500,6 @@ class DataLoader
                 'platform' => $platform,
                 'lang' => $lang,
                 'category' => $category,
-                'api_secret' => $apiSecret
             ]);
 
             // Cache Key
@@ -527,10 +508,9 @@ class DataLoader
             $cacheKey = "{$prefix}" . CacheKeys::EXTERNAL_DATA . "_{$context}_{$lang}_{$platform}_{$category}_{$microsite}_{$paramHash}";
             $cacheTTL = config('hashtagcms.externals.external_data_cache_ttl', 30); // Default 30 minutes
 
-            $callback = function () use ($apiUrl, $payload, $apiSecret) {
+            $callback = function () use ($apiUrl, $payload) {
                 $response = Http::withHeaders([
                     'Content-Type' => 'application/json',
-                    'x-api-secret' => $apiSecret
                 ])->get($apiUrl, $payload);
 
                 if ($response->successful()) {

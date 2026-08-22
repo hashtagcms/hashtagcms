@@ -54,12 +54,11 @@ HashtagCMS provides specific endpoints to manage the cache programmatically via 
 > **Note**: As of the latest version, all cache management endpoints are **protected** and require authentication using a valid Sanctum Bearer Token.
 
 ### Authentication
-**1. Sanctum Token (Middleware Protection)**
+**Sanctum Token (Middleware Protection)**
 *   `Authorization: Bearer <your-access-token>`
 
-**2. Context Validation (Controller Logic)**
+**Context Validation**
 *   `x-site` (or `site` param): The site context key (e.g., `web`).
-*   `x-api-secret` (or `api_secret` param): The API secret for the site context.
 
 ### 1. List Cache Keys
 Get a list of all keys currently in the Redis cache.
@@ -68,7 +67,6 @@ Get a list of all keys currently in the Redis cache.
 *   **Headers:**
     *   `Authorization`: Bearer `<token>`
     *   `x-site`: `<site-context>`
-    *   `x-api-secret`: `<api-secret>`
 *   **Parameters:**
     *   `pattern` (optional): Redis key pattern (default: `*`)
 *   **Response:**

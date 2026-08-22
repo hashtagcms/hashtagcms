@@ -39,18 +39,16 @@ class AnalyticsController extends Controller
     private function publishViaExternalApi()
     {
         $context = config('hashtagcms.context');
-        $apiSecret = config('hashtagcms.api_secrets.' . $context);
         $apiUrl = config('hashtagcms.externals.publish_api');
 
-        if (empty($apiUrl) || empty($apiSecret)) {
-            logger()->error("Analytics: Missing External API URL or Secret for context: $context");
+        if (empty($apiUrl)) {
+            logger()->error("Analytics: Missing External API URL for context: $context");
             return json_encode(['success' => false, 'message' => 'Configuration Error']);
         }
 
         try {
             $response = Http::withHeaders([
                 'Content-Type' => 'application/json',
-                'api_key' => $apiSecret
             ])->post($apiUrl, array_merge(request()->all(), ['site' => $context]));
 
             if ($response->successful()) {

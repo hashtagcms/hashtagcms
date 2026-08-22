@@ -434,11 +434,9 @@ class LoginController extends FrontendBaseController
     {
         try {
             $loginUrl = config('hashtagcms.externals.login_api');
-            $apiSecret = config('hashtagcms.api_secret');
 
             $response = Http::withHeaders([
                 'Content-Type' => 'application/json',
-                'api_key' => $apiSecret
             ])->post($loginUrl, [
                         'email' => $request->input('email'),
                         'password' => $request->input('password')
@@ -499,12 +497,10 @@ class LoginController extends FrontendBaseController
             $token = session(CacheKeys::CMS_API_TOKEN);
             if ($token) {
                 $logoutUrl = config('hashtagcms.externals.logout_api');
-                $apiSecret = config('hashtagcms.api_secret');
 
                 Http::withHeaders([
                     'Content-Type' => 'application/json',
                     'Authorization' => 'Bearer ' . $token,
-                    'api_key' => $apiSecret
                 ])->post($logoutUrl);
             }
         } catch (\Exception $e) {

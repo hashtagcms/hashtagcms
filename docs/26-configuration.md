@@ -10,9 +10,6 @@ The main configuration file.
     -   `assets_path`: Base URL and path for frontend assets (`js`, `css`, `img`).
 -   `media`: Upload paths and drivers.
 -   `domains`: Mapping of domains to contexts.
--   `api_secrets`: Keys for API access authentication.
-    > **Critical**: The **key** in this array must match your **Site Context** (e.g., `web` or `hashtagcms`), and the **value** must match the `api_secret` provided in the request.
-    > Example: `['web' => 'my-secret-key']`.
 -   `redirect_with_message_design`: CSS classes for success/error flash messages.
 -   `external_service_timeout`: Timeout (seconds) for service module HTTP calls.
 -   `additional_middleware`: Global middleware for all Frontend routes.

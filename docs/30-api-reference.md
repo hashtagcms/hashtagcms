@@ -5,7 +5,7 @@ HashtagCMS provides a robust REST API for Headless implementations (React, Vue, 
 ## Overview
 -   **Base URL**: `https://your-domain.com`
 -   **Authentication**:
-    -   **Public APIs**: Require `api_secret` (via query param or header).
+    -   **Public APIs**: No authentication required.
     -   **User APIs**: Require Bearer Token (Sanctum).
 
 ### Common Headers
@@ -13,7 +13,6 @@ Most public endpoints accept these context headers (or query params):
 -   `x-site` (or `site`): Site Context (e.g., `web`).
 -   `x-lang` (or `lang`): Language Code (e.g., `en`).
 -   `x-platform` (or `platform`): Platform Key (e.g., `web`).
--   `x-api-secret` (or `api_secret`): **Required**. Must match the secret defined in `config/hashtagcms.api_secrets.{site_context}`.
 
 ---
 
