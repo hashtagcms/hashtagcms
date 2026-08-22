@@ -230,7 +230,7 @@ trait HasCrudHelpers
 
         //if editing directory
         if (url()->current() == url()->previous()) {
-            $backURL = htcms_admin_path(request()->module_info->controller_name);
+            $backURL = htcms_admin_path(request()->module_info->controller_name ?? '');
         }
 
         return $backURL;
@@ -243,7 +243,11 @@ trait HasCrudHelpers
      */
     protected function getUserRights()
     {
-        return (request()->user()->isSuperAdmin() == 1) ? Arr::flatten(Permission::all('name')->toArray()) : request()->user()->rights();
+        $user = request()->user();
+        if (!$user) {
+            return [];
+        }
+        return ($user->isSuperAdmin() == 1) ? Arr::flatten(Permission::all('name')->toArray()) : $user->rights();
     }
 
 
