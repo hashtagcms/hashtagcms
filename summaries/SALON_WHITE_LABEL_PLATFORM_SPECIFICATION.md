@@ -4,7 +4,7 @@
 > **Workspace Root:** `/Users/marghoobsuleman/www/suleman/projects-n-products/focused/business/xsalon`  
 > **Backend App:** `/Users/marghoobsuleman/www/suleman/projects-n-products/focused/business/xsalon/backend/admin-panel`  
 > **Frontend KMP:** `/Users/marghoobsuleman/www/suleman/projects-n-products/focused/business/xsalon/frontend/xsalon-mobile`  
-> **Platform Model:** Multi-Tenant White-Label Salon SaaS powered by HashtagCMS
+> **Schema Standard:** HashtagCMS Multi-Tenant (`site_id`) & Multilingual (`_langs` tables with `timestamps` & `softDeletes`)
 
 ---
 
@@ -13,199 +13,214 @@
 The goal of the **xSalon Platform** is to provide a commercial-grade, multi-tenant appointment booking, membership, and rewards mobile platform powered by **HashtagCMS**. The architecture allows selling the platform to **hundreds of independent salon brands** (e.g. *xSalon Atelier, Glow & Co., Barber Republic, Pastel Nails*) with:
 
 1. **Zero-Code Custom Theming**: Each salon can customize their primary colors, secondary accents, backgrounds, typography, corner radii, and logos dynamically from the HashtagCMS Admin Panel without mobile app rebuilds.
-2. **Multi-Tenant Data Isolation**: Complete separation of services, stylists, rosters, appointments, promo codes, and payment gateways per salon using HashtagCMS `sites` context.
+2. **Multi-Tenant & Multilingual Data Isolation**: Complete separation of services, stylists, rosters, appointments, promo codes, and payment gateways per salon using HashtagCMS `site_id` and translatable `_langs` tables.
 3. **Server-Driven Booking Funnel**: Dynamic 2-to-5 step booking flows (Service $\rightarrow$ Stylist $\rightarrow$ Date/Time $\rightarrow$ Review $\rightarrow$ Confirmation) adaptable per salon business model.
 4. **Zero-Binary Dynamic Primitives**: Marketing teams can publish promotional banners and seasonal offer cards directly from CMS JSON.
 
 ---
 
-## 2. Designated Project Workspace Layout
+## 2. HashtagCMS Database Schema Standards
+
+Every entity strictly follows the official **HashtagCMS schema pattern**:
+- **Main Table**: Contains structural & numerical fields, `site_id` FK (on delete cascade), `insert_by`, `update_by`, `publish_status`, `timestamps()`, and `softDeletes()`.
+- **`_langs` Table**: Contains translatable text fields with composite primary key `[entity_id, lang_id]`, `timestamps()`, and `softDeletes()`.
 
 ```
-/Users/marghoobsuleman/www/suleman/projects-n-products/focused/business/xsalon/
-│
-├── backend/                                   [BACKEND SERVER & CMS CORE]
-│   └── admin-panel/                           [HashtagCMS Laravel Application]
-│       ├── composer.json                      (requires hashtagcms/hashtagcms, hashtagcms/workflows)
-│       ├── app/
-│       │   ├── Models/Salon/                  (Service, Stylist, Schedule, Booking, Membership, Offer)
-│       │   ├── Http/Controllers/Admin/Salon/  (Services, Stylists, Rosters, Bookings, Promos, Tiers)
-│       │   └── Workflows/Salon/               (Booking, OTP, Promo, Reschedule, Cancellation handlers)
-│       ├── database/migrations/               (Salon multi-tenant schema isolated by site_id)
-│       ├── database/seeders/                  (xSalon default seeders & sample luxury tenant data)
-│       └── resources/views/salon/             (Modern Tailwind Admin CRUD views)
-│
-└── frontend/                                  [MOBILE & CLIENT MULTIPLATFORM]
-    └── xsalon-mobile/                         [Kotlin Multiplatform Application]
-        ├── composeApp/
-        │   └── src/commonMain/kotlin/org/hashtagcms/xsalon/
-        │       ├── App.kt                     (Main Entry Point with dynamic theme & nav)
-        │       ├── theme/                     (Dynamic HashtagCmsTheme Token Engine)
-        │       ├── core/                      (HashtagCmsClient, ActionDispatcher, CartRepository)
-        │       └── sdui/
-        │           ├── engine/                (LayoutTransformer, ViewModuleRegistry)
-        │           ├── modules/plugins/       (SalonUiKitPlugin installer)
-        │           └── modules/impl/salon/    (15 Native Composable Salon View Modules)
-        ├── iosApp/                            (Native iOS project wrapper)
-        └── build.gradle.kts                   (KMP Gradle configuration)
-```
++----------------------------------------------------------------------------------------------------+
+|                                  HASHTAGCMS SALON DATABASE SCHEMA                                  |
++----------------------------------------------------------------------------------------------------+
 
----
-
-## 3. Dynamic Server-Driven Theming Schema
-
-Every visual element in the mobile app is parameterized through the HashtagCMS `theme` payload:
-
-```json
-{
-  "theme": {
-    "colors": {
-      "primary": "#E11D48",
-      "primaryVariant": "#BE123C",
-      "secondary": "#1A1024",
-      "background": "#FAF7F2",
-      "surface": "#FFFFFF",
-      "surfaceMuted": "#F4EFEA",
-      "accent": "#EA580C",
-      "onPrimary": "#FFFFFF",
-      "onSecondary": "#FFFFFF",
-      "textPrimary": "#1A1024",
-      "textSecondary": "#71717A",
-      "border": "#E4E4E7",
-      "success": "#16A34A",
-      "warning": "#F59E0B",
-      "error": "#DC2626"
-    },
-    "typography": {
-      "headlineFont": "PlayfairDisplay",
-      "bodyFont": "Inter",
-      "monoFont": "JetBrainsMono"
-    },
-    "shapes": {
-      "cardCornerRadius": 16,
-      "buttonCornerRadius": 12,
-      "chipCornerRadius": 8,
-      "style": "rounded"
-    },
-    "branding": {
-      "logoUrl": "https://cdn.hashtagcms.org/tenants/xsalon/logo.png",
-      "appName": "xSalon Atelier",
-      "tagline": "Hair, skin and nails, held to one standard"
-    }
-  }
-}
-```
-
----
-
-## 4. Multi-Tenant Database Schema (`backend/admin-panel`)
-
-```
-1. salon_services
-   ├── id (BIGINT PK)
-   ├── site_id (BIGINT FK -> sites.id)
-   ├── category_id (BIGINT FK -> salon_categories.id)
-   ├── name (VARCHAR: "Balayage + Gloss")
-   ├── description (TEXT)
+1. salon_services (Structural / Pricing)
+   ├── id (BIGINT UNSIGNED PK)
+   ├── site_id (BIGINT UNSIGNED FK -> sites.id ON DELETE CASCADE)
+   ├── category_id (BIGINT UNSIGNED NULLABLE FK -> categories.id)
    ├── duration_minutes (INT: 120)
-   ├── base_price (DECIMAL: 180.00)
-   ├── image_url (VARCHAR)
-   ├── is_signature (BOOLEAN: true)
+   ├── base_price (DECIMAL 10,2: 180.00)
+   ├── image_url (VARCHAR 255 NULLABLE)
+   ├── is_signature (TINYINT: 1)
+   ├── insert_by (BIGINT UNSIGNED)
+   ├── update_by (BIGINT UNSIGNED NULLABLE)
    ├── publish_status (TINYINT: 1)
-   └── timestamps
+   ├── timestamps()
+   └── softDeletes()
 
-2. salon_stylists
-   ├── id (BIGINT PK)
-   ├── site_id (BIGINT FK -> sites.id)
-   ├── user_id (BIGINT NULLABLE FK -> users.id)
-   ├── name (VARCHAR: "Juno Okafor")
-   ├── title (VARCHAR: "Senior Colourist")
-   ├── bio_quote (TEXT: "Trained in Paris and Tokyo...")
+   salon_service_langs (Translatable Content)
+   ├── service_id (BIGINT UNSIGNED FK -> salon_services.id ON DELETE CASCADE)
+   ├── lang_id (BIGINT UNSIGNED FK -> langs.id ON DELETE CASCADE)
+   ├── name (VARCHAR 128: "Balayage + Gloss")
+   ├── title (VARCHAR 128 NULLABLE)
+   ├── description (TEXT NULLABLE)
+   ├── timestamps()
+   ├── softDeletes()
+   └── PRIMARY KEY (service_id, lang_id)
+
+──────────────────────────────────────────────────────────────────────────────────────────────────────
+
+2. salon_stylists (Structural / Ratings)
+   ├── id (BIGINT UNSIGNED PK)
+   ├── site_id (BIGINT UNSIGNED FK -> sites.id ON DELETE CASCADE)
+   ├── user_id (BIGINT UNSIGNED NULLABLE FK -> users.id)
    ├── experience_years (INT: 9)
-   ├── rating (DECIMAL: 4.9)
+   ├── rating (DECIMAL 3,2: 4.90)
    ├── review_count (INT: 284)
-   ├── starting_price (DECIMAL: 180.00)
-   ├── photo_url (VARCHAR)
-   ├── specialties (JSON: ["Balayage", "Color correction", "Gloss"])
+   ├── starting_price (DECIMAL 10,2: 180.00)
+   ├── photo_url (VARCHAR 255 NULLABLE)
+   ├── specialties (JSON NULLABLE: ["Balayage", "Color correction", "Gloss"])
+   ├── insert_by (BIGINT UNSIGNED)
+   ├── update_by (BIGINT UNSIGNED NULLABLE)
    ├── publish_status (TINYINT: 1)
-   └── timestamps
+   ├── timestamps()
+   └── softDeletes()
 
-3. salon_schedules
-   ├── id (BIGINT PK)
-   ├── site_id (BIGINT FK -> sites.id)
-   ├── stylist_id (BIGINT FK -> salon_stylists.id)
+   salon_stylist_langs (Translatable Profile)
+   ├── stylist_id (BIGINT UNSIGNED FK -> salon_stylists.id ON DELETE CASCADE)
+   ├── lang_id (BIGINT UNSIGNED FK -> langs.id ON DELETE CASCADE)
+   ├── name (VARCHAR 128: "Juno Okafor")
+   ├── title (VARCHAR 128: "Senior Colourist")
+   ├── bio_quote (TEXT NULLABLE: "Trained in Paris and Tokyo...")
+   ├── timestamps()
+   ├── softDeletes()
+   └── PRIMARY KEY (stylist_id, lang_id)
+
+──────────────────────────────────────────────────────────────────────────────────────────────────────
+
+3. salon_schedules (Weekly Working Shifts & Slots)
+   ├── id (BIGINT UNSIGNED PK)
+   ├── site_id (BIGINT UNSIGNED FK -> sites.id ON DELETE CASCADE)
+   ├── stylist_id (BIGINT UNSIGNED FK -> salon_stylists.id ON DELETE CASCADE)
    ├── day_of_week (TINYINT: 1=Mon, 7=Sun)
    ├── shift_start (TIME: 09:00:00)
    ├── shift_end (TIME: 19:00:00)
    ├── slot_interval_minutes (INT: 30)
-   ├── is_active (BOOLEAN: true)
-   └── timestamps
+   ├── is_active (TINYINT: 1)
+   ├── insert_by (BIGINT UNSIGNED)
+   ├── update_by (BIGINT UNSIGNED NULLABLE)
+   ├── timestamps()
+   └── softDeletes()
 
-4. salon_bookings
-   ├── id (BIGINT PK)
-   ├── site_id (BIGINT FK -> sites.id)
-   ├── confirmation_code (VARCHAR: "#A48521")
-   ├── user_id (BIGINT FK -> users.id)
-   ├── stylist_id (BIGINT NULLABLE FK -> salon_stylists.id)
-   ├── service_id (BIGINT FK -> salon_services.id)
-   ├── location_id (BIGINT FK -> salon_locations.id)
+──────────────────────────────────────────────────────────────────────────────────────────────────────
+
+4. salon_bookings (Transactional Appointments)
+   ├── id (BIGINT UNSIGNED PK)
+   ├── site_id (BIGINT UNSIGNED FK -> sites.id ON DELETE CASCADE)
+   ├── confirmation_code (VARCHAR 64: "#A48521")
+   ├── user_id (BIGINT UNSIGNED FK -> users.id)
+   ├── stylist_id (BIGINT UNSIGNED NULLABLE FK -> salon_stylists.id)
+   ├── service_id (BIGINT UNSIGNED FK -> salon_services.id)
+   ├── location_id (BIGINT UNSIGNED FK -> salon_locations.id)
    ├── booking_date (DATE: 2026-04-30)
    ├── start_time (TIME: 14:00:00)
    ├── end_time (TIME: 15:40:00)
-   ├── total_amount (DECIMAL: 240.00)
-   ├── discount_amount (DECIMAL: 11.00)
-   ├── final_amount (DECIMAL: 229.00)
+   ├── total_amount (DECIMAL 10,2: 240.00)
+   ├── discount_amount (DECIMAL 10,2: 11.00)
+   ├── final_amount (DECIMAL 10,2: 229.00)
    ├── status (ENUM: pending, confirmed, completed, cancelled, rescheduled)
-   ├── promo_code (VARCHAR NULLABLE)
+   ├── promo_code (VARCHAR 64 NULLABLE)
    ├── payment_status (ENUM: unpaid, deposit_paid, paid_full)
-   └── timestamps
+   ├── insert_by (BIGINT UNSIGNED)
+   ├── update_by (BIGINT UNSIGNED NULLABLE)
+   ├── timestamps()
+   └── softDeletes()
 
-5. salon_memberships
-   ├── id (BIGINT PK)
-   ├── site_id (BIGINT FK -> sites.id)
-   ├── name (VARCHAR: "Atelier")
-   ├── slug (VARCHAR: "atelier")
-   ├── monthly_price (DECIMAL: 129.00)
-   ├── annual_price (DECIMAL: 1315.00)
-   ├── perks (JSON: ["2 signature services/mo", "15% off everything", "Early access to new stylists"])
-   ├── is_most_chosen (BOOLEAN: true)
+──────────────────────────────────────────────────────────────────────────────────────────────────────
+
+5. salon_memberships (Subscription Tiers)
+   ├── id (BIGINT UNSIGNED PK)
+   ├── site_id (BIGINT UNSIGNED FK -> sites.id ON DELETE CASCADE)
+   ├── slug (VARCHAR 64: "atelier")
+   ├── monthly_price (DECIMAL 10,2: 129.00)
+   ├── annual_price (DECIMAL 10,2: 1315.00)
+   ├── perks (JSON NULLABLE: ["2 signature services/mo", "15% off everything"])
+   ├── is_most_chosen (TINYINT: 1)
+   ├── insert_by (BIGINT UNSIGNED)
+   ├── update_by (BIGINT UNSIGNED NULLABLE)
    ├── publish_status (TINYINT: 1)
-   └── timestamps
+   ├── timestamps()
+   └── softDeletes()
 
-6. salon_offers
-   ├── id (BIGINT PK)
-   ├── site_id (BIGINT FK -> sites.id)
-   ├── title (VARCHAR: "First Visit")
-   ├── promo_code (VARCHAR: "XSALON15")
+   salon_membership_langs (Translatable Plan Details)
+   ├── membership_id (BIGINT UNSIGNED FK -> salon_memberships.id ON DELETE CASCADE)
+   ├── lang_id (BIGINT UNSIGNED FK -> langs.id ON DELETE CASCADE)
+   ├── name (VARCHAR 128: "Atelier")
+   ├── title (VARCHAR 128 NULLABLE)
+   ├── description (TEXT NULLABLE)
+   ├── timestamps()
+   ├── softDeletes()
+   └── PRIMARY KEY (membership_id, lang_id)
+
+──────────────────────────────────────────────────────────────────────────────────────────────────────
+
+6. salon_offers (Discounts & Promos)
+   ├── id (BIGINT UNSIGNED PK)
+   ├── site_id (BIGINT UNSIGNED FK -> sites.id ON DELETE CASCADE)
+   ├── promo_code (VARCHAR 64: "XSALON15")
    ├── discount_type (ENUM: percentage, fixed)
-   ├── discount_value (DECIMAL: 15.00)
-   ├── how_it_works (JSON: ["1. Copy code", "2. Choose service", "3. Paste at checkout"])
-   ├── terms_text (TEXT)
-   ├── starts_at (DATETIME)
-   ├── expires_at (DATETIME NULLABLE)
-   └── timestamps
+   ├── discount_value (DECIMAL 10,2: 15.00)
+   ├── how_it_works (JSON NULLABLE)
+   ├── starts_at (TIMESTAMP NULLABLE)
+   ├── expires_at (TIMESTAMP NULLABLE)
+   ├── insert_by (BIGINT UNSIGNED)
+   ├── update_by (BIGINT UNSIGNED NULLABLE)
+   ├── publish_status (TINYINT: 1)
+   ├── timestamps()
+   └── softDeletes()
+
+   salon_offer_langs (Translatable Offer Text)
+   ├── offer_id (BIGINT UNSIGNED FK -> salon_offers.id ON DELETE CASCADE)
+   ├── lang_id (BIGINT UNSIGNED FK -> langs.id ON DELETE CASCADE)
+   ├── title (VARCHAR 128: "First Visit")
+   ├── description (TEXT NULLABLE)
+   ├── terms_text (TEXT NULLABLE)
+   ├── timestamps()
+   ├── softDeletes()
+   └── PRIMARY KEY (offer_id, lang_id)
+
+──────────────────────────────────────────────────────────────────────────────────────────────────────
+
+7. salon_locations (Studios & Branches)
+   ├── id (BIGINT UNSIGNED PK)
+   ├── site_id (BIGINT UNSIGNED FK -> sites.id ON DELETE CASCADE)
+   ├── phone (VARCHAR 32 NULLABLE)
+   ├── email (VARCHAR 128 NULLABLE)
+   ├── latitude (DECIMAL 10,8 NULLABLE)
+   ├── longitude (DECIMAL 11,8 NULLABLE)
+   ├── insert_by (BIGINT UNSIGNED)
+   ├── update_by (BIGINT UNSIGNED NULLABLE)
+   ├── publish_status (TINYINT: 1)
+   ├── timestamps()
+   └── softDeletes()
+
+   salon_location_langs (Translatable Location Info)
+   ├── location_id (BIGINT UNSIGNED FK -> salon_locations.id ON DELETE CASCADE)
+   ├── lang_id (BIGINT UNSIGNED FK -> langs.id ON DELETE CASCADE)
+   ├── name (VARCHAR 128: "xSalon Atelier Mulberry")
+   ├── address (VARCHAR 255: "124 Mulberry St")
+   ├── city (VARCHAR 64: "New York")
+   ├── timestamps()
+   ├── softDeletes()
+   └── PRIMARY KEY (location_id, lang_id)
 ```
 
 ---
 
-## 5. Ten HashtagCMS Admin Panel Modules (`backend/admin-panel`)
+## 3. Ten HashtagCMS Admin Panel Modules (`backend/admin-panel`)
 
-| Module ID | Controller Route | Display Name | Icon | Management Scope |
-|---|---|---|---|---|
-| `70` | `salon/services` | Services & Catalog | `fa fa-scissors` | Haircut, color, facial, spa services, duration, and base pricing. |
-| `71` | `salon/stylists` | Stylists & Staff | `fa fa-user-circle` | Stylist portraits, titles, bio quotes, experience, ratings, and specialties. |
-| `72` | `salon/schedules` | Rosters & Shifts | `fa fa-calendar-check-o` | Working hours, breaks, holidays, and 30/60 min appointment slots. |
-| `73` | `salon/bookings` | Bookings & Schedule | `fa fa-calendar` | Master appointment diary, client history, reschedule, and cancellation. |
-| `74` | `salon/offers` | Offers & Promo Codes | `fa fa-tag` | Discount codes, validity, terms & conditions, and usage analytics. |
-| `75` | `salon/memberships`| Membership Tiers | `fa fa-crown` | Subscription plans (*Essentiel / Atelier*), perk checklists, and pricing. |
-| `76` | `salon/loyalty` | Loyalty & Points | `fa fa-star` | Points earning rates, tier thresholds, and customer balances. |
-| `77` | `salon/locations` | Studios & Branches | `fa fa-map-marker` | Multi-studio branches, addresses, contact info, and tax rates. |
-| `78` | `salon/preferences`| Onboarding Curation | `fa fa-sliders` | Category tiles (*Hair, Color, Skin, Nails, Spa*) for home feed curation. |
-| `79` | `salon/theme` | Theme & Design Tokens | `fa fa-paint-brush` | Live color picker, typography selection, button radius, and logo upload. |
+| Module ID | Route | Display Name | Management Scope |
+|---|---|---|---|
+| `70` | `salon/services` | Services & Catalog | Service catalog, duration, base pricing, and category tagging (with language tabs). |
+| `71` | `salon/stylists` | Stylists & Staff | Stylist portraits, titles, bio quotes, experience, ratings, and specialties. |
+| `72` | `salon/schedules` | Rosters & Shifts | Working hours, weekly shifts, and 30/60 min appointment slots. |
+| `73` | `salon/bookings` | Bookings & Schedule | Master appointment diary, client history, reschedule, and cancellation. |
+| `74` | `salon/offers` | Offers & Promo Codes | Discount codes (`XSALON15`), terms, validity, and usage limits. |
+| `75` | `salon/memberships`| Membership Tiers | Subscription plans (*Essentiel / Atelier*), perks, and pricing. |
+| `76` | `salon/loyalty` | Loyalty & Points | Points earning rates, tier thresholds, and customer balances. |
+| `77` | `salon/locations` | Studios & Branches | Multi-studio branches, addresses, contact info, and tax rates. |
+| `78` | `salon/preferences`| Onboarding Curation | Category tiles (*Hair, Color, Skin, Nails, Spa*) for home feed curation. |
+| `79` | `salon/theme` | Theme & Design Tokens | Live color picker, typography selection, button radius, and logo upload. |
 
 ---
 
-## 6. Frontend SDUI View Modules (`frontend/xsalon-mobile` - 15 Modules)
+## 4. Frontend SDUI View Modules (`frontend/xsalon-mobile` - 15 Modules)
 
 | # | SDUI Module Key (`viewType`) | Corresponding Screen | Composable Features |
 |---|---|---|---|
@@ -227,14 +242,14 @@ Every visual element in the mobile app is parameterized through the HashtagCMS `
 
 ---
 
-## 7. Server-Driven Workflows (`backend/admin-panel`)
+## 5. Server-Driven Workflows (`backend/admin-panel`)
 
 | Workflow Alias | Input Payload Contract | Actions & Emitted SDUI Directives |
 |---|---|---|
 | `WORKFLOW_VERIFY_OTP` | `{email, code}` | Verifies OTP $\rightarrow$ issues Sanctum token $\rightarrow$ `navigate("/preferences")`, `trigger_haptic("success")` |
 | `WORKFLOW_SAVE_PREFERENCES` | `{categories: ["hair", "color"]}` | Saves client category interests $\rightarrow$ `navigate("/home")` |
 | `WORKFLOW_APPLY_PROMO` | `{promo_code: "XSALON15", subtotal: 240}` | Validates promo $\rightarrow$ computes discount $\rightarrow$ `mutate_cart(discount: 11)`, `toast("Code applied!")` |
-| `WORKFLOW_CONFIRM_BOOKING` | `{service_id, stylist_id, date, time, location_id}` | Verifies slot lock $\rightarrow$ creates booking $\rightarrow$ `navigate("/booking-confirmed")`, `trigger_haptic("heavy")` |
+| `WORKFLOW_CONFIRM_BOOKING` | `{service_id, stylist_id, date, time, location_id}` | Verifies slot $\rightarrow$ creates booking $\rightarrow$ `navigate("/booking-confirmed")`, `trigger_haptic("heavy")` |
 | `WORKFLOW_RESCHEDULE_BOOKING` | `{booking_id, new_date, new_time}` | Updates booking date/time slot $\rightarrow$ `toast("Appointment updated")`, `mutate_booking_state` |
 | `WORKFLOW_CANCEL_BOOKING` | `{booking_id}` | Cancels booking & triggers refund $\rightarrow$ `toast("Appointment cancelled")`, `mutate_booking_state` |
-| `WORKFLOW_START_MEMBERSHIP` | `{membership_id, interval: "monthly"}` | Creates recurring billing $\rightarrow$ upgrades user tier $\rightarrow$ `toast("Welcome to Atelier!")`, `navigate("/profile")` |
+| `WORKFLOW_START_MEMBERSHIP` | `{membership_id, interval: "monthly"}` | Creates recurring subscription $\rightarrow$ `toast("Welcome to Atelier!")`, `navigate("/profile")` |
