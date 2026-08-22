@@ -1,7 +1,9 @@
 # Master Plan & Architecture Specification: White-Label Multi-Tenant Salon Platform (`xSalon`)
 
 > **Master Engineering & Product Specification**  
-> **Ecosystem Scope:** `hashtagcms/hashtagcms`, `hashtagcms-salon`, `hashtagcms/hashtagcms-workflows`, `hashtagcms-app`  
+> **Workspace Root:** `/Users/marghoobsuleman/www/suleman/projects-n-products/focused/business/xsalon`  
+> **Backend App:** `/Users/marghoobsuleman/www/suleman/projects-n-products/focused/business/xsalon/backend/admin-panel`  
+> **Frontend KMP:** `/Users/marghoobsuleman/www/suleman/projects-n-products/focused/business/xsalon/frontend/xsalon-mobile`  
 > **Platform Model:** Multi-Tenant White-Label Salon SaaS powered by HashtagCMS
 
 ---
@@ -17,7 +19,40 @@ The goal of the **xSalon Platform** is to provide a commercial-grade, multi-tena
 
 ---
 
-## 2. Dynamic Server-Driven Theming Schema
+## 2. Designated Project Workspace Layout
+
+```
+/Users/marghoobsuleman/www/suleman/projects-n-products/focused/business/xsalon/
+│
+├── backend/                                   [BACKEND SERVER & CMS CORE]
+│   └── admin-panel/                           [HashtagCMS Laravel Application]
+│       ├── composer.json                      (requires hashtagcms/hashtagcms, hashtagcms/workflows)
+│       ├── app/
+│       │   ├── Models/Salon/                  (Service, Stylist, Schedule, Booking, Membership, Offer)
+│       │   ├── Http/Controllers/Admin/Salon/  (Services, Stylists, Rosters, Bookings, Promos, Tiers)
+│       │   └── Workflows/Salon/               (Booking, OTP, Promo, Reschedule, Cancellation handlers)
+│       ├── database/migrations/               (Salon multi-tenant schema isolated by site_id)
+│       ├── database/seeders/                  (xSalon default seeders & sample luxury tenant data)
+│       └── resources/views/salon/             (Modern Tailwind Admin CRUD views)
+│
+└── frontend/                                  [MOBILE & CLIENT MULTIPLATFORM]
+    └── xsalon-mobile/                         [Kotlin Multiplatform Application]
+        ├── composeApp/
+        │   └── src/commonMain/kotlin/org/hashtagcms/xsalon/
+        │       ├── App.kt                     (Main Entry Point with dynamic theme & nav)
+        │       ├── theme/                     (Dynamic HashtagCmsTheme Token Engine)
+        │       ├── core/                      (HashtagCmsClient, ActionDispatcher, CartRepository)
+        │       └── sdui/
+        │           ├── engine/                (LayoutTransformer, ViewModuleRegistry)
+        │           ├── modules/plugins/       (SalonUiKitPlugin installer)
+        │           └── modules/impl/salon/    (15 Native Composable Salon View Modules)
+        ├── iosApp/                            (Native iOS project wrapper)
+        └── build.gradle.kts                   (KMP Gradle configuration)
+```
+
+---
+
+## 3. Dynamic Server-Driven Theming Schema
 
 Every visual element in the mobile app is parameterized through the HashtagCMS `theme` payload:
 
@@ -63,7 +98,7 @@ Every visual element in the mobile app is parameterized through the HashtagCMS `
 
 ---
 
-## 3. Database Schema Design (Multi-Tenant by `site_id`)
+## 4. Multi-Tenant Database Schema (`backend/admin-panel`)
 
 ```
 1. salon_services
@@ -153,7 +188,7 @@ Every visual element in the mobile app is parameterized through the HashtagCMS `
 
 ---
 
-## 4. HashtagCMS Admin Panel Modules (10 Modules)
+## 5. Ten HashtagCMS Admin Panel Modules (`backend/admin-panel`)
 
 | Module ID | Controller Route | Display Name | Icon | Management Scope |
 |---|---|---|---|---|
@@ -170,13 +205,13 @@ Every visual element in the mobile app is parameterized through the HashtagCMS `
 
 ---
 
-## 5. Mobile SDUI UI Kit Components (`hashtagcms-ui-salon` - 15 Modules)
+## 6. Frontend SDUI View Modules (`frontend/xsalon-mobile` - 15 Modules)
 
 | # | SDUI Module Key (`viewType`) | Corresponding Screen | Composable Features |
 |---|---|---|---|
 | **1** | `salon_next_ritual_banner` | **01 - Home** | Next appointment hero banner (*"Balayage with Juno - In 7 days"*) with Details & Message actions. |
 | **2** | `salon_category_nav` | **01 - Home / 03 - Book** | Horizontal category filter pills (*Hair, Skin, Nails, Spa, Grooming*). |
-| **3** | `salon_signature_rituals` | **01 - Home** | Horizontal service cards with duration, starting price, and booking route. |
+| **3** | `salon_signature_rituals` | **01 - Home** | Horizontal service catalog cards with price and duration. |
 | **4** | `salon_service_card` | **03 - Booking (Step 1)** | Service list item with category icon, title, duration badge, and select action. |
 | **5** | `salon_stylist_card` | **03 - Booking (Step 2)** | Stylist card with portrait, title, 4.9★ rating, years experience, and availability badges. |
 | **6** | `salon_slot_picker` | **03 - Booking (Step 3)** | Horizontal date strip calendar + Morning & Afternoon time chip grid with booked states. |
@@ -192,7 +227,7 @@ Every visual element in the mobile app is parameterized through the HashtagCMS `
 
 ---
 
-## 6. Server-Driven Workflows (`hashtagcms/workflows`)
+## 7. Server-Driven Workflows (`backend/admin-panel`)
 
 | Workflow Alias | Input Payload Contract | Actions & Emitted SDUI Directives |
 |---|---|---|
@@ -203,14 +238,3 @@ Every visual element in the mobile app is parameterized through the HashtagCMS `
 | `WORKFLOW_RESCHEDULE_BOOKING` | `{booking_id, new_date, new_time}` | Updates booking date/time slot $\rightarrow$ `toast("Appointment updated")`, `mutate_booking_state` |
 | `WORKFLOW_CANCEL_BOOKING` | `{booking_id}` | Cancels booking & triggers refund $\rightarrow$ `toast("Appointment cancelled")`, `mutate_booking_state` |
 | `WORKFLOW_START_MEMBERSHIP` | `{membership_id, interval: "monthly"}` | Creates recurring billing $\rightarrow$ upgrades user tier $\rightarrow$ `toast("Welcome to Atelier!")`, `navigate("/profile")` |
-
----
-
-## 7. Distribution & Rollout Strategy
-
-1. **Universal App (Recommended for Zero App Store Overhead)**:
-   - Single app on App Store / Google Play.
-   - Dynamic deep-link or QR code (`app.link?site=xsalon`) dynamically configures the app theme, services, and branding on first launch.
-   - Onboard 500 salons instantly from the Admin Panel without waiting for Apple/Google app review!
-2. **Automated Branded App Releases**:
-   - Parameterized Gradle CI/CD pipeline (`./gradlew assembleRelease -PsiteContext=xsalon -PappName="xSalon"`) for enterprise salon chains that require their own dedicated App Store listing.
