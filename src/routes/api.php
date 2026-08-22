@@ -5,14 +5,17 @@ use Illuminate\Support\Facades\Route;
 
 $callable = config('hashtagcms.namespace') . "Http\Controllers\Api\\";
 
+// Base prefix for all HashtagCms API routes. Configurable via HASHTAGCMS_API_PREFIX.
+$prefix = config('hashtagcmsapi.route_prefix', 'api/hashtagcms');
+
 /**
  * Health check
  */
-Route::get('api/hashtagcms/health-check', function (Request $request) {
+Route::get($prefix . '/health-check', function (Request $request) {
     return ['result' => 'okay'];
 });
 //'api', 'etag' - will add etag later
-Route::middleware(['api'])->prefix('api/hashtagcms/public')->group(function () use ($callable) {
+Route::middleware(['api'])->prefix($prefix . '/public')->group(function () use ($callable) {
 
     /**
      * Registration: V1
@@ -127,7 +130,7 @@ Route::middleware(['api'])->prefix('api/hashtagcms/public')->group(function () u
  * Private routes
  * You should protect these url under VPN
  */
-Route::middleware(['api', 'auth:sanctum'])->prefix('api/hashtagcms/private')->group(function () use ($callable) {
+Route::middleware(['api', 'auth:sanctum'])->prefix($prefix . '/private')->group(function () use ($callable) {
 
     Route::middleware([config('hashtagcmsapi.throttle_admin', 'throttle:60,1')])->group(function () use ($callable) {
         /**
@@ -169,7 +172,7 @@ Route::middleware(['api', 'auth:sanctum'])->prefix('api/hashtagcms/private')->gr
 });
 
 //Authentication
-Route::middleware(['api', 'auth:sanctum'])->prefix('api/hashtagcms/user')->group(function () use ($callable) {
+Route::middleware(['api', 'auth:sanctum'])->prefix($prefix . '/user')->group(function () use ($callable) {
 
     Route::get('v1/me', function (Request $request) use ($callable) {
 

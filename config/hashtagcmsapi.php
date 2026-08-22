@@ -1,6 +1,12 @@
 <?php
 
 return [
+    /**
+     * Base prefix for all HashtagCms API routes.
+     * Change this to version or relocate the API, e.g. 'api/ve1/hashtagcms'.
+     * Endpoints become {route_prefix}/public, {route_prefix}/private, {route_prefix}/user.
+     */
+    'route_prefix' => env('HASHTAGCMS_API_PREFIX', 'api/hashtagcms'),
     'login_session' => '+ 1 year',
     'login_session_expiry_format' => 'Y-m-d\TH:i:s.u\Z',
     'api_cache_enabled'=>env('HASHTAGCMS_API_CACHE_ENABLED', true),
