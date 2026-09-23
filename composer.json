@@ -15,6 +15,7 @@
         "php": "^8.3",
         "laravel/framework": "^13.0",
         "guzzlehttp/guzzle": "^7.9 || ^8.0",
+        "graylog2/gelf-php": "^2.0",
         "laravel/sanctum": "^4.0",
         "usmanhalalit/laracsv": "^2.1"
     },
@@ -48,6 +49,10 @@
             "aliases": {
                 "HashtagCms": "HashtagCms\\Facades\\HashtagCms"
             }
+        },
+        "branch-alias": {
+            "dev-master": "3.0.x-dev",
+            "dev-feature/release_309": "3.0.x-dev"
         }
     }
 }

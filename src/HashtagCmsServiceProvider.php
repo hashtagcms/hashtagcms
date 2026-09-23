@@ -37,6 +37,8 @@ use HashtagCms\Listeners\ProcessLangCopy;
 use Illuminate\Support\Facades\Auth;
 use HashtagCms\Core\Auth\ExternalApiUserProvider;
 use HashtagCms\Console\Commands\RegisterModules;
+use HashtagCms\Listeners\ExportLogEntry;
+use Illuminate\Log\Events\MessageLogged;
 
 class HashtagCmsServiceProvider extends ServiceProvider
 {
@@ -58,6 +60,13 @@ class HashtagCmsServiceProvider extends ServiceProvider
 
         Event::listen(UserVisit::class, RecordUserVisit::class);
         Event::listen(CopyLangData::class, ProcessLangCopy::class);
+
+        // External log export (Graylog / Last9 / ...). Disabled by default;
+        // only registers a listener when CMS_LOG_EXPORT_ENABLED=true so
+        // installs that don't use it pay zero overhead.
+        if (config('hashtagcmslog.enabled')) {
+            Event::listen(MessageLogged::class, ExportLogEntry::class);
+        }
 
         //Flush Analytics buffer on termination
         $this->app->terminating(function () {
@@ -135,6 +144,9 @@ class HashtagCmsServiceProvider extends ServiceProvider
         $this->mergeConfigFrom(__DIR__ . '/../config/hashtagcmsadmin.php', $this->groupName . 'admin');
         $this->mergeConfigFrom(__DIR__ . '/../config/hashtagcmscommon.php', $this->groupName . 'common');
         $this->mergeConfigFrom(__DIR__ . '/../config/hashtagcmsapi.php', $this->groupName . 'api');
+        $this->mergeConfigFrom(__DIR__ . '/../config/hashtagcmslog.php', $this->groupName . 'log');
+
+        $this->app->singleton(\HashtagCms\Core\Logging\LogExportManager::class);
 
         // Register the service the package provides.
         $this->app->singleton('hashtagcms', function ($app) {
@@ -170,6 +182,7 @@ class HashtagCmsServiceProvider extends ServiceProvider
             __DIR__ . '/../config/hashtagcms.php' => config_path('hashtagcms.php'),
             __DIR__ . '/../config/hashtagcmsadmin.php' => config_path('hashtagcmsadmin.php'),
             __DIR__ . '/../config/hashtagcmsapi.php' => config_path('hashtagcmsapi.php'),
+            __DIR__ . '/../config/hashtagcmslog.php' => config_path('hashtagcmslog.php'),
         ], $this->groupName . '.config');
 
         // Publishing the views.

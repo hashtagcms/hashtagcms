@@ -48,6 +48,7 @@ Welcome to the comprehensive HashtagCMS Developer Documentation. This guide will
 28. [Performance Optimization](28-performance.md) - Optimizing your CMS
 29. [Troubleshooting](29-troubleshooting.md) - Common issues and solutions
 30. [API Caching](38-caching.md) - Redis caching strategies and API
+31. [External Log Export](45-log-export.md) - Ship logs to Graylog, Last9, or other OTLP backends
 
 ### Reference
 30. [API Reference](30-api-reference.md) - Complete API documentation
