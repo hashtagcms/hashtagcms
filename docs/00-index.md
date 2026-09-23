@@ -40,6 +40,7 @@ Welcome to the comprehensive HashtagCMS Developer Documentation. This guide will
 23. [Frontend Development](23-frontend-dev.md) - Building frontend with HashtagCMS
 24. [Backend Development](24-backend-dev.md) - Admin panel customization
 25. [Middleware & Security](25-middleware-security.md) - Security features and middleware
+44. [Creating a Package](44-creating-a-package.md) - Building a distributable HashtagCMS package (admin modules, routes, views, API)
 
 ### Deployment & Maintenance
 26. [Configuration](26-configuration.md) - Configuration options and environment variables

@@ -144,6 +144,40 @@ class FormHelper
     }
 
     /**
+     * Create Color Input Tag (color swatch + hex text input, kept in sync)
+     *
+     * @param  string  $name
+     * @param  string  $value
+     * @param  array   $attributes
+     * @return string
+     */
+    public static function color(string $name = '', $value = '', array $attributes = []): string
+    {
+        $value = ($value !== '' && $value !== null) ? $value : '#000000';
+        $id = $attributes['id'] ?? $name;
+        $pickerId = "{$id}_picker";
+
+        $textAttributes = $attributes;
+        unset($textAttributes['id']);
+
+        $html = [];
+        $html[] = "<div style='display:flex;align-items:center;gap:8px;'>";
+        $html[] = self::input('text', $name, $value, array_merge($textAttributes, [
+            'id' => $id,
+            'style' => 'flex:1;' . ($textAttributes['style'] ?? ''),
+            'onchange' => "document.getElementById('{$pickerId}').value=this.value",
+        ]));
+        $html[] = self::input('color', $pickerId, $value, [
+            'id' => $pickerId,
+            'onchange' => "document.getElementById('{$id}').value=this.value",
+            'style' => 'flex-shrink:0;width:40px;height:38px;padding:2px;border:1px solid #ccc;',
+        ]);
+        $html[] = '</div>';
+
+        return implode('', $html);
+    }
+
+    /**
      * Create File Input Tag
      *
      * @param  string  $name

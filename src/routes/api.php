@@ -180,6 +180,16 @@ Route::middleware(['api', 'auth:sanctum'])->prefix($prefix . '/user')->group(fun
 
     });
 
+    // Token-validation endpoint (copy of v1/me). Behind auth:sanctum, so an
+    // invalid/missing bearer token returns 401 and a valid one returns the user
+    // — usable as an external token-introspection endpoint (e.g. by the
+    // workflows SSO opaque driver).
+    Route::get('v1/validate', function (Request $request) use ($callable) {
+
+        return app()->call($callable . 'AuthController@validateToken');
+
+    });
+
     Route::middleware([config('hashtagcmsapi.throttle_profile', 'throttle:5,1')])->post('v1/profile', function (Request $request) use ($callable) {
         return app()->call($callable . 'AuthController@updateProfile');
     });

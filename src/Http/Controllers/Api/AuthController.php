@@ -124,6 +124,26 @@ class AuthController extends ApiBaseController
     }
 
     /**
+     * Validate the current access token and return the authenticated user.
+     *
+     * A copy of me() intended as a token-validation endpoint (e.g. for external
+     * services / SSO token introspection). The `auth:sanctum` middleware rejects
+     * a missing or invalid bearer token with 401; a valid token returns the
+     * authenticated user. Kept as its own method (name `validate` is reserved by
+     * the framework's ValidatesRequests trait) so its response can evolve
+     * independently of me().
+     *
+     * @return mixed
+     */
+    public function validateToken(Request $request)
+    {
+
+        $user = $request->user();
+
+        return new UserResource($user);
+    }
+
+    /**
      * Logout
      *
      * @param Request $request

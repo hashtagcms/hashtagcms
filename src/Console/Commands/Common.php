@@ -610,7 +610,7 @@ trait Common
      * Classify a DB column into a logical form-field kind.
      *
      * Returns one of: text | textarea | number | decimal | checkbox |
-     *                 date | datetime | select | enum
+     *                 date | datetime | select | enum | color
      */
     protected function classifyColumn(array $col): string
     {
@@ -620,6 +620,10 @@ trait Common
         // Foreign key → dropdown
         if (Str::endsWith($name, '_id')) {
             return 'select';
+        }
+        // Color code (hex) column → color swatch + text input
+        if (Str::contains($name, 'color')) {
+            return 'color';
         }
         // Boolean / bit flag → checkbox
         if ($type === 'tinyint(1)' || $type === 'boolean' || $type === 'bool') {
@@ -771,6 +775,11 @@ trait Common
                 case 'number':
                     $html .= "                    {!! FormHelper::label('{$name}', '{$label}', array('class' => '{$labelCss}')) !!}\n";
                     $html .= "                    {!! FormHelper::input('number', '{$name}', {$varRef}, array('class' => '{$inputCss}', 'placeholder' => 'Enter {$label}')) !!}\n";
+                    break;
+
+                case 'color':
+                    $html .= "                    {!! FormHelper::label('{$name}', '{$label}', array('class' => '{$labelCss}')) !!}\n";
+                    $html .= "                    {!! FormHelper::color('{$name}', {$varRef}, array('class' => '{$inputCss}')) !!}\n";
                     break;
 
                 case 'enum':
